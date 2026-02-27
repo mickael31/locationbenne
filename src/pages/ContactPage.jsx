@@ -8,6 +8,9 @@ const defaultForm = {
   fullName: "",
   phone: "",
   email: "",
+  city: "",
+  benneType: "",
+  volume: "",
   message: "",
 };
 
@@ -158,6 +161,36 @@ export default function ContactPage() {
               />
             </label>
             <label>
+              Ville (optionnel)
+              <input
+                type="text"
+                name="city"
+                placeholder="Ex: Montauban"
+                value={form.city}
+                onChange={updateField}
+              />
+            </label>
+            <label>
+              Type de benne (optionnel)
+              <input
+                type="text"
+                name="benneType"
+                placeholder="Ex: Gravats / Debarras / Dechets verts"
+                value={form.benneType}
+                onChange={updateField}
+              />
+            </label>
+            <label>
+              Volume (optionnel)
+              <input
+                type="text"
+                name="volume"
+                placeholder="Ex: 7 m3"
+                value={form.volume}
+                onChange={updateField}
+              />
+            </label>
+            <label>
               Description de la demande (obligatoire)
               <textarea
                 required
@@ -174,7 +207,7 @@ export default function ContactPage() {
 
             {submitStatus === "stored" ? (
               <p className="success">
-                Merci. Votre demande est bien enregistrée.
+                Merci. Votre demande a bien ete envoyee.
               </p>
             ) : null}
 

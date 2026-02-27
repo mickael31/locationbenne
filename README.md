@@ -3,7 +3,8 @@
 Ce projet contient:
 
 - Frontend React/Vite (site public)
-- Backend Node/Express (API contact + envoi email SMTP)
+- Envoi formulaire possible en direct via EmailJS (compatible hebergement statique)
+- Backend Node/Express (API contact + envoi email MailerSend/SMTP)
 
 La partie admin a ete retiree.
 
@@ -24,7 +25,25 @@ Recommande:
 
 - `APP_DATA_DIR`: dossier persistant pour les donnees serveur (`state.json`).
 
-Configuration email SMTP (sans interface admin):
+Configuration email MailerSend (recommande):
+
+- `MAILERSEND_ENABLED=true`
+- `MAILERSEND_API_KEY`
+- `MAILERSEND_TEMPLATE_ID`
+- `MAILERSEND_FROM_EMAIL`
+- `MAILERSEND_FROM_NAME`
+- `MAILERSEND_RECIPIENTS` (emails separes par virgule)
+
+Configuration EmailJS (mode statique IONOS recommande):
+
+- `VITE_CONTACT_PROVIDER=emailjs`
+- `VITE_EMAILJS_ENABLED=true`
+- `VITE_EMAILJS_PUBLIC_KEY`
+- `VITE_EMAILJS_SERVICE_ID`
+- `VITE_EMAILJS_TEMPLATE_ID`
+- `VITE_API_BASE_URL` (laisser vide pour mode 100% frontend)
+
+Configuration email SMTP (fallback):
 
 - `SMTP_PREFILL_ENABLED=true`
 - `SMTP_PREFILL_HOST`
@@ -61,3 +80,9 @@ Le serveur Node:
 ## Endpoint principal
 
 - `POST /api/contact/submit`
+
+Notes:
+
+- Si `VITE_CONTACT_PROVIDER=emailjs` et que les IDs EmailJS sont renseignes, le formulaire envoie en direct via EmailJS.
+- Si MailerSend est active et configure, l'API envoie via MailerSend.
+- Si MailerSend echoue et que SMTP est configure, l'API tente SMTP en secours.

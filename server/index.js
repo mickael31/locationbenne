@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import express from "express";
 import nodemailer from "nodemailer";
+import { EmailParams, MailerSend, Recipient, Sender } from "mailersend";
 
 function parseIntEnv(name, fallback) {
   const value = Number(process.env[name]);
@@ -149,6 +150,22 @@ const SMTP_PREFILL_FROM_EMAIL = normalizeText(
 ).toLowerCase();
 const SMTP_PREFILL_RECIPIENTS = buildRecipientList(
   process.env.SMTP_PREFILL_RECIPIENTS || "",
+);
+const MAILERSEND_ENABLED = parseBoolEnv("MAILERSEND_ENABLED", false);
+const MAILERSEND_API_KEY = String(process.env.MAILERSEND_API_KEY || "").trim();
+const MAILERSEND_TEMPLATE_ID = String(
+  process.env.MAILERSEND_TEMPLATE_ID || "",
+).trim();
+const MAILERSEND_FROM_EMAIL = normalizeText(
+  process.env.MAILERSEND_FROM_EMAIL || "",
+  255,
+).toLowerCase();
+const MAILERSEND_FROM_NAME = normalizeText(
+  process.env.MAILERSEND_FROM_NAME || "Location Benne Occitanie",
+  255,
+);
+const MAILERSEND_RECIPIENTS = buildRecipientList(
+  process.env.MAILERSEND_RECIPIENTS || "",
 );
 
 const ENCRYPTION_KEY = deriveSecretKey(
@@ -389,6 +406,34 @@ function getEnvSmtpPrefillConfig() {
   );
 }
 
+function getEnvMailerSendConfig() {
+  if (!MAILERSEND_ENABLED) return null;
+
+  return {
+    enabled: true,
+    apiKey: MAILERSEND_API_KEY,
+    templateId: MAILERSEND_TEMPLATE_ID,
+    fromEmail: MAILERSEND_FROM_EMAIL,
+    fromName: MAILERSEND_FROM_NAME || "Location Benne Occitanie",
+    recipients: MAILERSEND_RECIPIENTS,
+  };
+}
+
+function validateMailerSendConfig(config) {
+  if (!config?.enabled) return;
+  if (!config.apiKey) throw new Error("mailersend-api-key-required");
+  if (!config.templateId) throw new Error("mailersend-template-id-required");
+  if (!isValidEmail(config.fromEmail)) {
+    throw new Error("mailersend-from-invalid");
+  }
+  if (!Array.isArray(config.recipients) || config.recipients.length === 0) {
+    throw new Error("mailersend-recipients-required");
+  }
+  if (config.recipients.some((email) => !isValidEmail(email))) {
+    throw new Error("mailersend-recipient-invalid");
+  }
+}
+
 function sanitizeSmtpConfigForClient(config) {
   return {
     enabled: config.enabled,
@@ -475,6 +520,13 @@ function createSubmission(rawInput) {
   const phone = normalizeText(rawInput?.phone, 40);
   const email = normalizeText(rawInput?.email, 255).toLowerCase();
   const message = normalizeText(rawInput?.message, 4000);
+  const city = normalizeText(rawInput?.city, 120);
+  const volume = normalizeText(rawInput?.volume, 60);
+  const benneType = normalizeText(rawInput?.benneType, 120);
+  const pageUrl = normalizeText(
+    rawInput?.pageUrl || rawInput?.page_url || "",
+    600,
+  );
 
   if (!fullName || !phone || !email || !message) {
     throw new Error("submission-missing-fields");
@@ -494,6 +546,10 @@ function createSubmission(rawInput) {
     phone,
     email,
     message,
+    city,
+    volume,
+    benneType,
+    pageUrl,
   };
 }
 
@@ -530,6 +586,49 @@ async function sendSubmissionNotificationEmail(submission, smtpConfig) {
     subject,
     text: textLines.join("\n"),
   });
+}
+
+async function sendSubmissionNotificationEmailViaMailerSend(
+  submission,
+  mailerSendConfig,
+) {
+  const mailerSend = new MailerSend({
+    apiKey: mailerSendConfig.apiKey,
+  });
+
+  const sentFrom = new Sender(
+    mailerSendConfig.fromEmail,
+    mailerSendConfig.fromName,
+  );
+
+  const recipients = mailerSendConfig.recipients.map(
+    (email) => new Recipient(email),
+  );
+
+  const personalization = mailerSendConfig.recipients.map((email) => ({
+    email,
+    data: {
+      city: submission.city || "",
+      email: submission.email || "",
+      phone: submission.phone || "",
+      volume: submission.volume || "",
+      message: submission.message || "",
+      sent_at: submission.date || "",
+      fullName: submission.fullName || "",
+      page_url: submission.pageUrl || "",
+      benneType: submission.benneType || "",
+    },
+  }));
+
+  const emailParams = new EmailParams()
+    .setFrom(sentFrom)
+    .setTo(recipients)
+    .setReplyTo(sentFrom)
+    .setSubject(`Nouvelle demande de location - ${submission.fullName}`)
+    .setTemplateId(mailerSendConfig.templateId)
+    .setPersonalization(personalization);
+
+  await mailerSend.email.send(emailParams);
 }
 
 async function sendSmtpTestEmail(smtpConfig, username) {
@@ -938,7 +1037,10 @@ app.post("/api/contact/submit", async (req, res) => {
 
   let submission;
   try {
-    submission = createSubmission(req.body);
+    submission = createSubmission({
+      ...(req.body || {}),
+      pageUrl: req.body?.pageUrl || req.body?.page_url || req.headers.referer || "",
+    });
   } catch (error) {
     res.status(400).json({ error: error.message || "invalid-submission" });
     return;
@@ -951,11 +1053,49 @@ app.post("/api/contact/submit", async (req, res) => {
   };
   saveState(next);
 
+  const mailerSendConfig = getEnvMailerSendConfig();
+  let notificationProviderConfigured = false;
+
+  if (mailerSendConfig) {
+    notificationProviderConfigured = true;
+    try {
+      validateMailerSendConfig(mailerSendConfig);
+      await sendSubmissionNotificationEmailViaMailerSend(
+        submission,
+        mailerSendConfig,
+      );
+      res.status(201).json({
+        status: "stored",
+        notification: "sent",
+        provider: "mailersend",
+      });
+      return;
+    } catch (error) {
+      console.error(
+        "Submission stored but MailerSend notification failed:",
+        error,
+      );
+    }
+  }
+
   const smtpConfig = getSmtpConfigFromState(next);
-  if (!smtpConfig.enabled) {
+  if (smtpConfig.enabled) {
+    notificationProviderConfigured = true;
+  }
+
+  if (!notificationProviderConfigured) {
     res.status(201).json({
       status: "stored",
       notification: "disabled",
+    });
+    return;
+  }
+
+  if (!smtpConfig.enabled) {
+    res.status(201).json({
+      status: "stored",
+      notification: "failed",
+      provider: "mailersend",
     });
     return;
   }
@@ -966,9 +1106,13 @@ app.post("/api/contact/submit", async (req, res) => {
     res.status(201).json({
       status: "stored",
       notification: "sent",
+      provider: "smtp",
     });
   } catch (error) {
-    console.error("Submission stored but SMTP notification failed:", error);
+    console.error(
+      "Submission stored but notification delivery failed (SMTP fallback):",
+      error,
+    );
     res.status(201).json({
       status: "stored",
       notification: "failed",
