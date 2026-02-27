@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+﻿import { NavLink } from "react-router-dom";
 import SectionCta from "../components/SectionCta";
 import { company, home } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
@@ -17,8 +17,8 @@ export default function HomePage() {
 
             <ul className="hero-points">
               <li>Intervention locale rapide sur Montauban, Toulouse, Albi et alentours.</li>
-              <li>Solution adaptee a chaque volume de dechets, de 3 a 15 m3.</li>
-              <li>Accompagnement simple: conseil, livraison, enl�vement.</li>
+              <li>Solution adaptée à chaque volume de déchets, de 3 à 15 m³.</li>
+              <li>Accompagnement simple : conseil, livraison, enlèvement.</li>
             </ul>
 
             <div className="button-row">
@@ -36,7 +36,7 @@ export default function HomePage() {
                 <span>Livraison rapide</span>
               </article>
               <article className="hero-kpi">
-                <strong>3 a 15 m3</strong>
+                <strong>3 à 15 m³</strong>
                 <span>Tailles disponibles</span>
               </article>
               <article className="hero-kpi">
@@ -64,15 +64,15 @@ export default function HomePage() {
       <section className="trust-strip">
         <div className="container trust-grid">
           <article className="trust-item fade-in">Particuliers et professionnels</article>
-          <article className="trust-item fade-in stagger-1">Zones urbaines et periurbaines</article>
-          <article className="trust-item fade-in stagger-2">Gestion responsable des dechets</article>
-          <article className="trust-item fade-in stagger-3">Accompagnement de A a Z</article>
+          <article className="trust-item fade-in stagger-1">Zones urbaines et périurbaines</article>
+          <article className="trust-item fade-in stagger-2">Gestion responsable des déchets</article>
+          <article className="trust-item fade-in stagger-3">Accompagnement de A à Z</article>
         </div>
       </section>
 
       <section className="section">
         <div className="container split">
-          <img className="fade-in-left" src={home.intro.image} alt="Equipe Location Benne Occitanie" />
+          <img className="fade-in-left" src={home.intro.image} alt="Équipe Location Benne Occitanie" />
           <div className="fade-in-right">
             <h2>{home.intro.title}</h2>
             <p>{home.intro.text}</p>
@@ -102,7 +102,7 @@ export default function HomePage() {
       <section className="section quick-cta">
         <div className="container quick-cta-content fade-in">
           <div>
-            <h2>Pret a evacuer vos dechets ?</h2>
+            <h2>Prêt à évacuer vos déchets ?</h2>
             <p className="quick-cta-note">Un appel suffit pour lancer votre demande.</p>
           </div>
           <div className="button-row">
@@ -133,8 +133,8 @@ export default function HomePage() {
 
       <section className="section alt">
         <div className="container">
-          <p className="eyebrow fade-in">Etapes</p>
-          <h2 className="fade-in">Un parcours simple, du devis a l'enlevement</h2>
+          <p className="eyebrow fade-in">Étapes</p>
+          <h2 className="fade-in">Un parcours simple, du devis à l'enlèvement</h2>
           <div className="process-grid">
             {home.process.map((item, i) => (
               <article className={`process-card scale-in stagger-${i + 1}`} key={item.title}>
@@ -181,7 +181,7 @@ export default function HomePage() {
 
       <section className="section">
         <div className="container">
-          <h2 className="fade-in">Questions frequentes</h2>
+          <h2 className="fade-in">Questions fréquentes</h2>
           <div className="faq-list">
             {home.faqs.map((faq) => (
               <details className="fade-in" key={faq.question}>

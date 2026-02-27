@@ -6,7 +6,6 @@ const target = "dist/.htaccess";
 const distIndex = "dist/index.html";
 const staticRouteEntries = [
   "about",
-  "blog",
   "contact",
   "357-2",
   "services",

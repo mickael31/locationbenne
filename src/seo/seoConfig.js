@@ -1,4 +1,4 @@
-import { company, home } from "../data/content";
+﻿import { company, home } from "../data/content";
 
 export const SITE_ORIGIN = "https://location-benne-occitanie.fr";
 export const SITE_NAME = company.name;
@@ -7,71 +7,63 @@ export const DEFAULT_IMAGE =
 
 const ROUTE_LABELS = {
   "/": "Accueil",
-  "/about": "A propos",
+  "/about": "À propos",
   "/services": "Services",
   "/357-2": "Bennes",
   "/contact": "Contact",
-  "/blog": "Blog",
-  "/politique-de-confidentialite": "Politique de confidentialite",
+  "/politique-de-confidentialite": "Politique de confidentialité",
 };
 
 const PAGE_SEO = {
   "/": {
     title: "Location Benne Occitanie | Location de bennes en Occitanie",
     description:
-      "Location de bennes rapide en Occitanie : Montauban, Toulouse, Albi et alentours. Devis gratuit, livraison rapide, evacuation de dechets.",
+      "Location de bennes rapide en Occitanie : Montauban, Toulouse, Albi et alentours. Devis gratuit, livraison rapide, évacuation de déchets.",
     image: "/images/2025/08/ChatGPT-Image-5-aout-2025-01_57_25-1024x683.png",
     keywords: [
       "location benne occitanie",
       "location benne montauban",
       "location benne toulouse",
       "location benne albi",
-      "evacuation dechets",
+      "évacuation déchets",
     ],
     includeLocalBusiness: true,
     includeFaq: true,
   },
   "/about": {
-    title: "A propos | Location Benne Occitanie",
+    title: "À propos | Location Benne Occitanie",
     description:
-      "Decouvrez l'expertise de Location Benne Occitanie, son histoire, son equipe et son engagement pour un service de qualite.",
+      "Découvrez l'expertise de Location Benne Occitanie, son histoire, son équipe et son engagement pour un service de qualité.",
     image: "/images/2025/08/ChatGPT-Image-4-aout-2025-21_26_42.png",
   },
   "/services": {
     title: "Services | Location Benne Occitanie",
     description:
-      "Nos services : location de bennes, evacuation de dechets, devis gratuits et accompagnement personnalise en Occitanie.",
+      "Nos services : location de bennes, évacuation de déchets, devis gratuits et accompagnement personnalisé en Occitanie.",
     image: "/images/2025/08/ChatGPT-Image-4-aout-2025-23_35_24-1024x683.png",
   },
   "/357-2": {
-    title: "Bennes 3 a 15 m3 | Location Benne Occitanie",
+    title: "Bennes 3 à 15 m³ | Location Benne Occitanie",
     description:
-      "Consultez notre gamme de bennes 3 m3, 7 m3, 10 m3 et 15 m3 pour tous vos chantiers et debarras en Occitanie.",
+      "Consultez notre gamme de bennes 3 m³, 7 m³, 10 m³ et 15 m³ pour tous vos chantiers et débarras en Occitanie.",
     image:
       "/images/2025/08/ChatGPT-Image-6-aout-2025-17_06_30-e1754492942287.png",
   },
   "/contact": {
     title: "Contact | Location Benne Occitanie",
     description:
-      "Contactez Location Benne Occitanie pour votre demande de location de benne. Reponse rapide et devis gratuit.",
+      "Contactez Location Benne Occitanie pour votre demande de location de benne. Réponse rapide et devis gratuit.",
     image: "/images/2025/08/cropped-Logo_de_Benne_Occitanie-removebg-preview.png",
   },
   "/politique-de-confidentialite": {
-    title: "Politique de confidentialite | Location Benne Occitanie",
+    title: "Politique de confidentialité | Location Benne Occitanie",
     description:
-      "Consultez notre politique de confidentialite et vos droits concernant le traitement des donnees personnelles.",
+      "Consultez notre politique de confidentialité et vos droits concernant le traitement des données personnelles.",
     image: "/images/2025/08/cropped-Logo_de_Benne_Occitanie-removebg-preview.png",
   },
-  "/blog": {
-    title: "Blog | Location Benne Occitanie",
-    description:
-      "Actualites et conseils de Location Benne Occitanie sur la location de bennes et la gestion des dechets.",
-    image: "/images/2025/08/ChatGPT-Image-4-aout-2025-19_24_04.png",
-    robots: "noindex,follow",
-  },
   "*": {
-    title: "Page non trouvee | Location Benne Occitanie",
-    description: "La page demandee n'existe pas.",
+    title: "Page non trouvée | Location Benne Occitanie",
+    description: "La page demandée n'existe pas.",
     image: "/images/2025/08/cropped-Logo_de_Benne_Occitanie-removebg-preview.png",
     robots: "noindex,nofollow",
   },
@@ -152,7 +144,7 @@ function getLocalBusinessSchema() {
     areaServed: ["Montauban", "Toulouse", "Albi", "Occitanie"],
     serviceType: [
       "Location de bennes",
-      "Evacuation de dechets",
+      "Évacuation de déchets",
       "Devis gratuit",
     ],
   };

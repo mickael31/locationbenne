@@ -1,13 +1,13 @@
-import { NavLink } from "react-router-dom";
+﻿import { NavLink } from "react-router-dom";
 import SectionCta from "../components/SectionCta";
 import { bennes, company } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
 
 const benneUsage = {
-  "Benne 3 m³": "Ideal pour petits debarras, jardins et travaux ponctuels.",
-  "Benne 7 m³": "Le meilleur compromis pour renovation et volume intermediaire.",
-  "Benne 10 m³": "Parfait pour gros travaux de maison et debarras complets.",
-  "Benne 15 m³": "Concue pour gros chantiers et besoins professionnels lourds.",
+  "Benne 3 m³": "Idéal pour petits débarras, jardins et travaux ponctuels.",
+  "Benne 7 m³": "Le meilleur compromis pour rénovation et volume intermédiaire.",
+  "Benne 10 m³": "Parfait pour gros travaux de maison et débarras complets.",
+  "Benne 15 m³": "Conçue pour gros chantiers et besoins professionnels lourds.",
 };
 
 export default function BennesPage() {
@@ -76,15 +76,15 @@ export default function BennesPage() {
           <div className="bennes-compare-grid">
             <article className="process-card scale-in stagger-1">
               <h3>Petit chantier</h3>
-              <p>Debarras de cave, garage, taille de haies et petits gravats.</p>
+              <p>Débarras de cave, garage, taille de haies et petits gravats.</p>
             </article>
             <article className="process-card scale-in stagger-2">
-              <h3>Projet intermediaire</h3>
-              <p>Renovation de pieces, demenagement, dechets mixtes.</p>
+              <h3>Projet intermédiaire</h3>
+              <p>Rénovation de pièces, déménagement, déchets mixtes.</p>
             </article>
             <article className="process-card scale-in stagger-3">
               <h3>Gros volume</h3>
-              <p>Renovation lourde, demoliton, chantier professionnel.</p>
+              <p>Rénovation lourde, démolition, chantier professionnel.</p>
             </article>
           </div>
         </div>

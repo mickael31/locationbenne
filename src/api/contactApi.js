@@ -1,4 +1,4 @@
-export async function submitContactForm(form) {
+﻿export async function submitContactForm(form) {
   const response = await fetch("/api/contact/submit", {
     method: "POST",
     headers: {

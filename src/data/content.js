@@ -1,4 +1,4 @@
-export const company = {
+ï»¿export const company = {
   name: "Location Benne Occitanie",
   email: "mesnierdu82@gmail.com",
   phoneDisplay: "+33 6 79 98 41 26",
@@ -10,8 +10,7 @@ export const company = {
 
 export const navLinks = [
   { to: "/", label: "Accueil" },
-  { to: "/about", label: "À propos" },
-  { to: "/blog", label: "Blog" },
+  { to: "/about", label: "Ã€ propos" },
   { to: "/contact", label: "Contact" },
   { to: "/357-2", label: "Bennes" },
   { to: "/services", label: "Services" },
@@ -22,14 +21,14 @@ export const home = {
     eyebrow: "Votre solution",
     title: "Location de bennes rapide et efficace",
     description:
-      "Profitez d'un service d'évacuation de gravats et déchets dans toute l'Occitanie : Montauban, Toulouse, Albi, ainsi que toutes les communes alentours.",
+      "Profitez d'un service d'Ã©vacuation de gravats et dÃ©chets dans toute l'Occitanie : Montauban, Toulouse, Albi, ainsi que toutes les communes alentours.",
     image:
       "/images/2025/08/ChatGPT-Image-5-aout-2025-01_57_25-1024x683.png",
   },
   intro: {
     title:
-      "Découvrez l'histoire de Location Benne Occitanie et notre engagement",
-    text: "Location Benne Occitanie, spécialisée dans la location de bennes, est dédiée à un service de qualité en Occitanie depuis sa création.",
+      "DÃ©couvrez l'histoire de Location Benne Occitanie et notre engagement",
+    text: "Location Benne Occitanie, spÃ©cialisÃ©e dans la location de bennes, est dÃ©diÃ©e Ã  un service de qualitÃ© en Occitanie depuis sa crÃ©ation.",
     image:
       "/images/2025/08/ChatGPT-Image-4-aout-2025-19_24_04.png",
   },
@@ -37,12 +36,12 @@ export const home = {
     {
       number: "01.",
       title: "Location de Bennes",
-      description: "Une benne polyvalente, idéale pour tous vos projets.",
+      description: "Une benne polyvalente, idÃ©ale pour tous vos projets.",
     },
     {
       number: "02.",
-      title: "Évacuation de Déchets",
-      description: "Un service rapide pour l'évacuation de tous vos déchets.",
+      title: "Ã‰vacuation de DÃ©chets",
+      description: "Un service rapide pour l'Ã©vacuation de tous vos dÃ©chets.",
     },
     {
       number: "03.",
@@ -52,9 +51,9 @@ export const home = {
   ],
   benefits: [
     {
-      title: "Rapidité",
+      title: "RapiditÃ©",
       description:
-        "Nous garantissons une intervention rapide pour répondre à vos besoins d'évacuation de manière efficace.",
+        "Nous garantissons une intervention rapide pour rÃ©pondre Ã  vos besoins d'Ã©vacuation de maniÃ¨re efficace.",
     },
     {
       title: "Devis gratuit",
@@ -64,60 +63,60 @@ export const home = {
     {
       title: "Expertise locale",
       description:
-        "Nos connaissances locales nous permettent d'offrir des solutions adaptées et efficaces pour votre environnement.",
+        "Nos connaissances locales nous permettent d'offrir des solutions adaptÃ©es et efficaces pour votre environnement.",
     },
   ],
   process: [
-    {      title: "Étape 1 : Demande",
+    {      title: "Ã‰tape 1 : Demande",
       description:
-        "Contactez-nous pour discuter de vos besoins et obtenir un devis personnalisé.",
+        "Contactez-nous pour discuter de vos besoins et obtenir un devis personnalisÃ©.",
     },
-    {      title: "Étape 2 : Livraison",
+    {      title: "Ã‰tape 2 : Livraison",
       description:
-        "Nous livrons la benne à l'endroit indiqué dans les meilleurs délais.",
+        "Nous livrons la benne Ã  l'endroit indiquÃ© dans les meilleurs dÃ©lais.",
     },
-    {      title: "Étape 3 : Évacuation",
+    {      title: "Ã‰tape 3 : Ã‰vacuation",
       description:
-        "Une fois la benne pleine, nous assurons son enlèvement rapidement et efficacement.",
+        "Une fois la benne pleine, nous assurons son enlÃ¨vement rapidement et efficacement.",
     },
   ],
   commitments: [
     {
-      title: "Simplicité & Rapidité",
+      title: "SimplicitÃ© & RapiditÃ©",
       description:
-        "Réservation facile et livraison express de votre benne partout en Occitanie, pour tous vos chantiers et débarras.",
+        "RÃ©servation facile et livraison express de votre benne partout en Occitanie, pour tous vos chantiers et dÃ©barras.",
     },
     {
       title: "Tarifs transparents",
       description:
-        "Devis gratuit et prix sans surprise, adaptés à chaque besoin, pour particuliers et professionnels.",
+        "Devis gratuit et prix sans surprise, adaptÃ©s Ã  chaque besoin, pour particuliers et professionnels.",
     },
     {
-      title: "Service local & réactif",
+      title: "Service local & rÃ©actif",
       description:
-        "Une équipe proche de chez vous, à l'écoute, disponible pour répondre à toutes vos questions et assurer un suivi personnalisé.",
+        "Une Ã©quipe proche de chez vous, Ã  l'Ã©coute, disponible pour rÃ©pondre Ã  toutes vos questions et assurer un suivi personnalisÃ©.",
     },
     {
-      title: "Engagement écologique",
+      title: "Engagement Ã©cologique",
       description:
-        "Gestion responsable des déchets, tri en centre agréé et solutions respectueuses de l'environnement.",
+        "Gestion responsable des dÃ©chets, tri en centre agrÃ©Ã© et solutions respectueuses de l'environnement.",
     },
   ],
   faqs: [
     {
-      question: "Quels types de déchets peuvent être mis dans une benne ?",
+      question: "Quels types de dÃ©chets peuvent Ãªtre mis dans une benne ?",
       answer:
-        "Nous acceptons les gravats, déchets verts, encombrants et déchets de chantier classiques. Les déchets dangereux sont exclus.",
+        "Nous acceptons les gravats, dÃ©chets verts, encombrants et dÃ©chets de chantier classiques. Les dÃ©chets dangereux sont exclus.",
     },
     {
-      question: "Intervenez-vous uniquement à Montauban ?",
+      question: "Intervenez-vous uniquement Ã  Montauban ?",
       answer:
         "Non, nous intervenons sur Montauban, Toulouse, Albi et les communes alentours dans toute l'Occitanie.",
     },
     {
       question: "En combien de temps pouvez-vous livrer une benne ?",
       answer:
-        "Selon disponibilité, la livraison peut être effectuée rapidement, souvent sous 24h à 48h.",
+        "Selon disponibilitÃ©, la livraison peut Ãªtre effectuÃ©e rapidement, souvent sous 24h Ã  48h.",
     },
     {
       question: "Le devis est-il gratuit ?",
@@ -128,28 +127,28 @@ export const home = {
 };
 
 export const about = {
-  title: "Découvrez l'expertise de Location Benne Occitanie",
-  subtitle: "À propos",
+  title: "DÃ©couvrez l'expertise de Location Benne Occitanie",
+  subtitle: "Ã€ propos",
   companyTitle: "Notre entreprise",
-  companyHeading: "Engagés pour un service de qualité en location de bennes",
+  companyHeading: "EngagÃ©s pour un service de qualitÃ© en location de bennes",
   companyParagraphs: [
-    "Location Benne Occitanie est fière d'avoir aidé de nombreux clients à gérer efficacement leurs déchets, offrant des solutions sur mesure qui ont transformé des espaces encombrés en lieux propres et organisés.",
-    "Depuis sa création, Location Benne Occitanie a su répondre aux besoins variés de ses clients en matière de gestion des déchets. Grâce à des services rapides et efficaces, l'entreprise a pu améliorer la satisfaction et la tranquillité d'esprit de nombreux particuliers et professionnels autour de Montauban, Toulouse et Albi. Chaque intervention vise à optimiser l'espace de vie des clients tout en respectant l'environnement.",
+    "Location Benne Occitanie est fiÃ¨re d'avoir aidÃ© de nombreux clients Ã  gÃ©rer efficacement leurs dÃ©chets, offrant des solutions sur mesure qui ont transformÃ© des espaces encombrÃ©s en lieux propres et organisÃ©s.",
+    "Depuis sa crÃ©ation, Location Benne Occitanie a su rÃ©pondre aux besoins variÃ©s de ses clients en matiÃ¨re de gestion des dÃ©chets. GrÃ¢ce Ã  des services rapides et efficaces, l'entreprise a pu amÃ©liorer la satisfaction et la tranquillitÃ© d'esprit de nombreux particuliers et professionnels autour de Montauban, Toulouse et Albi. Chaque intervention vise Ã  optimiser l'espace de vie des clients tout en respectant l'environnement.",
   ],
   counters: [
-    { value: "25+", label: "Années d'expérience" },
-    { value: "1+", label: "Membres de l'équipe" },
+    { value: "25+", label: "AnnÃ©es d'expÃ©rience" },
+    { value: "1+", label: "Membres de l'Ã©quipe" },
     { value: "99%", label: "Clients satisfaits" },
-    { value: "1000+", label: "Chantiers réalisés" },
+    { value: "1000+", label: "Chantiers rÃ©alisÃ©s" },
   ],
   storyTitle: "Notre parcours",
   storyHeading: "L'histoire de Location Benne Occitanie",
   storyText:
-    "Location Benne Occitanie a été fondée pour répondre à un besoin croissant de solutions de gestion des déchets en région Occitanie. Au fil des années, l'entreprise a construit une réputation solide grâce à son expertise locale et à son engagement envers la satisfaction client. Aujourd'hui, elle est un acteur clé dans la location de bennes, offrant des services adaptés aux besoins des habitants de la région.",
-  teamTitle: "Notre équipe",
-  teamHeading: "Des experts à votre service",
+    "Location Benne Occitanie a Ã©tÃ© fondÃ©e pour rÃ©pondre Ã  un besoin croissant de solutions de gestion des dÃ©chets en rÃ©gion Occitanie. Au fil des annÃ©es, l'entreprise a construit une rÃ©putation solide grÃ¢ce Ã  son expertise locale et Ã  son engagement envers la satisfaction client. Aujourd'hui, elle est un acteur clÃ© dans la location de bennes, offrant des services adaptÃ©s aux besoins des habitants de la rÃ©gion.",
+  teamTitle: "Notre Ã©quipe",
+  teamHeading: "Des experts Ã  votre service",
   teamText:
-    "Chez Location Benne Occitanie, notre équipe d'experts met tout son savoir-faire à votre disposition pour garantir la réussite de vos projets. Forts d'une expérience reconnue dans la location de bennes et la gestion des déchets, nous vous accompagnons à chaque étape : conseil sur le choix de la benne, modalités de livraison, respect des délais, et suivi personnalisé. Professionnels ou particuliers, bénéficiez d'un service réactif, de solutions adaptées et d'une écoute attentive pour tous vos besoins. Notre priorité : votre satisfaction, la sécurité de vos chantiers et le respect de l'environnement en Occitanie. Faites confiance à des spécialistes locaux engagés à vos côtés !",
+    "Chez Location Benne Occitanie, notre Ã©quipe d'experts met tout son savoir-faire Ã  votre disposition pour garantir la rÃ©ussite de vos projets. Forts d'une expÃ©rience reconnue dans la location de bennes et la gestion des dÃ©chets, nous vous accompagnons Ã  chaque Ã©tape : conseil sur le choix de la benne, modalitÃ©s de livraison, respect des dÃ©lais, et suivi personnalisÃ©. Professionnels ou particuliers, bÃ©nÃ©ficiez d'un service rÃ©actif, de solutions adaptÃ©es et d'une Ã©coute attentive pour tous vos besoins. Notre prioritÃ© : votre satisfaction, la sÃ©curitÃ© de vos chantiers et le respect de l'environnement en Occitanie. Faites confiance Ã  des spÃ©cialistes locaux engagÃ©s Ã  vos cÃ´tÃ©s !",
   images: [
     "/images/2025/08/ChatGPT-Image-4-aout-2025-21_26_42.png",
     "/images/2025/08/ChatGPT-Image-4-aout-2025-22_15_10-1024x683.png",
@@ -164,28 +163,28 @@ export const servicesPage = {
     {
       title: "Location de Bennes",
       description:
-        "Nous proposons des bennes adaptées à tous vos besoins, que ce soit pour des travaux de construction, de rénovation ou d'évacuation de déchets. Nos équipes vous conseilleront sur la taille adéquate et assureront une livraison rapide pour vous permettre de commencer vos travaux sans délai.",
+        "Nous proposons des bennes adaptÃ©es Ã  tous vos besoins, que ce soit pour des travaux de construction, de rÃ©novation ou d'Ã©vacuation de dÃ©chets. Nos Ã©quipes vous conseilleront sur la taille adÃ©quate et assureront une livraison rapide pour vous permettre de commencer vos travaux sans dÃ©lai.",
       image:
         "/images/2025/08/a8ba24e4-7cd1-44a0-ac98-0315be9ccc7a.png",
     },
     {
-      title: "Évacuation de Déchets",
+      title: "Ã‰vacuation de DÃ©chets",
       description:
-        "Notre service d'évacuation de déchets est conçu pour vous aider à vous débarrasser efficacement de toutes sortes de gravats et encombrants. Nous nous chargeons de la collecte et du transport vers les sites de traitement, garantissant une gestion écologique de vos déchets et le respect des normes environnementales.",
+        "Notre service d'Ã©vacuation de dÃ©chets est conÃ§u pour vous aider Ã  vous dÃ©barrasser efficacement de toutes sortes de gravats et encombrants. Nous nous chargeons de la collecte et du transport vers les sites de traitement, garantissant une gestion Ã©cologique de vos dÃ©chets et le respect des normes environnementales.",
       image:
         "/images/2025/08/ChatGPT-Image-4-aout-2025-23_35_24-1024x683.png",
     },
     {
       title: "Devis Gratuits",
       description:
-        "Nous offrons des devis gratuits pour toutes nos prestations. Grâce à notre approche transparente, vous pouvez évaluer nos services sans engagement et choisir la solution qui correspond le mieux à vos besoins, le tout dans un délai rapide et efficace.",
+        "Nous offrons des devis gratuits pour toutes nos prestations. GrÃ¢ce Ã  notre approche transparente, vous pouvez Ã©valuer nos services sans engagement et choisir la solution qui correspond le mieux Ã  vos besoins, le tout dans un dÃ©lai rapide et efficace.",
       image:
         "/images/2025/08/08eedad2-d9c8-425a-a0f0-74c74af2721f-683x1024.png",
     },
     {
-      title: "Service Client Personnalisé",
+      title: "Service Client PersonnalisÃ©",
       description:
-        "Notre équipe est à votre disposition pour répondre à toutes vos questions et vous fournir un service client personnalisé. Nous nous engageons à vous assister tout au long de votre projet, garantissant une satisfaction totale grâce à notre expertise et notre soutien constant.",
+        "Notre Ã©quipe est Ã  votre disposition pour rÃ©pondre Ã  toutes vos questions et vous fournir un service client personnalisÃ©. Nous nous engageons Ã  vous assister tout au long de votre projet, garantissant une satisfaction totale grÃ¢ce Ã  notre expertise et notre soutien constant.",
       image:
         "/images/2025/08/a8ba24e4-7cd1-44a0-ac98-0315be9ccc7a.png",
     },
@@ -193,37 +192,37 @@ export const servicesPage = {
 };
 
 export const bennes = {
-  eyebrow: "Nos bennes de 3 à 15 m³",
+  eyebrow: "Nos bennes de 3 Ã  15 mÂ³",
   title: "Location pour tous vos besoins",
-  heading: "Notre gamme de bennes en détail",
+  heading: "Notre gamme de bennes en dÃ©tail",
   intro:
-    "Découvrez notre gamme complète de bennes à louer de 3 à 15 m³, adaptées à tous vos besoins : travaux, débarras, chantiers, déchets verts ou gravats. Nous livrons rapidement sur Montauban, Toulouse, Albi et toute la région Occitanie, pour particuliers et professionnels.",
+    "DÃ©couvrez notre gamme complÃ¨te de bennes Ã  louer de 3 Ã  15 mÂ³, adaptÃ©es Ã  tous vos besoins : travaux, dÃ©barras, chantiers, dÃ©chets verts ou gravats. Nous livrons rapidement sur Montauban, Toulouse, Albi et toute la rÃ©gion Occitanie, pour particuliers et professionnels.",
   types: [
     {
-      title: "Benne 3 m³",
+      title: "Benne 3 mÂ³",
       description:
-        "Vous avez un petit volume de déchets à évacuer ? La benne 3 m³ est idéale pour tous vos petits chantiers à la maison : débarras de cave, nettoyage de garage, taille de haies ou petits travaux de bricolage. Son format compact lui permet de se faufiler partout, même dans les accès les plus étroits. Facile à positionner, elle s'adresse aussi bien aux particuliers qu'aux petits artisans qui souhaitent évacuer rapidement gravats, déchets verts ou petits encombrants. Optez pour une solution simple, rapide et économique avec notre benne 3 m³ !",
+        "Vous avez un petit volume de dÃ©chets Ã  Ã©vacuer ? La benne 3 mÂ³ est idÃ©ale pour tous vos petits chantiers Ã  la maison : dÃ©barras de cave, nettoyage de garage, taille de haies ou petits travaux de bricolage. Son format compact lui permet de se faufiler partout, mÃªme dans les accÃ¨s les plus Ã©troits. Facile Ã  positionner, elle s'adresse aussi bien aux particuliers qu'aux petits artisans qui souhaitent Ã©vacuer rapidement gravats, dÃ©chets verts ou petits encombrants. Optez pour une solution simple, rapide et Ã©conomique avec notre benne 3 mÂ³ !",
       image:
         "/images/2025/08/ChatGPT-Image-6-aout-2025-17_06_30-e1754492942287.png",
     },
     {
-      title: "Benne 7 m³",
+      title: "Benne 7 mÂ³",
       description:
-        "Le compromis parfait pour la maison ou le chantier ! La benne 7 m³ s'adapte à tous les besoins courants de rénovation, de débarras d'une pièce entière ou d'évacuation après un déménagement. Assez grande pour stocker du mobilier, des gravats, du bois ou des déchets mixtes, elle reste toutefois maniable et facile à placer même en zone urbaine ou dans les lotissements. Pour tous vos projets intermédiaires, faites confiance à la benne 7 m³, polyvalente et économique !",
+        "Le compromis parfait pour la maison ou le chantier ! La benne 7 mÂ³ s'adapte Ã  tous les besoins courants de rÃ©novation, de dÃ©barras d'une piÃ¨ce entiÃ¨re ou d'Ã©vacuation aprÃ¨s un dÃ©mÃ©nagement. Assez grande pour stocker du mobilier, des gravats, du bois ou des dÃ©chets mixtes, elle reste toutefois maniable et facile Ã  placer mÃªme en zone urbaine ou dans les lotissements. Pour tous vos projets intermÃ©diaires, faites confiance Ã  la benne 7 mÂ³, polyvalente et Ã©conomique !",
       image:
         "/images/2025/08/Conteneur-a-dechets-blanc-sur-beton.png",
     },
     {
-      title: "Benne 10 m³",
+      title: "Benne 10 mÂ³",
       description:
-        "Un grand volume pour vos travaux ambitieux ! Vous préparez une rénovation complète, le débarras d'une grande maison ou l'élagage massif de votre jardin ? La benne 10 m³ est faite pour vous. Elle offre suffisamment d'espace pour les déchets volumineux, les matériaux de chantier, les meubles encombrants ou les déchets verts en quantité. Sa polyvalence séduit aussi bien les professionnels du bâtiment que les particuliers lors de gros travaux. Avec la benne 10 m³, libérez-vous des contraintes logistiques et gagnez un temps précieux !",
+        "Un grand volume pour vos travaux ambitieux ! Vous prÃ©parez une rÃ©novation complÃ¨te, le dÃ©barras d'une grande maison ou l'Ã©lagage massif de votre jardin ? La benne 10 mÂ³ est faite pour vous. Elle offre suffisamment d'espace pour les dÃ©chets volumineux, les matÃ©riaux de chantier, les meubles encombrants ou les dÃ©chets verts en quantitÃ©. Sa polyvalence sÃ©duit aussi bien les professionnels du bÃ¢timent que les particuliers lors de gros travaux. Avec la benne 10 mÂ³, libÃ©rez-vous des contraintes logistiques et gagnez un temps prÃ©cieux !",
       image:
         "/images/2025/08/ChatGPT-Image-6-aout-2025-17_19_27.png",
     },
     {
-      title: "Benne 15 m³",
+      title: "Benne 15 mÂ³",
       description:
-        "Le choix des gros chantiers et des professionnels exigeants ! La benne 15 m³ répond aux besoins les plus importants : chantiers de démolition, nettoyage d'entrepôts, débarras de bâtiments entiers ou grands travaux d'entreprise. Son volume généreux limite les rotations, ce qui est idéal pour optimiser votre temps et vos coûts. Capable d'accueillir tout-venant, gravats, déchets industriels ou mobiliers volumineux, elle est le partenaire indispensable des opérations de grande envergure. Pour tous vos grands projets, la benne 15 m³ est la solution la plus efficace et la plus rentable !",
+        "Le choix des gros chantiers et des professionnels exigeants ! La benne 15 mÂ³ rÃ©pond aux besoins les plus importants : chantiers de dÃ©molition, nettoyage d'entrepÃ´ts, dÃ©barras de bÃ¢timents entiers ou grands travaux d'entreprise. Son volume gÃ©nÃ©reux limite les rotations, ce qui est idÃ©al pour optimiser votre temps et vos coÃ»ts. Capable d'accueillir tout-venant, gravats, dÃ©chets industriels ou mobiliers volumineux, elle est le partenaire indispensable des opÃ©rations de grande envergure. Pour tous vos grands projets, la benne 15 mÂ³ est la solution la plus efficace et la plus rentable !",
       image:
         "/images/2025/08/ChatGPT-Image-6-aout-2025-17_24_50.png",
     },
@@ -232,7 +231,7 @@ export const bennes = {
 
 export const contact = {
   eyebrow: "Contact",
-  title: "Nous sommes là pour vous aider",
+  title: "Nous sommes lÃ  pour vous aider",
   subtitle: "Entrer en contact",
   sectionTitle: "Nous contacter facilement",
   sectionSubtitle:
@@ -241,72 +240,72 @@ export const contact = {
 };
 
 export const privacy = {
-  lastUpdate: "Dernière mise à jour : 4 août 2025",
+  lastUpdate: "DerniÃ¨re mise Ã  jour : 4 aoÃ»t 2025",
   sections: [
     {
       title: "1. Introduction",
       paragraphs: [
-        "Nous accordons une grande importance à la protection de vos données personnelles. Cette politique de confidentialité explique quelles informations nous collectons, comment nous les utilisons et quels sont vos droits.",
+        "Nous accordons une grande importance Ã  la protection de vos donnÃ©es personnelles. Cette politique de confidentialitÃ© explique quelles informations nous collectons, comment nous les utilisons et quels sont vos droits.",
       ],
     },
     {
-      title: "2. Données collectées",
+      title: "2. DonnÃ©es collectÃ©es",
       paragraphs: ["Nous collectons les informations suivantes :"],
       list: [
-        "Informations saisies dans les formulaires de contact/devis (nom, prénom, adresse e-mail, téléphone, message, ville)",
-        "Informations techniques : adresse IP, navigateur, pages visitées (via cookies techniques)",
+        "Informations saisies dans les formulaires de contact/devis (nom, prÃ©nom, adresse e-mail, tÃ©lÃ©phone, message, ville)",
+        "Informations techniques : adresse IP, navigateur, pages visitÃ©es (via cookies techniques)",
       ],
     },
     {
-      title: "3. Utilisation des données",
-      paragraphs: ["Les données sont utilisées uniquement pour :"],
+      title: "3. Utilisation des donnÃ©es",
+      paragraphs: ["Les donnÃ©es sont utilisÃ©es uniquement pour :"],
       list: [
-        "Répondre à vos demandes de contact ou devis",
-        "Gérer nos prestations de services",
-        "Améliorer notre site et nos services",
+        "RÃ©pondre Ã  vos demandes de contact ou devis",
+        "GÃ©rer nos prestations de services",
+        "AmÃ©liorer notre site et nos services",
       ],
       footer:
-        "Nous ne vendons ni ne partageons vos données à des tiers non autorisés.",
+        "Nous ne vendons ni ne partageons vos donnÃ©es Ã  des tiers non autorisÃ©s.",
     },
     {
       title: "4. Cookies",
       paragraphs: [
-        "Notre site utilise des cookies pour améliorer l'expérience utilisateur et mesurer l'audience (ex : Google Analytics). Vous pouvez à tout moment paramétrer vos préférences de cookies dans votre navigateur.",
+        "Notre site utilise des cookies pour amÃ©liorer l'expÃ©rience utilisateur et mesurer l'audience (ex : Google Analytics). Vous pouvez Ã  tout moment paramÃ©trer vos prÃ©fÃ©rences de cookies dans votre navigateur.",
       ],
     },
     {
-      title: "5. Destinataires des données",
+      title: "5. Destinataires des donnÃ©es",
       paragraphs: [
-        "Seules les personnes habilitées de Location Benne Occitanie ont accès à vos informations pour traiter vos demandes.",
+        "Seules les personnes habilitÃ©es de Location Benne Occitanie ont accÃ¨s Ã  vos informations pour traiter vos demandes.",
       ],
     },
     {
-      title: "6. Durée de conservation",
+      title: "6. DurÃ©e de conservation",
       paragraphs: [
-        "Vos données sont conservées pendant la durée nécessaire au traitement de votre demande et au maximum 3 ans après le dernier contact.",
+        "Vos donnÃ©es sont conservÃ©es pendant la durÃ©e nÃ©cessaire au traitement de votre demande et au maximum 3 ans aprÃ¨s le dernier contact.",
       ],
     },
     {
-      title: "7. Sécurité",
+      title: "7. SÃ©curitÃ©",
       paragraphs: [
-        "Nous mettons en place des mesures techniques pour protéger vos données contre tout accès non autorisé, modification, divulgation ou destruction.",
+        "Nous mettons en place des mesures techniques pour protÃ©ger vos donnÃ©es contre tout accÃ¨s non autorisÃ©, modification, divulgation ou destruction.",
       ],
     },
     {
       title: "8. Vos droits",
-      paragraphs: ["Conformément au RGPD, vous disposez des droits suivants :"],
+      paragraphs: ["ConformÃ©ment au RGPD, vous disposez des droits suivants :"],
       list: [
-        "Accès, rectification ou suppression de vos données",
+        "AccÃ¨s, rectification ou suppression de vos donnÃ©es",
         "Limitation ou opposition au traitement",
         "Retrait du consentement",
       ],
       footer:
-        "Pour exercer vos droits, écrivez-nous à : mesnierdu82@gmail.com ou via le formulaire de contact du site.",
+        "Pour exercer vos droits, Ã©crivez-nous Ã  : mesnierdu82@gmail.com ou via le formulaire de contact du site.",
     },
     {
       title: "9. Contact",
       paragraphs: [
-        "Pour toute question concernant la politique de confidentialité, contactez-nous à : mesnierdu82@gmail.com",
+        "Pour toute question concernant la politique de confidentialitÃ©, contactez-nous Ã  : mesnierdu82@gmail.com",
       ],
     },
   ],

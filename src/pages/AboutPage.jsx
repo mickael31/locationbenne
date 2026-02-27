@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+﻿import { NavLink } from "react-router-dom";
 import SectionCta from "../components/SectionCta";
 import { about, company } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
@@ -13,8 +13,8 @@ export default function AboutPage() {
           <p className="eyebrow">{about.subtitle}</p>
           <h1>{about.title}</h1>
           <p className="about-hero-lead">
-            Une equipe locale engagee pour livrer un service fiable, rapide et
-            parfaitement adapte a chaque chantier en Occitanie.
+            Une équipe locale engagée pour livrer un service fiable, rapide et
+            parfaitement adapté à chaque chantier en Occitanie.
           </p>
           <div className="services-hero-actions">
             <NavLink to="/contact" className="btn btn-primary">
@@ -29,7 +29,7 @@ export default function AboutPage() {
 
       <section className="about-pillars">
         <div className="container about-pillars-grid">
-          <article className="about-pillar fade-in">Reactivite terrain</article>
+          <article className="about-pillar fade-in">Réactivité terrain</article>
           <article className="about-pillar fade-in stagger-1">Conseil utile, sans blabla</article>
           <article className="about-pillar fade-in stagger-2">Service local de confiance</article>
         </div>
@@ -37,7 +37,7 @@ export default function AboutPage() {
 
       <section className="section">
         <div className="container split about-block">
-          <img className="fade-in-left" src={about.images[0]} alt="Equipe sur chantier" />
+          <img className="fade-in-left" src={about.images[0]} alt="Équipe sur chantier" />
           <div className="fade-in-right">
             <p className="eyebrow">{about.companyTitle}</p>
             <h2>{about.companyHeading}</h2>

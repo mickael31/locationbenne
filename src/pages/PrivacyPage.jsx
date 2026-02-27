@@ -1,4 +1,4 @@
-import { company, privacy } from "../data/content";
+﻿import { company, privacy } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
 
 export default function PrivacyPage() {

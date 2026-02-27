@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import SectionCta from "../components/SectionCta";
 import { company, contact } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
@@ -54,15 +54,15 @@ export default function ContactPage() {
           <p className="eyebrow">{contact.eyebrow}</p>
           <h1>{contact.title}</h1>
           <p className="contact-hero-lead">
-            Une equipe locale disponible pour organiser votre location de benne
-            sans perte de temps, du devis a l'enlevement.
+            Une équipe locale disponible pour organiser votre location de benne
+            sans perte de temps, du devis à l'enlèvement.
           </p>
           <div className="services-hero-actions">
             <a href={`tel:${company.phoneRaw}`} className="btn btn-primary">
               Appeler {company.phoneLocalDisplay}
             </a>
             <a href={`mailto:${company.email}`} className="btn btn-light">
-              Ecrire par email
+              Écrire par email
             </a>
           </div>
         </div>
@@ -70,7 +70,7 @@ export default function ContactPage() {
 
       <section className="contact-highlights">
         <div className="container contact-highlights-grid">
-          <article className="contact-highlight-item fade-in">Reponse rapide</article>
+          <article className="contact-highlight-item fade-in">Réponse rapide</article>
           <article className="contact-highlight-item fade-in stagger-1">
             Devis gratuit
           </article>
@@ -86,12 +86,12 @@ export default function ContactPage() {
       <section className="section">
         <div className="container contact-grid contact-grid-pro">
           <article className="card contact-info-card fade-in">
-            <p className="service-tag">Coordonnees</p>
+            <p className="service-tag">Coordonnées</p>
             <h2>{contact.sectionTitle}</h2>
             <p className="contact-card-lead">{contact.sectionSubtitle}</p>
             <div className="contact-lines">
               <p>
-                <span>Telephone</span>
+                <span>Téléphone</span>
                 <a href={`tel:${company.phoneRaw}`}>{company.phoneLocalDisplay}</a>
               </p>
               <p>
@@ -109,8 +109,8 @@ export default function ContactPage() {
                 <p>Montauban, Toulouse, Albi et alentours.</p>
               </article>
               <article>
-                <h3>Delais habituels</h3>
-                <p>Livraison possible sous 24h a 48h selon disponibilite.</p>
+                <h3>Délais habituels</h3>
+                <p>Livraison possible sous 24h à 48h selon disponibilité.</p>
               </article>
             </div>
           </article>
@@ -136,7 +136,7 @@ export default function ContactPage() {
               />
             </label>
             <label>
-              Numero de telephone (obligatoire)
+              Numéro de téléphone (obligatoire)
               <input
                 required
                 type="tel"
@@ -163,7 +163,7 @@ export default function ContactPage() {
                 required
                 name="message"
                 rows={6}
-                placeholder="Decrivez votre besoin de benne en Occitanie"
+                placeholder="Décrivez votre besoin de benne en Occitanie"
                 value={form.message}
                 onChange={updateField}
               />
@@ -174,13 +174,13 @@ export default function ContactPage() {
 
             {submitStatus === "stored" ? (
               <p className="success">
-                Merci. Votre demande est bien enregistree.
+                Merci. Votre demande est bien enregistrée.
               </p>
             ) : null}
 
             {submitStatus === "stored-notify-warning" ? (
               <p className="admin-lock">
-                Demande enregistree, mais la notification email admin a echoue.
+                Demande enregistrée, mais la notification email admin a échoué.
               </p>
             ) : null}
 
@@ -192,7 +192,7 @@ export default function ContactPage() {
 
             {submitStatus === "error" ? (
               <p className="admin-error">
-                Votre demande n&apos;a pas pu etre envoyee.
+                Votre demande n&apos;a pas pu être envoyée.
               </p>
             ) : null}
           </form>

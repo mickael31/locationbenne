@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+﻿import { NavLink } from "react-router-dom";
 import SectionCta from "../components/SectionCta";
 import { company, servicesPage } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
@@ -13,8 +13,8 @@ export default function ServicesPage() {
           <p className="eyebrow">{servicesPage.eyebrow}</p>
           <h1>{servicesPage.title}</h1>
           <p className="services-hero-lead">
-            Une organisation claire, des interventions rapides et une execution
-            fiable pour vos besoins d'evacuation de dechets en Occitanie.
+            Une organisation claire, des interventions rapides et une exécution
+            fiable pour vos besoins d'évacuation de déchets en Occitanie.
           </p>
           <div className="services-hero-actions">
             <NavLink to="/contact" className="btn btn-primary">
@@ -37,7 +37,7 @@ export default function ServicesPage() {
             Solutions particuliers / pros
           </article>
           <article className="services-proof-item fade-in stagger-3">
-            Suivi de A a Z
+            Suivi de A à Z
           </article>
         </div>
       </section>
@@ -70,27 +70,27 @@ export default function ServicesPage() {
 
       <section className="section alt">
         <div className="container">
-          <p className="eyebrow fade-in">Methode</p>
-          <h2 className="fade-in">Comment se deroule votre prestation</h2>
+          <p className="eyebrow fade-in">Méthode</p>
+          <h2 className="fade-in">Comment se déroule votre prestation</h2>
           <div className="services-flow-grid">
             <article className="process-card scale-in stagger-1">
               <h3>Brief rapide</h3>
               <p>
-                Nous analysons votre volume, votre type de dechets et vos contraintes
-                d'acces.
+                Nous analysons votre volume, votre type de déchets et vos contraintes
+                d'accès.
               </p>
             </article>
             <article className="process-card scale-in stagger-2">
-              <h3>Livraison adaptee</h3>
+              <h3>Livraison adaptée</h3>
               <p>
-                Nous planifions la benne sur le bon creneau pour eviter les retards de
+                Nous planifions la benne sur le bon créneau pour éviter les retards de
                 chantier.
               </p>
             </article>
             <article className="process-card scale-in stagger-3">
-              <h3>Enlevement et suivi</h3>
+              <h3>Enlèvement et suivi</h3>
               <p>
-                Une fois remplie, nous recuperons la benne et assurons un traitement
+                Une fois remplie, nous récupérons la benne et assurons un traitement
                 responsable.
               </p>
             </article>

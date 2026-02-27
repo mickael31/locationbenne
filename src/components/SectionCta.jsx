@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+﻿import { NavLink } from "react-router-dom";
 import { company } from "../data/content";
 
 export default function SectionCta() {
@@ -7,7 +7,7 @@ export default function SectionCta() {
       <div className="container cta-content">
         <h2>Ne laissez pas vos encombrants s'accumuler !</h2>
         <p>
-          Contactez-nous des aujourd'hui pour un devis gratuit et rapide sur la
+          Contactez-nous dès aujourd'hui pour un devis gratuit et rapide sur la
           location de bennes.
         </p>
         <div className="cta-actions">
