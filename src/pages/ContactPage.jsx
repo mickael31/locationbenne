@@ -1,6 +1,7 @@
 import { useState } from "react";
 import SectionCta from "../components/SectionCta";
 import { company, contact } from "../data/content";
+import useScrollReveal from "../hooks/useScrollReveal";
 
 const defaultForm = {
   fullName: "",
@@ -9,9 +10,25 @@ const defaultForm = {
   message: "",
 };
 
+function storeSubmission(form) {
+  try {
+    const existing = JSON.parse(localStorage.getItem("contact_submissions") || "[]");
+    existing.unshift({
+      ...form,
+      id: Date.now().toString(),
+      date: new Date().toISOString(),
+      status: "new",
+    });
+    localStorage.setItem("contact_submissions", JSON.stringify(existing));
+  } catch {
+    // localStorage unavailable
+  }
+}
+
 export default function ContactPage() {
   const [form, setForm] = useState(defaultForm);
   const [sent, setSent] = useState(false);
+  useScrollReveal();
 
   function updateField(event) {
     const { name, value } = event.target;
@@ -20,6 +37,7 @@ export default function ContactPage() {
 
   function submitForm(event) {
     event.preventDefault();
+    storeSubmission(form);
     setSent(true);
     setForm(defaultForm);
   }
@@ -36,7 +54,7 @@ export default function ContactPage() {
 
       <section className="section">
         <div className="container contact-grid">
-          <article className="card">
+          <article className="card fade-in">
             <h2>{contact.sectionTitle}</h2>
             <p>
               <a href={`tel:${company.phoneRaw}`}>{company.phoneLocalDisplay}</a>
@@ -48,7 +66,7 @@ export default function ContactPage() {
             <p>{contact.sectionSubtitle}</p>
           </article>
 
-          <form className="card contact-form" onSubmit={submitForm}>
+          <form className="card contact-form fade-in stagger-2" onSubmit={submitForm}>
             <h2>{contact.formTitle}</h2>
             <label>
               Nom complet (obligatoire)
@@ -62,7 +80,7 @@ export default function ContactPage() {
               />
             </label>
             <label>
-              Numéro de téléphone (obligatoire)
+              Num\u00E9ro de t\u00E9l\u00E9phone (obligatoire)
               <input
                 required
                 type="tel"
@@ -89,7 +107,7 @@ export default function ContactPage() {
                 required
                 name="message"
                 rows={6}
-                placeholder="Décrivez votre besoin de benne en Occitanie"
+                placeholder="D\u00E9crivez votre besoin de benne en Occitanie"
                 value={form.message}
                 onChange={updateField}
               />
@@ -99,7 +117,7 @@ export default function ContactPage() {
             </button>
             {sent ? (
               <p className="success">
-                Merci pour votre demande de location ! Nous vous répondrons
+                Merci pour votre demande de location ! Nous vous r\u00E9pondrons
                 rapidement.
               </p>
             ) : null}

@@ -1,7 +1,16 @@
-import { NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { company, navLinks } from "../data/content";
 
 function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [location.pathname]);
+
   return (
     <header className="site-header">
       <div className="top-bar">
@@ -13,12 +22,22 @@ function Header() {
           <img src={company.logo} alt={company.name} />
           <span>{company.name}</span>
         </NavLink>
-        <nav>
+        <button
+          className={`menu-toggle${menuOpen ? " open" : ""}`}
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-label="Menu"
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+        <nav className={menuOpen ? "open" : ""}>
           {navLinks.map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
               className={({ isActive }) => (isActive ? "active" : "")}
+              onClick={() => setMenuOpen(false)}
             >
               {link.label}
             </NavLink>
@@ -37,9 +56,9 @@ function Footer() {
     <footer className="site-footer">
       <div className="footer-inner">
         <NavLink to="/politique-de-confidentialite">
-          Politique de confidentialité
+          Politique de confidentialit\u00E9
         </NavLink>
-        <p>Droit d'auteur © 2026 Location Benne Occitanie</p>
+        <p>Droit d'auteur \u00A9 2026 Location Benne Occitanie</p>
       </div>
     </footer>
   );

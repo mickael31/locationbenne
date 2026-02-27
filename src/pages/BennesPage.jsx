@@ -1,7 +1,10 @@
 import SectionCta from "../components/SectionCta";
 import { bennes } from "../data/content";
+import useScrollReveal from "../hooks/useScrollReveal";
 
 export default function BennesPage() {
+  useScrollReveal();
+
   return (
     <>
       <section className="page-hero">
@@ -14,10 +17,10 @@ export default function BennesPage() {
 
       <section className="section">
         <div className="container">
-          <h2>{bennes.heading}</h2>
+          <h2 className="fade-in">{bennes.heading}</h2>
           <div className="cards">
-            {bennes.types.map((item) => (
-              <article className="card benne-card" key={item.title}>
+            {bennes.types.map((item, i) => (
+              <article className={`card benne-card scale-in stagger-${i + 1}`} key={item.title}>
                 <img src={item.image} alt={item.title} />
                 <h3>{item.title}</h3>
                 <p>{item.description}</p>
