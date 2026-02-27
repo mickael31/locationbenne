@@ -58,7 +58,7 @@ export default function HomePage() {
 
       <section className="section quick-cta">
         <div className="container quick-cta-content fade-in">
-          <h2>Pr\u00EAt \u00E0 \u00E9vacuer vos d\u00E9chets ?</h2>
+          <h2>Prêt à évacuer vos déchets ?</h2>
           <NavLink to="/contact" className="btn btn-primary">
             Demander un devis
           </NavLink>
@@ -68,7 +68,7 @@ export default function HomePage() {
       <section className="section">
         <div className="container">
           <p className="eyebrow fade-in">Nos atouts</p>
-          <h2 className="fade-in">D\u00E9couvrez nos avantages uniques pour vos projets</h2>
+          <h2 className="fade-in">Découvrez nos avantages uniques pour vos projets</h2>
           <div className="cards">
             {home.benefits.map((item, i) => (
               <article className={`card scale-in stagger-${i + 1}`} key={item.title}>
@@ -82,8 +82,8 @@ export default function HomePage() {
 
       <section className="section alt">
         <div className="container">
-          <p className="eyebrow fade-in">Comment \u00E7a fonctionne</p>
-          <h2 className="fade-in">D\u00E9couvrez notre processus de location de bennes</h2>
+          <p className="eyebrow fade-in">Comment ça fonctionne</p>
+          <h2 className="fade-in">Découvrez notre processus de location de bennes</h2>
           <div className="cards">
             {home.process.map((item, i) => (
               <article className={`card scale-in stagger-${i + 1}`} key={item.step}>

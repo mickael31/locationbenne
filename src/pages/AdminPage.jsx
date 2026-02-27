@@ -1,58 +1,139 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  authenticateAdmin,
+  changeAdminPassword,
+  clearLockState,
+  createDefaultAdminKeyring,
+  DEFAULT_ADMIN_PASSWORD,
+  DEFAULT_ADMIN_USERNAME,
+  getKeyring,
+  getRemainingLockMs,
+  isAdminPasswordStrong,
+  loadDecryptedSubmissions,
+  migrateLegacySubmissions,
+  registerFailedLogin,
+  saveEncryptedSubmissions,
+  wipeAdminVault,
+} from "../security/adminVault";
 
-const ADMIN_PASSWORD = "admin2026";
+const SESSION_TIMEOUT_MS = 10 * 60 * 1000;
 
-function getSubmissions() {
-  try {
-    return JSON.parse(localStorage.getItem("contact_submissions") || "[]");
-  } catch {
-    return [];
-  }
+function formatDate(isoDate) {
+  return new Date(isoDate).toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
-function saveSubmissions(data) {
-  localStorage.setItem("contact_submissions", JSON.stringify(data));
+function formatRemaining(secondsTotal) {
+  const minutes = Math.floor(secondsTotal / 60);
+  const seconds = secondsTotal % 60;
+  return `${minutes.toString().padStart(2, "0")}:${seconds
+    .toString()
+    .padStart(2, "0")}`;
 }
 
-function LoginForm({ onLogin }) {
+function SetupForm({ onSetup, busy, error }) {
+  return (
+    <section className="page-hero">
+      <div className="container">
+        <p className="eyebrow">Administration</p>
+        <h1>Initialiser le compte admin</h1>
+        <div className="admin-login card">
+          <p className="security-note">
+            Identifiants initiaux: <strong>{DEFAULT_ADMIN_USERNAME}</strong> /
+            <strong> {DEFAULT_ADMIN_PASSWORD}</strong>
+          </p>
+          <p className="security-note">
+            Le mot de passe sera utilise pour dechiffrer le coffre local.
+            Change-le des la premiere connexion.
+          </p>
+          {error ? <p className="admin-error">{error}</p> : null}
+          <button className="btn btn-primary" onClick={onSetup} disabled={busy}>
+            {busy ? "Initialisation..." : "Creer l'admin par defaut"}
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function LoginForm({ onLogin, onReset, busy, error }) {
+  const [username, setUsername] = useState(DEFAULT_ADMIN_USERNAME);
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [remainingSeconds, setRemainingSeconds] = useState(() =>
+    Math.ceil(getRemainingLockMs() / 1000),
+  );
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      sessionStorage.setItem("admin_auth", "true");
-      onLogin();
-    } else {
-      setError("Mot de passe incorrect");
-    }
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRemainingSeconds(Math.ceil(getRemainingLockMs() / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  function submit(event) {
+    event.preventDefault();
+    if (remainingSeconds > 0) return;
+    onLogin(username, password);
   }
 
   return (
     <section className="page-hero">
       <div className="container">
         <p className="eyebrow">Administration</p>
-        <h1>Acc\u00E8s administrateur</h1>
+        <h1>Connexion admin securisee</h1>
         <div className="admin-login card">
-          <form onSubmit={handleSubmit}>
-            <label style={{ fontWeight: 600, marginBottom: "0.4rem", display: "block" }}>
-              Mot de passe
+          <form onSubmit={submit}>
+            <label className="admin-input-label">
+              Identifiant
+              <input
+                type="text"
+                autoComplete="username"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                required
+              />
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); setError(""); }}
-              placeholder="Entrez le mot de passe admin"
-              autoFocus
-            />
-            {error && (
-              <p style={{ color: "#c0392b", fontSize: "0.9rem", margin: "0 0 0.5rem" }}>
-                {error}
+            <label className="admin-input-label">
+              Mot de passe
+              <input
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+              />
+            </label>
+
+            {remainingSeconds > 0 ? (
+              <p className="admin-lock">
+                Trop de tentatives. Nouvel essai dans{" "}
+                {formatRemaining(remainingSeconds)}.
               </p>
-            )}
-            <button type="submit" className="btn btn-primary" style={{ width: "100%" }}>
-              Se connecter
-            </button>
+            ) : null}
+            {error ? <p className="admin-error">{error}</p> : null}
+
+            <div className="admin-inline-actions">
+              <button
+                className="btn btn-primary"
+                type="submit"
+                disabled={busy || remainingSeconds > 0}
+              >
+                {busy ? "Verification..." : "Se connecter"}
+              </button>
+              <button
+                className="btn btn-ghost"
+                type="button"
+                onClick={onReset}
+                disabled={busy}
+              >
+                Reinitialiser l'admin
+              </button>
+            </div>
           </form>
         </div>
       </div>
@@ -60,69 +141,127 @@ function LoginForm({ onLogin }) {
   );
 }
 
-function EmailModal({ submission, onClose, onSend }) {
-  const [subject, setSubject] = useState(
-    "Re: Demande de location de benne"
+function ChangePasswordCard({ onSubmit, busy, status }) {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [nextPassword, setNextPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [localError, setLocalError] = useState("");
+
+  async function submit(event) {
+    event.preventDefault();
+    setLocalError("");
+
+    if (nextPassword !== confirmPassword) {
+      setLocalError("Le nouveau mot de passe et la confirmation ne correspondent pas.");
+      return;
+    }
+    if (!isAdminPasswordStrong(nextPassword)) {
+      setLocalError(
+        "Nouveau mot de passe trop faible (8+ caracteres, majuscule, minuscule, chiffre).",
+      );
+      return;
+    }
+
+    const ok = await onSubmit(currentPassword, nextPassword);
+    if (ok) {
+      setCurrentPassword("");
+      setNextPassword("");
+      setConfirmPassword("");
+    }
+  }
+
+  return (
+    <article className="card admin-password-card">
+      <h3>Changer le mot de passe admin</h3>
+      <form className="email-compose" onSubmit={submit}>
+        <label className="admin-input-label">
+          Mot de passe actuel
+          <input
+            type="password"
+            value={currentPassword}
+            onChange={(event) => setCurrentPassword(event.target.value)}
+            autoComplete="current-password"
+            required
+          />
+        </label>
+        <label className="admin-input-label">
+          Nouveau mot de passe
+          <input
+            type="password"
+            value={nextPassword}
+            onChange={(event) => setNextPassword(event.target.value)}
+            autoComplete="new-password"
+            required
+          />
+        </label>
+        <label className="admin-input-label">
+          Confirmation
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(event) => setConfirmPassword(event.target.value)}
+            autoComplete="new-password"
+            required
+          />
+        </label>
+
+        {localError ? <p className="admin-error">{localError}</p> : null}
+        {status.type === "error" ? <p className="admin-error">{status.message}</p> : null}
+        {status.type === "success" ? <p className="success">{status.message}</p> : null}
+
+        <button type="submit" className="btn btn-primary" disabled={busy}>
+          {busy ? "Mise a jour..." : "Modifier le mot de passe"}
+        </button>
+      </form>
+    </article>
   );
+}
+
+function EmailModal({ submission, onClose, onSend }) {
+  const [subject, setSubject] = useState("Re: Demande de location de benne");
   const [body, setBody] = useState(
-    `Bonjour ${submission.fullName},\n\nMerci pour votre demande. Nous avons bien re\u00E7u votre message et nous revenons vers vous tr\u00E8s rapidement.\n\nCordialement,\nLocation Benne Occitanie`
+    `Bonjour ${submission.fullName},\n\nMerci pour votre demande. Nous revenons vers vous tres rapidement.\n\nCordialement,\nLocation Benne Occitanie`,
   );
 
-  function handleSend(e) {
-    e.preventDefault();
-    const mailtoUrl = `mailto:${submission.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.open(mailtoUrl, "_blank");
+  function handleSend(event) {
+    event.preventDefault();
+    const url = `mailto:${submission.email}?subject=${encodeURIComponent(
+      subject,
+    )}&body=${encodeURIComponent(body)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
     onSend(submission.id);
     onClose();
   }
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.5)",
-        zIndex: 100,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "1rem",
-      }}
-      onClick={onClose}
-    >
-      <div
-        className="card"
-        style={{ maxWidth: 600, width: "100%", cursor: "default" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h2 style={{ marginBottom: "1rem" }}>R\u00E9pondre \u00E0 {submission.fullName}</h2>
-        <p style={{ color: "var(--muted)", fontSize: "0.9rem" }}>
-          Destinataire : {submission.email}
-        </p>
+    <div className="admin-modal-backdrop" onClick={onClose}>
+      <div className="card admin-modal" onClick={(event) => event.stopPropagation()}>
+        <h2>Repondre a {submission.fullName}</h2>
+        <p className="admin-muted">Destinataire : {submission.email}</p>
         <form className="email-compose" onSubmit={handleSend}>
-          <label style={{ fontWeight: 600 }}>
+          <label className="admin-input-label">
             Objet
             <input
               value={subject}
-              onChange={(e) => setSubject(e.target.value)}
+              onChange={(event) => setSubject(event.target.value)}
               required
             />
           </label>
-          <label style={{ fontWeight: 600 }}>
+          <label className="admin-input-label">
             Message
             <textarea
               value={body}
-              onChange={(e) => setBody(e.target.value)}
+              onChange={(event) => setBody(event.target.value)}
               rows={8}
               required
             />
           </label>
-          <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+          <div className="admin-inline-actions">
             <button type="button" className="btn btn-ghost" onClick={onClose}>
               Annuler
             </button>
             <button type="submit" className="btn btn-primary">
-              Ouvrir dans le client mail
+              Ouvrir le client mail
             </button>
           </div>
         </form>
@@ -131,43 +270,37 @@ function EmailModal({ submission, onClose, onSend }) {
   );
 }
 
-function AdminPanel({ onLogout }) {
-  const [submissions, setSubmissions] = useState(getSubmissions());
+function AdminPanel({
+  adminUsername,
+  submissions,
+  busy,
+  onLogout,
+  onWipeVault,
+  onChangePassword,
+  passwordStatus,
+  onUpdateStatus,
+  onDeleteSubmission,
+}) {
   const [tab, setTab] = useState("new");
   const [emailTarget, setEmailTarget] = useState(null);
 
-  useEffect(() => {
-    setSubmissions(getSubmissions());
-  }, []);
+  const countNew = useMemo(
+    () => submissions.filter((item) => item.status === "new").length,
+    [submissions],
+  );
+  const countReplied = useMemo(
+    () => submissions.filter((item) => item.status === "replied").length,
+    [submissions],
+  );
+  const countArchived = useMemo(
+    () => submissions.filter((item) => item.status === "archived").length,
+    [submissions],
+  );
 
-  function updateStatus(id, status) {
-    const updated = submissions.map((s) =>
-      s.id === id ? { ...s, status } : s
-    );
-    saveSubmissions(updated);
-    setSubmissions(updated);
-  }
-
-  function deleteSubmission(id) {
-    const updated = submissions.filter((s) => s.id !== id);
-    saveSubmissions(updated);
-    setSubmissions(updated);
-  }
-
-  function handleEmailSent(id) {
-    updateStatus(id, "replied");
-  }
-
-  const filtered = submissions.filter((s) => {
-    if (tab === "new") return s.status === "new";
-    if (tab === "replied") return s.status === "replied";
-    if (tab === "archived") return s.status === "archived";
-    return true;
-  });
-
-  const countNew = submissions.filter((s) => s.status === "new").length;
-  const countReplied = submissions.filter((s) => s.status === "replied").length;
-  const countArchived = submissions.filter((s) => s.status === "archived").length;
+  const filtered = useMemo(() => {
+    if (tab === "all") return submissions;
+    return submissions.filter((item) => item.status === tab);
+  }, [submissions, tab]);
 
   return (
     <>
@@ -176,17 +309,29 @@ function AdminPanel({ onLogout }) {
           <div className="admin-header">
             <div>
               <p className="eyebrow">Administration</p>
-              <h1>Gestion des demandes</h1>
+              <h1>Espace admin chiffre</h1>
+              <p className="admin-muted">Connecte en tant que: {adminUsername}</p>
             </div>
-            <button className="btn btn-ghost" onClick={onLogout}>
-              D\u00E9connexion
-            </button>
+            <div className="admin-inline-actions">
+              <button className="btn btn-ghost" onClick={onWipeVault}>
+                Reinitialiser le coffre
+              </button>
+              <button className="btn btn-ghost" onClick={onLogout}>
+                Verrouiller
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
       <section className="section">
         <div className="container admin-panel">
+          <ChangePasswordCard
+            onSubmit={onChangePassword}
+            busy={busy}
+            status={passwordStatus}
+          />
+
           <div className="stat-grid">
             <div className="stat-card">
               <div className="stat-number">{submissions.length}</div>
@@ -198,11 +343,11 @@ function AdminPanel({ onLogout }) {
             </div>
             <div className="stat-card">
               <div className="stat-number">{countReplied}</div>
-              <div className="stat-label">R\u00E9pondues</div>
+              <div className="stat-label">Repondues</div>
             </div>
             <div className="stat-card">
               <div className="stat-number">{countArchived}</div>
-              <div className="stat-label">Archiv\u00E9es</div>
+              <div className="stat-label">Archivees</div>
             </div>
           </div>
 
@@ -223,126 +368,337 @@ function AdminPanel({ onLogout }) {
               className={`admin-tab ${tab === "replied" ? "active" : ""}`}
               onClick={() => setTab("replied")}
             >
-              R\u00E9pondues ({countReplied})
+              Repondues ({countReplied})
             </button>
             <button
               className={`admin-tab ${tab === "archived" ? "active" : ""}`}
               onClick={() => setTab("archived")}
             >
-              Archiv\u00E9es ({countArchived})
+              Archivees ({countArchived})
             </button>
           </div>
 
+          {busy ? <p className="admin-muted">Synchronisation chiffree...</p> : null}
+
           {filtered.length === 0 ? (
             <div className="empty-state">
-              <div className="icon">{tab === "new" ? "\u2709\uFE0F" : "\u{1F4E6}"}</div>
-              <p>Aucune demande dans cette cat\u00E9gorie.</p>
+              <p>Aucune demande dans cette categorie.</p>
             </div>
           ) : (
-            filtered.map((sub) => (
-              <div className="submission-card" key={sub.id}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
-                  <div className="date">
-                    {new Date(sub.date).toLocaleDateString("fr-FR", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </div>
-                  <span className={`badge badge-${sub.status}`}>
-                    {sub.status === "new" && "Nouvelle"}
-                    {sub.status === "replied" && "R\u00E9pondue"}
-                    {sub.status === "archived" && "Archiv\u00E9e"}
+            filtered.map((submission) => (
+              <article className="submission-card" key={submission.id}>
+                <div className="submission-header">
+                  <div className="date">{formatDate(submission.date)}</div>
+                  <span className={`badge badge-${submission.status}`}>
+                    {submission.status === "new" && "Nouvelle"}
+                    {submission.status === "replied" && "Repondue"}
+                    {submission.status === "archived" && "Archivee"}
                   </span>
                 </div>
                 <div className="field-row">
                   <span className="field-label">Nom :</span>
-                  <span className="field-value">{sub.fullName}</span>
+                  <span className="field-value">{submission.fullName}</span>
                 </div>
                 <div className="field-row">
-                  <span className="field-label">T\u00E9l\u00E9phone :</span>
+                  <span className="field-label">Telephone :</span>
                   <span className="field-value">
-                    <a href={`tel:${sub.phone}`}>{sub.phone}</a>
+                    <a href={`tel:${submission.phone}`}>{submission.phone}</a>
                   </span>
                 </div>
                 <div className="field-row">
                   <span className="field-label">Email :</span>
                   <span className="field-value">
-                    <a href={`mailto:${sub.email}`}>{sub.email}</a>
+                    <a href={`mailto:${submission.email}`}>{submission.email}</a>
                   </span>
                 </div>
                 <div className="field-row">
                   <span className="field-label">Message :</span>
-                  <span className="field-value">{sub.message}</span>
+                  <span className="field-value">{submission.message}</span>
                 </div>
                 <div className="actions">
-                  <button
-                    className="btn-sm"
-                    onClick={() => setEmailTarget(sub)}
-                  >
-                    R\u00E9pondre par email
+                  <button className="btn-sm" onClick={() => setEmailTarget(submission)}>
+                    Repondre
                   </button>
-                  <a
-                    className="btn-sm"
-                    href={`tel:${sub.phone}`}
-                  >
+                  <a className="btn-sm" href={`tel:${submission.phone}`}>
                     Appeler
                   </a>
-                  {sub.status !== "replied" && (
+                  {submission.status !== "replied" ? (
                     <button
                       className="btn-sm"
-                      onClick={() => updateStatus(sub.id, "replied")}
+                      onClick={() => onUpdateStatus(submission.id, "replied")}
                     >
-                      Marquer r\u00E9pondue
+                      Marquer repondue
                     </button>
-                  )}
-                  {sub.status !== "archived" && (
+                  ) : null}
+                  {submission.status !== "archived" ? (
                     <button
                       className="btn-sm"
-                      onClick={() => updateStatus(sub.id, "archived")}
+                      onClick={() => onUpdateStatus(submission.id, "archived")}
                     >
                       Archiver
                     </button>
-                  )}
+                  ) : null}
                   <button
                     className="btn-sm danger"
-                    onClick={() => deleteSubmission(sub.id)}
+                    onClick={() => onDeleteSubmission(submission.id)}
                   >
                     Supprimer
                   </button>
                 </div>
-              </div>
+              </article>
             ))
           )}
         </div>
       </section>
 
-      {emailTarget && (
+      {emailTarget ? (
         <EmailModal
           submission={emailTarget}
           onClose={() => setEmailTarget(null)}
-          onSend={handleEmailSent}
+          onSend={(id) => onUpdateStatus(id, "replied")}
         />
-      )}
+      ) : null}
     </>
   );
 }
 
 export default function AdminPage() {
-  const [authenticated, setAuthenticated] = useState(
-    sessionStorage.getItem("admin_auth") === "true"
-  );
+  const [keyring, setKeyring] = useState(() => getKeyring());
+  const [privateKey, setPrivateKey] = useState(null);
+  const [adminUsername, setAdminUsername] = useState("");
+  const [submissions, setSubmissions] = useState([]);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [migrationInfo, setMigrationInfo] = useState("");
+  const [passwordStatus, setPasswordStatus] = useState({
+    type: "idle",
+    message: "",
+  });
+
+  const isConfigured = Boolean(keyring);
+  const isUnlocked = Boolean(privateKey);
+
+  useEffect(() => {
+    if (!isUnlocked || !keyring) return undefined;
+
+    const activityEvents = ["click", "keydown", "mousemove", "touchstart"];
+    let timerId = null;
+
+    function lockSession() {
+      setPrivateKey(null);
+      setSubmissions([]);
+      setError("Session fermee automatiquement apres inactivite.");
+    }
+
+    function resetTimer() {
+      if (timerId) clearTimeout(timerId);
+      timerId = setTimeout(lockSession, SESSION_TIMEOUT_MS);
+    }
+
+    activityEvents.forEach((eventName) => {
+      window.addEventListener(eventName, resetTimer);
+    });
+    resetTimer();
+
+    return () => {
+      if (timerId) clearTimeout(timerId);
+      activityEvents.forEach((eventName) => {
+        window.removeEventListener(eventName, resetTimer);
+      });
+    };
+  }, [isUnlocked, keyring]);
+
+  async function refreshSubmissions(unlockedKey) {
+    const decrypted = await loadDecryptedSubmissions(unlockedKey);
+    setSubmissions(decrypted);
+  }
+
+  async function setupDefaultAdmin() {
+    setBusy(true);
+    setError("");
+    setMigrationInfo("");
+    setPasswordStatus({ type: "idle", message: "" });
+
+    try {
+      const created = await createDefaultAdminKeyring();
+      const auth = await authenticateAdmin(
+        created,
+        DEFAULT_ADMIN_USERNAME,
+        DEFAULT_ADMIN_PASSWORD,
+      );
+      const migratedCount = await migrateLegacySubmissions(auth.keyring.publicKey);
+
+      clearLockState();
+      setKeyring(auth.keyring);
+      setPrivateKey(auth.privateKey);
+      setAdminUsername(auth.keyring.auth.username);
+      await refreshSubmissions(auth.privateKey);
+
+      if (migratedCount > 0) {
+        setMigrationInfo(
+          `${migratedCount} anciennes demande(s) ont ete migrees vers le stockage chiffre.`,
+        );
+      } else {
+        setMigrationInfo(
+          "Compte admin initialise. Pense a changer le mot de passe par defaut.",
+        );
+      }
+    } catch {
+      setError("Impossible de creer le compte admin.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleLogin(username, password) {
+    if (!keyring) return;
+    setBusy(true);
+    setError("");
+    setMigrationInfo("");
+    setPasswordStatus({ type: "idle", message: "" });
+
+    try {
+      const auth = await authenticateAdmin(keyring, username, password);
+      const migratedCount = await migrateLegacySubmissions(auth.keyring.publicKey);
+
+      clearLockState();
+      setKeyring(auth.keyring);
+      setPrivateKey(auth.privateKey);
+      setAdminUsername(auth.keyring.auth.username);
+      await refreshSubmissions(auth.privateKey);
+
+      if (auth.upgraded) {
+        setMigrationInfo(
+          "Ancien coffre migre vers le format compte admin username/password.",
+        );
+      } else if (migratedCount > 0) {
+        setMigrationInfo(
+          `${migratedCount} anciennes demande(s) ont ete migrees vers le stockage chiffre.`,
+        );
+      }
+    } catch {
+      const state = registerFailedLogin();
+      if (state.lockUntil > Date.now()) {
+        setError("Trop de tentatives. Acces temporairement verrouille.");
+      } else {
+        setError("Identifiant ou mot de passe invalide.");
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
 
   function handleLogout() {
-    sessionStorage.removeItem("admin_auth");
-    setAuthenticated(false);
+    setPrivateKey(null);
+    setSubmissions([]);
+    setMigrationInfo("");
+    setPasswordStatus({ type: "idle", message: "" });
+    setError("");
   }
 
-  if (!authenticated) {
-    return <LoginForm onLogin={() => setAuthenticated(true)} />;
+  async function persistSubmissions(nextSubmissions) {
+    if (!keyring?.publicKey) return;
+    setBusy(true);
+    try {
+      await saveEncryptedSubmissions(nextSubmissions, keyring.publicKey);
+      setSubmissions(nextSubmissions);
+    } finally {
+      setBusy(false);
+    }
   }
 
-  return <AdminPanel onLogout={handleLogout} />;
+  function updateStatus(id, status) {
+    const next = submissions.map((item) =>
+      item.id === id ? { ...item, status } : item,
+    );
+    persistSubmissions(next);
+  }
+
+  function deleteSubmission(id) {
+    const next = submissions.filter((item) => item.id !== id);
+    persistSubmissions(next);
+  }
+
+  async function handleChangePassword(currentPassword, nextPassword) {
+    if (!keyring || !adminUsername) return false;
+    setBusy(true);
+    setPasswordStatus({ type: "idle", message: "" });
+
+    try {
+      const updated = await changeAdminPassword(
+        keyring,
+        adminUsername,
+        currentPassword,
+        nextPassword,
+      );
+      setKeyring(updated);
+      setPasswordStatus({
+        type: "success",
+        message: "Mot de passe modifie avec succes.",
+      });
+      return true;
+    } catch {
+      setPasswordStatus({
+        type: "error",
+        message: "Mot de passe actuel incorrect.",
+      });
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function resetAdmin() {
+    const confirmed = window.confirm(
+      "Reinitialiser l'admin supprime toutes les donnees locales chiffrees. Continuer ?",
+    );
+    if (!confirmed) return;
+    wipeAdminVault();
+    setPrivateKey(null);
+    setSubmissions([]);
+    setKeyring(null);
+    setAdminUsername("");
+    setBusy(false);
+    setError("");
+    setMigrationInfo("");
+    setPasswordStatus({ type: "idle", message: "" });
+  }
+
+  if (!isConfigured) {
+    return <SetupForm onSetup={setupDefaultAdmin} busy={busy} error={error} />;
+  }
+
+  if (!isUnlocked) {
+    return (
+      <LoginForm
+        onLogin={handleLogin}
+        onReset={resetAdmin}
+        busy={busy}
+        error={error}
+      />
+    );
+  }
+
+  return (
+    <>
+      {migrationInfo ? (
+        <section className="section">
+          <div className="container">
+            <p className="success">{migrationInfo}</p>
+          </div>
+        </section>
+      ) : null}
+      <AdminPanel
+        adminUsername={adminUsername}
+        submissions={submissions}
+        busy={busy}
+        onLogout={handleLogout}
+        onWipeVault={resetAdmin}
+        onChangePassword={handleChangePassword}
+        passwordStatus={passwordStatus}
+        onUpdateStatus={updateStatus}
+        onDeleteSubmission={deleteSubmission}
+      />
+    </>
+  );
 }

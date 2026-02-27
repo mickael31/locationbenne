@@ -2,6 +2,7 @@ import { useState } from "react";
 import SectionCta from "../components/SectionCta";
 import { company, contact } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
+import { addEncryptedSubmission } from "../security/adminVault";
 
 const defaultForm = {
   fullName: "",
@@ -10,35 +11,33 @@ const defaultForm = {
   message: "",
 };
 
-function storeSubmission(form) {
-  try {
-    const existing = JSON.parse(localStorage.getItem("contact_submissions") || "[]");
-    existing.unshift({
-      ...form,
-      id: Date.now().toString(),
-      date: new Date().toISOString(),
-      status: "new",
-    });
-    localStorage.setItem("contact_submissions", JSON.stringify(existing));
-  } catch {
-    // localStorage unavailable
-  }
-}
-
 export default function ContactPage() {
   const [form, setForm] = useState(defaultForm);
-  const [sent, setSent] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState("idle");
   useScrollReveal();
 
   function updateField(event) {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
+    if (submitStatus !== "idle") setSubmitStatus("idle");
   }
 
-  function submitForm(event) {
+  async function submitForm(event) {
     event.preventDefault();
-    storeSubmission(form);
-    setSent(true);
+
+    try {
+      const result = await addEncryptedSubmission(form);
+      if (result.status === "stored") {
+        setSubmitStatus("stored");
+      } else if (result.status === "keyring-missing") {
+        setSubmitStatus("keyring-missing");
+      } else {
+        setSubmitStatus("error");
+      }
+    } catch {
+      setSubmitStatus("error");
+    }
+
     setForm(defaultForm);
   }
 
@@ -66,7 +65,10 @@ export default function ContactPage() {
             <p>{contact.sectionSubtitle}</p>
           </article>
 
-          <form className="card contact-form fade-in stagger-2" onSubmit={submitForm}>
+          <form
+            className="card contact-form fade-in stagger-2"
+            onSubmit={submitForm}
+          >
             <h2>{contact.formTitle}</h2>
             <label>
               Nom complet (obligatoire)
@@ -115,10 +117,22 @@ export default function ContactPage() {
             <button type="submit" className="btn btn-primary">
               Envoyer la demande
             </button>
-            {sent ? (
+
+            {submitStatus === "stored" ? (
               <p className="success">
-                Merci pour votre demande de location ! Nous vous répondrons
-                rapidement.
+                Merci pour votre demande de location. Votre message est enregistré
+                de manière chiffrée.
+              </p>
+            ) : null}
+            {submitStatus === "keyring-missing" ? (
+              <p className="admin-error">
+                Stockage chiffré indisponible : le coffre admin doit être initialisé
+                sur cet appareil.
+              </p>
+            ) : null}
+            {submitStatus === "error" ? (
+              <p className="admin-error">
+                Votre demande n'a pas pu être stockée localement.
               </p>
             ) : null}
           </form>

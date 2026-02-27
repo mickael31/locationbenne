@@ -1,4 +1,4 @@
-export const company = {
+﻿export const company = {
   name: "Location Benne Occitanie",
   email: "mesnierdu82@gmail.com",
   phoneDisplay: "+33 6 79 98 41 26",
@@ -129,28 +129,6 @@ export const home = {
       question: "Le devis est-il gratuit ?",
       answer:
         "Oui, nous proposons des devis gratuits et sans engagement pour toutes les demandes de location.",
-    },
-  ],
-  testimonials: [
-    {
-      author: "Dominique Tertrais",
-      text: "Une équipe de choc, efficace, sympathique et discrète avec un rapport qualité prix au top… un travail soigné et performant. Je recommande avec enthousiasme.",
-    },
-    {
-      author: "Magali Estevinha",
-      text: "Nous recommandons Location Benne Occitanie, pour leur réactivité et sérieux. Travail propre et respectueux des lieux.",
-    },
-    {
-      author: "Corinne et Eric BELIERES",
-      text: "Faisant suite aux aléas climatiques il nous a fallu évacuer un cubage important d'arbres qui étaient tombés. La benne a été livrée dans les temps, positionnée dans notre jardin. Très pratique. L'évacuation des déchets verts a été faite rapidement vers la déchetterie. Un soulagement pour nous. Merci infiniment à Location Benne Occitanie pour leur réactivité et leur professionnalisme. Service impeccable. Tarif imbattable et sans surprise. À recommander.",
-    },
-    {
-      author: "Marlène Brustet",
-      text: "Nous avons fait de gros travaux dans notre jardin et nous étions un peu dépassés par la quantité de déchets verts à évacuer. Heureusement, nous avons loué une benne chez Location Benne Occitanie et ça a été un vrai soulagement ! La benne a été déposée rapidement, juste devant la maison, ce qui nous a permis de tout débarrasser sans aller à la déchèterie. Le service est très pratique, l'équipe a été réactive et de bon conseil. Merci encore, nous sommes vraiment satisfaits et n'hésiterons pas à refaire appel à vous pour nos prochains travaux !",
-    },
-    {
-      author: "Mick Cbo",
-      text: "Un service impeccable du début à la fin ! J'ai loué une benne pour évacuer gravats et encombrants suite à des travaux à Montauban. La livraison a été rapide, la benne parfaitement adaptée, et l'équipe très professionnelle. Aucune démarche à faire, tout est pris en charge (livraison, enlèvement, évacuation à la déchèterie), c'est super pratique. Réponse rapide, conseils personnalisés, et tarifs clairs sans surprise. Je recommande vivement Location Benne Occitanie à tous ceux qui cherchent une solution efficace, fiable et locale pour leurs déchets. Merci encore pour votre sérieux !",
     },
   ],
 };
@@ -339,3 +317,4 @@ export const privacy = {
     },
   ],
 };
+
