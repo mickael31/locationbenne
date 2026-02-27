@@ -9,6 +9,7 @@ const staticRouteEntries = [
   "contact",
   "357-2",
   "services",
+  "partenaire-elagage",
   "politique-de-confidentialite",
 ];
 

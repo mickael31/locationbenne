@@ -31,6 +31,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://location-benne-occitanie.fr/partenaire-elagage/</loc>
+    <lastmod>2026-02-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://location-benne-occitanie.fr/politique-de-confidentialite/</loc>
     <lastmod>2026-02-27</lastmod>
     <changefreq>yearly</changefreq>

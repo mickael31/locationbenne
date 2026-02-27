@@ -13,6 +13,7 @@ const ROUTE_LABELS = {
   "/services": "Services",
   "/357-2": "Bennes",
   "/contact": "Contact",
+  "/partenaire-elagage": "Élagage",
   "/politique-de-confidentialite": "Politique de confidentialité",
 };
 
@@ -61,6 +62,19 @@ const PAGE_SEO = {
       "Contactez Location Benne Occitanie pour votre demande de location de benne. Réponse rapide et devis gratuit.",
     image: "/images/2025/08/cropped-Logo_de_Benne_Occitanie-removebg-preview.png",
     imageAlt: "Contact Location Benne Occitanie",
+  },
+  "/partenaire-elagage": {
+    title: "Élagage | Location Benne Occitanie",
+    description:
+      "Découvrez notre activité Natur'Elag 82, gérée par la même direction que Location Benne Occitanie, pour vos travaux d'élagage et abattage.",
+    image: "/images/2025/08/ChatGPT-Image-4-aout-2025-22_15_10-1024x683.png",
+    imageAlt: "Travaux d'élagage avec partenaire local en Tarn-et-Garonne",
+    keywords: [
+      "partenaire elagage montauban",
+      "elagage tarn et garonne",
+      "abattage arbres 82",
+      "natur elag 82",
+    ],
   },
   "/politique-de-confidentialite": {
     title: "Politique de confidentialité | Location Benne Occitanie",

@@ -14,6 +14,7 @@ export const navLinks = [
   { to: "/contact", label: "Contact" },
   { to: "/357-2", label: "Bennes" },
   { to: "/services", label: "Services" },
+  { to: "/partenaire-elagage", label: "Élagage" },
 ];
 
 export const home = {
@@ -187,6 +188,38 @@ export const servicesPage = {
         "Notre équipe est à votre disposition pour répondre à toutes vos questions et vous fournir un service client personnalisé. Nous nous engageons à vous assister tout au long de votre projet, garantissant une satisfaction totale grâce à notre expertise et notre soutien constant.",
       image:
         "/images/2025/08/a8ba24e4-7cd1-44a0-ac98-0315be9ccc7a.png",
+    },
+  ],
+};
+
+export const partnerPage = {
+  eyebrow: "Notre activité élagage",
+  title: "Élagage et abattage avec la même direction",
+  lead: "Location Benne Occitanie et Natur'Elag 82 sont portés par la même personne. Vous bénéficiez d'un suivi cohérent pour la benne, l'élagage et l'évacuation.",
+  website: "https://natur-elag82.fr/",
+  websiteLabel: "natur-elag82.fr",
+  partnerName: "Natur'Elag 82",
+  highlights: [
+    "Même interlocuteur",
+    "Intervention locale rapide",
+    "Travail soigné et sécurisé",
+    "Prestations pour particuliers et pros",
+  ],
+  reasons: [
+    {
+      title: "Une équipe, deux expertises",
+      description:
+        "Vous traitez avec la même direction pour l'élagage et la location de benne, avec un suivi plus simple.",
+    },
+    {
+      title: "Organisation chantier simplifiée",
+      description:
+        "Pour un chantier complet, vous coordonnez plus facilement l'élagage, la benne et l'enlèvement des déchets.",
+    },
+    {
+      title: "Service local réactif",
+      description:
+        "Interventions de proximité avec une bonne connaissance des contraintes terrain en Tarn-et-Garonne.",
     },
   ],
 };
