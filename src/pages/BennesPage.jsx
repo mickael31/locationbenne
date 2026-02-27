@@ -75,17 +75,14 @@ export default function BennesPage() {
           <h2 className="fade-in">Choisissez le volume selon votre besoin</h2>
           <div className="bennes-compare-grid">
             <article className="process-card scale-in stagger-1">
-              <p className="process-step">3 m3</p>
               <h3>Petit chantier</h3>
               <p>Debarras de cave, garage, taille de haies et petits gravats.</p>
             </article>
             <article className="process-card scale-in stagger-2">
-              <p className="process-step">7 m3</p>
               <h3>Projet intermediaire</h3>
               <p>Renovation de pieces, demenagement, dechets mixtes.</p>
             </article>
             <article className="process-card scale-in stagger-3">
-              <p className="process-step">10-15 m3</p>
               <h3>Gros volume</h3>
               <p>Renovation lourde, demoliton, chantier professionnel.</p>
             </article>

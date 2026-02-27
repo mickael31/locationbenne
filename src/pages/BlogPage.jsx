@@ -57,7 +57,6 @@ export default function BlogPage() {
           <div className="blog-topic-grid">
             {upcomingTopics.map((topic, i) => (
               <article className={`process-card scale-in stagger-${i + 1}`} key={topic.title}>
-                <p className="process-step">Sujet {(i + 1).toString().padStart(2, "0")}</p>
                 <h3>{topic.title}</h3>
                 <p>{topic.text}</p>
               </article>

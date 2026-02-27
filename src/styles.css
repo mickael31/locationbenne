@@ -531,18 +531,6 @@ nav a:hover {
   padding: 1.2rem;
 }
 
-.process-step {
-  display: inline-block;
-  margin: 0 0 0.5rem;
-  padding: 0.22rem 0.55rem;
-  border-radius: 999px;
-  background: var(--brand-soft);
-  color: #1a2129;
-  font-family: "Oswald", sans-serif;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-}
-
 .home-review-wrap {
   margin-top: 1.4rem;
 }
@@ -625,6 +613,16 @@ h2 {
   background:
     linear-gradient(90deg, #1b222a 0%, #2b3745 68%, #1b222a 100%);
   color: #f5f8fa;
+}
+
+.quick-cta h1,
+.quick-cta h2,
+.quick-cta h3 {
+  color: #f5f8fa;
+}
+
+.quick-cta p {
+  color: #d6e1eb;
 }
 
 .quick-cta-content {
@@ -778,6 +776,12 @@ details[open] summary::after {
   background: linear-gradient(120deg, #151b22 0%, #2a3441 62%, #131a21 100%);
 }
 
+.cta-section h1,
+.cta-section h2,
+.cta-section h3 {
+  color: #f7fafc;
+}
+
 .cta-section::before {
   content: "";
   position: absolute;
@@ -802,6 +806,7 @@ details[open] summary::after {
 .cta-content p {
   margin: 0 auto 1.4rem;
   max-width: 760px;
+  color: #d6e1eb;
 }
 
 .cta-actions {
@@ -821,7 +826,9 @@ details[open] summary::after {
 }
 
 .page-hero p,
-.page-hero h1 {
+.page-hero h1,
+.page-hero h2,
+.page-hero h3 {
   color: inherit;
 }
 

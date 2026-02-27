@@ -133,12 +133,11 @@ export default function HomePage() {
 
       <section className="section alt">
         <div className="container">
-          <p className="eyebrow fade-in">Process</p>
+          <p className="eyebrow fade-in">Etapes</p>
           <h2 className="fade-in">Un parcours simple, du devis a l'enlevement</h2>
           <div className="process-grid">
             {home.process.map((item, i) => (
-              <article className={`process-card scale-in stagger-${i + 1}`} key={item.step}>
-                <p className="process-step">{item.step}</p>
+              <article className={`process-card scale-in stagger-${i + 1}`} key={item.title}>
                 <h3>{item.title}</h3>
                 <p>{item.description}</p>
               </article>

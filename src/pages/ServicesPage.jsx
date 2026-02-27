@@ -74,7 +74,6 @@ export default function ServicesPage() {
           <h2 className="fade-in">Comment se deroule votre prestation</h2>
           <div className="services-flow-grid">
             <article className="process-card scale-in stagger-1">
-              <p className="process-step">ETAPE 01</p>
               <h3>Brief rapide</h3>
               <p>
                 Nous analysons votre volume, votre type de dechets et vos contraintes
@@ -82,7 +81,6 @@ export default function ServicesPage() {
               </p>
             </article>
             <article className="process-card scale-in stagger-2">
-              <p className="process-step">ETAPE 02</p>
               <h3>Livraison adaptee</h3>
               <p>
                 Nous planifions la benne sur le bon creneau pour eviter les retards de
@@ -90,7 +88,6 @@ export default function ServicesPage() {
               </p>
             </article>
             <article className="process-card scale-in stagger-3">
-              <p className="process-step">ETAPE 03</p>
               <h3>Enlevement et suivi</h3>
               <p>
                 Une fois remplie, nous recuperons la benne et assurons un traitement
