@@ -2,7 +2,7 @@ import { useState } from "react";
 import SectionCta from "../components/SectionCta";
 import { company, contact } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
-import { addEncryptedSubmission, notifyNewSubmission } from "../security/adminVault";
+import { submitContactForm } from "../api/contactApi";
 
 const defaultForm = {
   fullName: "",
@@ -19,28 +19,29 @@ export default function ContactPage() {
   function updateField(event) {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
-    if (submitStatus !== "idle") setSubmitStatus("idle");
+    if (submitStatus !== "idle") {
+      setSubmitStatus("idle");
+    }
   }
 
   async function submitForm(event) {
     event.preventDefault();
 
     try {
-      const result = await addEncryptedSubmission(form);
-      if (result.status === "stored") {
-        const notify = await notifyNewSubmission(result.submission);
-        if (notify.status === "failed" || notify.status === "invalid-config") {
-          setSubmitStatus("stored-notify-warning");
-        } else {
-          setSubmitStatus("stored");
-        }
-      } else if (result.status === "keyring-missing") {
-        setSubmitStatus("keyring-missing");
+      const result = await submitContactForm(form);
+      if (result.status === "stored" && result.notification === "failed") {
+        setSubmitStatus("stored-notify-warning");
+      } else if (result.status === "stored") {
+        setSubmitStatus("stored");
       } else {
         setSubmitStatus("error");
       }
-    } catch {
-      setSubmitStatus("error");
+    } catch (error) {
+      if (error.code === "too-many-requests") {
+        setSubmitStatus("rate-limit");
+      } else {
+        setSubmitStatus("error");
+      }
     }
 
     setForm(defaultForm);
@@ -87,7 +88,7 @@ export default function ContactPage() {
               />
             </label>
             <label>
-              Numéro de téléphone (obligatoire)
+              Numero de telephone (obligatoire)
               <input
                 required
                 type="tel"
@@ -114,7 +115,7 @@ export default function ContactPage() {
                 required
                 name="message"
                 rows={6}
-                placeholder="Décrivez votre besoin de benne en Occitanie"
+                placeholder="Decrivez votre besoin de benne en Occitanie"
                 value={form.message}
                 onChange={updateField}
               />
@@ -125,25 +126,25 @@ export default function ContactPage() {
 
             {submitStatus === "stored" ? (
               <p className="success">
-                Merci pour votre demande de location. Votre message est enregistré
-                de manière chiffrée.
+                Merci. Votre demande est bien enregistree.
               </p>
             ) : null}
+
             {submitStatus === "stored-notify-warning" ? (
               <p className="admin-lock">
-                Demande enregistree de maniere chiffree, mais la notification email
-                admin n'a pas pu etre envoyee.
+                Demande enregistree, mais la notification email admin a echoue.
               </p>
             ) : null}
-            {submitStatus === "keyring-missing" ? (
-              <p className="admin-error">
-                Stockage chiffré indisponible : le coffre admin doit être initialisé
-                sur cet appareil.
+
+            {submitStatus === "rate-limit" ? (
+              <p className="admin-lock">
+                Trop de tentatives. Merci de patienter avant de renvoyer.
               </p>
             ) : null}
+
             {submitStatus === "error" ? (
               <p className="admin-error">
-                Votre demande n'a pas pu être stockée localement.
+                Votre demande n&apos;a pas pu etre envoyee.
               </p>
             ) : null}
           </form>
@@ -154,4 +155,3 @@ export default function ContactPage() {
     </>
   );
 }
-

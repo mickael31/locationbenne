@@ -1,25 +1,29 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  authenticateAdmin,
+  bootstrapAdmin,
   changeAdminPassword,
-  clearLockState,
-  createDefaultAdminKeyring,
-  DEFAULT_ADMIN_PASSWORD,
-  DEFAULT_ADMIN_USERNAME,
-  getNotificationConfig,
-  getKeyring,
-  getRemainingLockMs,
-  isAdminPasswordStrong,
-  loadDecryptedSubmissions,
-  migrateLegacySubmissions,
-  notifyNewSubmission,
-  registerFailedLogin,
-  saveNotificationConfig,
-  saveEncryptedSubmissions,
-  wipeAdminVault,
-} from "../security/adminVault";
+  deleteSubmission,
+  getAdminSession,
+  getBootstrapStatus,
+  getSmtpConfig,
+  getSubmissions,
+  loginAdmin,
+  logoutAdmin,
+  saveSmtpConfig,
+  sendSmtpTest,
+  updateSubmissionStatus,
+} from "../api/adminApi";
 
-const SESSION_TIMEOUT_MS = 10 * 60 * 1000;
+const defaultSmtpConfig = {
+  enabled: false,
+  host: "",
+  port: 587,
+  secure: false,
+  username: "",
+  fromEmail: "",
+  recipients: [],
+  hasPassword: false,
+};
 
 function formatDate(isoDate) {
   return new Date(isoDate).toLocaleDateString("fr-FR", {
@@ -31,12 +35,33 @@ function formatDate(isoDate) {
   });
 }
 
-function formatRemaining(secondsTotal) {
-  const minutes = Math.floor(secondsTotal / 60);
-  const seconds = secondsTotal % 60;
-  return `${minutes.toString().padStart(2, "0")}:${seconds
+function formatRemainingMs(value) {
+  const seconds = Math.max(0, Math.ceil(Number(value || 0) / 1000));
+  const minutesPart = Math.floor(seconds / 60);
+  const secondsPart = seconds % 60;
+  return `${minutesPart.toString().padStart(2, "0")}:${secondsPart
     .toString()
     .padStart(2, "0")}`;
+}
+
+function isStrongPassword(password) {
+  const value = String(password || "");
+  if (value.length < 8) return false;
+  if (!/[a-z]/.test(value)) return false;
+  if (!/[A-Z]/.test(value)) return false;
+  if (!/\d/.test(value)) return false;
+  return true;
+}
+
+function parseRecipients(value) {
+  return Array.from(
+    new Set(
+      String(value || "")
+        .split(/[\n,;]+/)
+        .map((item) => item.trim().toLowerCase())
+        .filter(Boolean),
+    ),
+  );
 }
 
 function recipientsToText(recipients) {
@@ -44,76 +69,148 @@ function recipientsToText(recipients) {
   return recipients.join("\n");
 }
 
-function textToRecipients(value) {
-  return String(value || "")
-    .split(/[\n,;]+/)
-    .map((item) => item.trim())
-    .filter(Boolean);
+function getAuthErrorMessage(code) {
+  if (code === "invalid-credentials") return "Identifiant ou mot de passe invalide.";
+  if (code === "login-locked") return "Trop de tentatives. Reessayez plus tard.";
+  if (code === "weak-password") return "Mot de passe trop faible.";
+  if (code === "invalid-current-password") return "Mot de passe actuel incorrect.";
+  if (code === "admin-not-configured") return "Le compte admin n'est pas configure.";
+  return "Erreur d'authentification.";
 }
 
-function getNotificationErrorMessage(reason) {
-  if (reason === "invalid-webhook-url") {
-    return "URL webhook invalide (HTTPS requis, sauf localhost en dev).";
+function getSmtpErrorMessage(code) {
+  if (code === "smtp-host-required") return "Le serveur SMTP est obligatoire.";
+  if (code === "smtp-port-invalid") return "Le port SMTP est invalide.";
+  if (code === "smtp-username-required") return "Le compte SMTP est obligatoire.";
+  if (code === "smtp-password-required") return "Le mot de passe SMTP est obligatoire.";
+  if (code === "smtp-from-invalid") return "L'email expediteur est invalide.";
+  if (code === "smtp-recipients-required") {
+    return "Ajoute au moins un destinataire.";
   }
-  if (reason === "missing-recipients") {
-    return "Ajoute au moins un destinataire email.";
+  if (code === "smtp-recipient-invalid") {
+    return "Un ou plusieurs destinataires sont invalides.";
   }
-  if (reason === "invalid-recipient-email") {
-    return "Un ou plusieurs emails destinataires sont invalides.";
+  if (code === "smtp-send-failed") {
+    return "Echec d'envoi SMTP. Verifie tes identifiants et ton host.";
   }
-  return "Configuration notification invalide.";
+  return "Configuration SMTP invalide.";
 }
 
-function SetupForm({ onSetup, busy, error }) {
+function SetupForm({ suggestedUsername, busy, error, onSubmit }) {
+  const [username, setUsername] = useState(suggestedUsername || "admin");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [localError, setLocalError] = useState("");
+
+  useEffect(() => {
+    setUsername(suggestedUsername || "admin");
+  }, [suggestedUsername]);
+
+  async function submit(event) {
+    event.preventDefault();
+    setLocalError("");
+
+    if (!username.trim()) {
+      setLocalError("Identifiant obligatoire.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setLocalError("Le mot de passe et la confirmation ne correspondent pas.");
+      return;
+    }
+    if (!isStrongPassword(password)) {
+      setLocalError(
+        "Mot de passe faible (8+ caracteres, majuscule, minuscule, chiffre).",
+      );
+      return;
+    }
+
+    await onSubmit({
+      username: username.trim().toLowerCase(),
+      password,
+    });
+  }
+
   return (
     <section className="page-hero">
       <div className="container">
         <p className="eyebrow">Administration</p>
-        <h1>Initialiser le compte admin</h1>
+        <h1>Configuration initiale</h1>
         <div className="admin-login card">
           <p className="security-note">
-            Identifiants initiaux: <strong>{DEFAULT_ADMIN_USERNAME}</strong> /
-            <strong> {DEFAULT_ADMIN_PASSWORD}</strong>
+            Cree le compte administrateur du site. Les donnees seront ensuite
+            gerees cote serveur.
           </p>
-          <p className="security-note">
-            Le mot de passe sera utilise pour dechiffrer le coffre local.
-            Change-le des la premiere connexion.
-          </p>
-          {error ? <p className="admin-error">{error}</p> : null}
-          <button className="btn btn-primary" onClick={onSetup} disabled={busy}>
-            {busy ? "Initialisation..." : "Creer l'admin par defaut"}
-          </button>
+
+          <form onSubmit={submit}>
+            <label className="admin-input-label">
+              Identifiant admin
+              <input
+                type="text"
+                autoComplete="username"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                required
+              />
+            </label>
+
+            <label className="admin-input-label">
+              Mot de passe admin
+              <input
+                type="password"
+                autoComplete="new-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+              />
+            </label>
+
+            <label className="admin-input-label">
+              Confirmation
+              <input
+                type="password"
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                required
+              />
+            </label>
+
+            {localError ? <p className="admin-error">{localError}</p> : null}
+            {error ? <p className="admin-error">{error}</p> : null}
+
+            <button type="submit" className="btn btn-primary" disabled={busy}>
+              {busy ? "Initialisation..." : "Creer le compte admin"}
+            </button>
+          </form>
         </div>
       </div>
     </section>
   );
 }
 
-function LoginForm({ onLogin, onReset, busy, error }) {
-  const [username, setUsername] = useState(DEFAULT_ADMIN_USERNAME);
+function LoginForm({ defaultUsername, busy, error, lockMs, onSubmit }) {
+  const [username, setUsername] = useState(defaultUsername || "admin");
   const [password, setPassword] = useState("");
-  const [remainingSeconds, setRemainingSeconds] = useState(() =>
-    Math.ceil(getRemainingLockMs() / 1000),
-  );
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setRemainingSeconds(Math.ceil(getRemainingLockMs() / 1000));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
+    setUsername(defaultUsername || "admin");
+  }, [defaultUsername]);
 
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault();
-    if (remainingSeconds > 0) return;
-    onLogin(username, password);
+    if (lockMs > 0) return;
+    await onSubmit({
+      username: username.trim().toLowerCase(),
+      password,
+    });
   }
 
   return (
     <section className="page-hero">
       <div className="container">
         <p className="eyebrow">Administration</p>
-        <h1>Connexion admin securisee</h1>
+        <h1>Connexion securisee</h1>
         <div className="admin-login card">
           <form onSubmit={submit}>
             <label className="admin-input-label">
@@ -126,6 +223,7 @@ function LoginForm({ onLogin, onReset, busy, error }) {
                 required
               />
             </label>
+
             <label className="admin-input-label">
               Mot de passe
               <input
@@ -137,31 +235,21 @@ function LoginForm({ onLogin, onReset, busy, error }) {
               />
             </label>
 
-            {remainingSeconds > 0 ? (
+            {lockMs > 0 ? (
               <p className="admin-lock">
-                Trop de tentatives. Nouvel essai dans{" "}
-                {formatRemaining(remainingSeconds)}.
+                Connexion verrouillee temporairement: {formatRemainingMs(lockMs)}.
               </p>
             ) : null}
+
             {error ? <p className="admin-error">{error}</p> : null}
 
-            <div className="admin-inline-actions">
-              <button
-                className="btn btn-primary"
-                type="submit"
-                disabled={busy || remainingSeconds > 0}
-              >
-                {busy ? "Verification..." : "Se connecter"}
-              </button>
-              <button
-                className="btn btn-ghost"
-                type="button"
-                onClick={onReset}
-                disabled={busy}
-              >
-                Reinitialiser l'admin
-              </button>
-            </div>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={busy || lockMs > 0}
+            >
+              {busy ? "Connexion..." : "Se connecter"}
+            </button>
           </form>
         </div>
       </div>
@@ -169,7 +257,7 @@ function LoginForm({ onLogin, onReset, busy, error }) {
   );
 }
 
-function ChangePasswordCard({ onSubmit, busy, status }) {
+function ChangePasswordCard({ busy, status, onSubmit }) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [nextPassword, setNextPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -180,12 +268,12 @@ function ChangePasswordCard({ onSubmit, busy, status }) {
     setLocalError("");
 
     if (nextPassword !== confirmPassword) {
-      setLocalError("Le nouveau mot de passe et la confirmation ne correspondent pas.");
+      setLocalError("Le mot de passe et la confirmation ne correspondent pas.");
       return;
     }
-    if (!isAdminPasswordStrong(nextPassword)) {
+    if (!isStrongPassword(nextPassword)) {
       setLocalError(
-        "Nouveau mot de passe trop faible (8+ caracteres, majuscule, minuscule, chiffre).",
+        "Mot de passe faible (8+ caracteres, majuscule, minuscule, chiffre).",
       );
       return;
     }
@@ -212,6 +300,7 @@ function ChangePasswordCard({ onSubmit, busy, status }) {
             required
           />
         </label>
+
         <label className="admin-input-label">
           Nouveau mot de passe
           <input
@@ -222,6 +311,7 @@ function ChangePasswordCard({ onSubmit, busy, status }) {
             required
           />
         </label>
+
         <label className="admin-input-label">
           Confirmation
           <input
@@ -245,50 +335,63 @@ function ChangePasswordCard({ onSubmit, busy, status }) {
   );
 }
 
-function NotificationSettingsCard({
-  config,
-  onSave,
-  onSendTest,
-  busy,
-  status,
-}) {
-  const [enabled, setEnabled] = useState(Boolean(config?.enabled));
-  const [webhookUrl, setWebhookUrl] = useState(config?.webhookUrl || "");
-  const [recipientsInput, setRecipientsInput] = useState(() =>
-    recipientsToText(config?.recipients),
+function SmtpSettingsCard({ config, busy, status, onSave, onTest }) {
+  const [enabled, setEnabled] = useState(Boolean(config.enabled));
+  const [host, setHost] = useState(config.host || "");
+  const [port, setPort] = useState(String(config.port || 587));
+  const [secure, setSecure] = useState(Boolean(config.secure));
+  const [username, setUsername] = useState(config.username || "");
+  const [password, setPassword] = useState("");
+  const [fromEmail, setFromEmail] = useState(config.fromEmail || "");
+  const [recipientsText, setRecipientsText] = useState(
+    recipientsToText(config.recipients),
   );
 
   useEffect(() => {
-    setEnabled(Boolean(config?.enabled));
-    setWebhookUrl(config?.webhookUrl || "");
-    setRecipientsInput(recipientsToText(config?.recipients));
+    setEnabled(Boolean(config.enabled));
+    setHost(config.host || "");
+    setPort(String(config.port || 587));
+    setSecure(Boolean(config.secure));
+    setUsername(config.username || "");
+    setFromEmail(config.fromEmail || "");
+    setRecipientsText(recipientsToText(config.recipients));
+    setPassword("");
   }, [config]);
 
-  function getDraft() {
-    return {
+  function buildPayload() {
+    const payload = {
       enabled,
-      webhookUrl,
-      recipients: textToRecipients(recipientsInput),
+      host: host.trim(),
+      port: Number(port),
+      secure,
+      username: username.trim(),
+      fromEmail: fromEmail.trim().toLowerCase(),
+      recipients: parseRecipients(recipientsText),
     };
+    if (password.trim()) {
+      payload.password = password.trim();
+    }
+    return payload;
   }
 
-  async function handleSave(event) {
+  async function submit(event) {
     event.preventDefault();
-    await onSave(getDraft());
+    await onSave(buildPayload());
   }
 
-  async function handleSendTest() {
-    await onSendTest(getDraft());
+  async function sendTest() {
+    await onTest(buildPayload());
   }
 
   return (
     <article className="card admin-notification-card">
-      <h3>Notifications email des nouvelles demandes</h3>
+      <h3>Notifications email SMTP</h3>
       <p className="security-note">
-        Utilise un webhook HTTPS (n8n, Make, Zapier, serveur perso) qui se
-        charge d'envoyer les emails. Aucun mot de passe SMTP n'est stocke ici.
+        Les demandes sont stockees cote serveur de maniere chiffree. Quand SMTP est
+        actif, un email complet est envoye automatiquement aux destinataires.
       </p>
-      <form className="email-compose" onSubmit={handleSave}>
+
+      <form className="email-compose" onSubmit={submit}>
         <label className="admin-checkbox">
           <input
             type="checkbox"
@@ -299,23 +402,78 @@ function NotificationSettingsCard({
         </label>
 
         <label className="admin-input-label">
-          URL webhook
+          Serveur SMTP
           <input
-            type="url"
-            value={webhookUrl}
-            onChange={(event) => setWebhookUrl(event.target.value)}
-            placeholder="https://votre-relai-email.exemple/webhook"
+            type="text"
+            value={host}
+            onChange={(event) => setHost(event.target.value)}
+            placeholder="smtp.votre-domaine.com"
             disabled={!enabled}
           />
         </label>
 
         <label className="admin-input-label">
-          Destinataires (1 email par ligne, ou separes par virgule)
+          Port SMTP
+          <input
+            type="number"
+            min={1}
+            max={65535}
+            value={port}
+            onChange={(event) => setPort(event.target.value)}
+            disabled={!enabled}
+          />
+        </label>
+
+        <label className="admin-checkbox">
+          <input
+            type="checkbox"
+            checked={secure}
+            onChange={(event) => setSecure(event.target.checked)}
+            disabled={!enabled}
+          />
+          Connexion securisee TLS/SSL
+        </label>
+
+        <label className="admin-input-label">
+          Identifiant SMTP
+          <input
+            type="text"
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
+            placeholder="contact@votre-domaine.com"
+            disabled={!enabled}
+          />
+        </label>
+
+        <label className="admin-input-label">
+          Mot de passe SMTP
+          <input
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder={config.hasPassword ? "Laisser vide pour conserver" : ""}
+            disabled={!enabled}
+          />
+        </label>
+
+        <label className="admin-input-label">
+          Email expediteur
+          <input
+            type="email"
+            value={fromEmail}
+            onChange={(event) => setFromEmail(event.target.value)}
+            placeholder="contact@votre-domaine.com"
+            disabled={!enabled}
+          />
+        </label>
+
+        <label className="admin-input-label">
+          Destinataires (1 email par ligne ou separes par virgule)
           <textarea
             rows={4}
-            value={recipientsInput}
-            onChange={(event) => setRecipientsInput(event.target.value)}
-            placeholder={"admin@exemple.com\nops@exemple.com"}
+            value={recipientsText}
+            onChange={(event) => setRecipientsText(event.target.value)}
+            placeholder={"admin@exemple.com\nassistant@exemple.com"}
             disabled={!enabled}
           />
         </label>
@@ -325,15 +483,15 @@ function NotificationSettingsCard({
 
         <div className="admin-inline-actions">
           <button type="submit" className="btn btn-primary" disabled={busy}>
-            {busy ? "Sauvegarde..." : "Sauvegarder la configuration"}
+            {busy ? "Sauvegarde..." : "Sauvegarder la config SMTP"}
           </button>
           <button
             type="button"
             className="btn btn-ghost"
-            onClick={handleSendTest}
+            onClick={sendTest}
             disabled={busy || !enabled}
           >
-            Envoyer un test
+            Envoyer un test SMTP
           </button>
         </div>
       </form>
@@ -361,7 +519,7 @@ function EmailModal({ submission, onClose, onSend }) {
     <div className="admin-modal-backdrop" onClick={onClose}>
       <div className="card admin-modal" onClick={(event) => event.stopPropagation()}>
         <h2>Repondre a {submission.fullName}</h2>
-        <p className="admin-muted">Destinataire : {submission.email}</p>
+        <p className="admin-muted">Destinataire: {submission.email}</p>
         <form className="email-compose" onSubmit={handleSend}>
           <label className="admin-input-label">
             Objet
@@ -371,6 +529,7 @@ function EmailModal({ submission, onClose, onSend }) {
               required
             />
           </label>
+
           <label className="admin-input-label">
             Message
             <textarea
@@ -380,6 +539,7 @@ function EmailModal({ submission, onClose, onSend }) {
               required
             />
           </label>
+
           <div className="admin-inline-actions">
             <button type="button" className="btn btn-ghost" onClick={onClose}>
               Annuler
@@ -399,13 +559,12 @@ function AdminPanel({
   submissions,
   busy,
   onLogout,
-  onWipeVault,
   onChangePassword,
   passwordStatus,
-  notificationConfig,
-  notificationStatus,
-  onSaveNotificationConfig,
-  onSendNotificationTest,
+  smtpConfig,
+  smtpStatus,
+  onSaveSmtpConfig,
+  onTestSmtp,
   onUpdateStatus,
   onDeleteSubmission,
 }) {
@@ -437,15 +596,12 @@ function AdminPanel({
           <div className="admin-header">
             <div>
               <p className="eyebrow">Administration</p>
-              <h1>Espace admin chiffre</h1>
+              <h1>Espace admin serveur</h1>
               <p className="admin-muted">Connecte en tant que: {adminUsername}</p>
             </div>
             <div className="admin-inline-actions">
-              <button className="btn btn-ghost" onClick={onWipeVault}>
-                Reinitialiser le coffre
-              </button>
               <button className="btn btn-ghost" onClick={onLogout}>
-                Verrouiller
+                Deconnexion
               </button>
             </div>
           </div>
@@ -459,11 +615,12 @@ function AdminPanel({
             busy={busy}
             status={passwordStatus}
           />
-          <NotificationSettingsCard
-            config={notificationConfig}
-            status={notificationStatus}
-            onSave={onSaveNotificationConfig}
-            onSendTest={onSendNotificationTest}
+
+          <SmtpSettingsCard
+            config={smtpConfig}
+            status={smtpStatus}
+            onSave={onSaveSmtpConfig}
+            onTest={onTestSmtp}
             busy={busy}
           />
 
@@ -513,7 +670,7 @@ function AdminPanel({
             </button>
           </div>
 
-          {busy ? <p className="admin-muted">Synchronisation chiffree...</p> : null}
+          {busy ? <p className="admin-muted">Synchronisation...</p> : null}
 
           {filtered.length === 0 ? (
             <div className="empty-state">
@@ -530,26 +687,28 @@ function AdminPanel({
                     {submission.status === "archived" && "Archivee"}
                   </span>
                 </div>
+
                 <div className="field-row">
-                  <span className="field-label">Nom :</span>
+                  <span className="field-label">Nom:</span>
                   <span className="field-value">{submission.fullName}</span>
                 </div>
                 <div className="field-row">
-                  <span className="field-label">Telephone :</span>
+                  <span className="field-label">Telephone:</span>
                   <span className="field-value">
                     <a href={`tel:${submission.phone}`}>{submission.phone}</a>
                   </span>
                 </div>
                 <div className="field-row">
-                  <span className="field-label">Email :</span>
+                  <span className="field-label">Email:</span>
                   <span className="field-value">
                     <a href={`mailto:${submission.email}`}>{submission.email}</a>
                   </span>
                 </div>
                 <div className="field-row">
-                  <span className="field-label">Message :</span>
+                  <span className="field-label">Message:</span>
                   <span className="field-value">{submission.message}</span>
                 </div>
+
                 <div className="actions">
                   <button className="btn-sm" onClick={() => setEmailTarget(submission)}>
                     Repondre
@@ -598,194 +757,152 @@ function AdminPanel({
 }
 
 export default function AdminPage() {
-  const [keyring, setKeyring] = useState(() => getKeyring());
-  const [privateKey, setPrivateKey] = useState(null);
-  const [adminUsername, setAdminUsername] = useState("");
-  const [submissions, setSubmissions] = useState([]);
+  const [stage, setStage] = useState("loading");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [migrationInfo, setMigrationInfo] = useState("");
+  const [suggestedUsername, setSuggestedUsername] = useState("admin");
+  const [adminUsername, setAdminUsername] = useState("");
+  const [submissions, setSubmissions] = useState([]);
+  const [smtpConfig, setSmtpConfig] = useState(defaultSmtpConfig);
   const [passwordStatus, setPasswordStatus] = useState({
     type: "idle",
     message: "",
   });
-  const [notificationConfig, setNotificationConfig] = useState(() =>
-    getNotificationConfig(),
-  );
-  const [notificationStatus, setNotificationStatus] = useState({
+  const [smtpStatus, setSmtpStatus] = useState({
     type: "idle",
     message: "",
   });
-
-  const isConfigured = Boolean(keyring);
-  const isUnlocked = Boolean(privateKey);
+  const [loginLockMs, setLoginLockMs] = useState(0);
 
   useEffect(() => {
-    if (!isUnlocked || !keyring) return undefined;
+    let mounted = true;
 
-    const activityEvents = ["click", "keydown", "mousemove", "touchstart"];
-    let timerId = null;
+    async function initialize() {
+      setBusy(true);
+      setError("");
+      try {
+        const boot = await getBootstrapStatus();
+        if (!mounted) return;
 
-    function lockSession() {
-      setPrivateKey(null);
-      setSubmissions([]);
-      setError("Session fermee automatiquement apres inactivite.");
+        setSuggestedUsername(boot.suggestedUsername || "admin");
+        if (!boot.configured) {
+          setStage("setup");
+          return;
+        }
+
+        try {
+          const me = await getAdminSession();
+          if (!mounted) return;
+          setAdminUsername(me.username);
+          await refreshDashboard();
+          if (!mounted) return;
+          setStage("panel");
+        } catch {
+          if (!mounted) return;
+          setStage("login");
+        }
+      } catch {
+        if (!mounted) return;
+        setError("Impossible de charger la configuration admin.");
+        setStage("login");
+      } finally {
+        if (mounted) {
+          setBusy(false);
+        }
+      }
     }
 
-    function resetTimer() {
-      if (timerId) clearTimeout(timerId);
-      timerId = setTimeout(lockSession, SESSION_TIMEOUT_MS);
-    }
-
-    activityEvents.forEach((eventName) => {
-      window.addEventListener(eventName, resetTimer);
-    });
-    resetTimer();
-
+    initialize();
     return () => {
-      if (timerId) clearTimeout(timerId);
-      activityEvents.forEach((eventName) => {
-        window.removeEventListener(eventName, resetTimer);
-      });
+      mounted = false;
     };
-  }, [isUnlocked, keyring]);
+  }, []);
 
-  async function refreshSubmissions(unlockedKey) {
-    const decrypted = await loadDecryptedSubmissions(unlockedKey);
-    setSubmissions(decrypted);
+  useEffect(() => {
+    if (loginLockMs <= 0) return undefined;
+    const timerId = setInterval(() => {
+      setLoginLockMs((current) => Math.max(0, current - 1000));
+    }, 1000);
+    return () => clearInterval(timerId);
+  }, [loginLockMs]);
+
+  async function refreshDashboard() {
+    const [submissionsResult, smtpResult] = await Promise.all([
+      getSubmissions(),
+      getSmtpConfig(),
+    ]);
+    setSubmissions(Array.isArray(submissionsResult.submissions) ? submissionsResult.submissions : []);
+    setSmtpConfig(smtpResult.config || defaultSmtpConfig);
   }
 
-  async function setupDefaultAdmin() {
+  async function handleSetup(payload) {
     setBusy(true);
     setError("");
-    setMigrationInfo("");
-    setPasswordStatus({ type: "idle", message: "" });
-    setNotificationStatus({ type: "idle", message: "" });
-
     try {
-      const created = await createDefaultAdminKeyring();
-      const auth = await authenticateAdmin(
-        created,
-        DEFAULT_ADMIN_USERNAME,
-        DEFAULT_ADMIN_PASSWORD,
-      );
-      const migratedCount = await migrateLegacySubmissions(auth.keyring.publicKey);
-
-      clearLockState();
-      setKeyring(auth.keyring);
-      setPrivateKey(auth.privateKey);
-      setAdminUsername(auth.keyring.auth.username);
-      await refreshSubmissions(auth.privateKey);
-
-      if (migratedCount > 0) {
-        setMigrationInfo(
-          `${migratedCount} anciennes demande(s) ont ete migrees vers le stockage chiffre.`,
-        );
-      } else {
-        setMigrationInfo(
-          "Compte admin initialise. Pense a changer le mot de passe par defaut.",
-        );
-      }
-    } catch {
-      setError("Impossible de creer le compte admin.");
+      const result = await bootstrapAdmin(payload);
+      setAdminUsername(result.username);
+      await refreshDashboard();
+      setStage("panel");
+    } catch (apiError) {
+      setError(getAuthErrorMessage(apiError.code));
     } finally {
       setBusy(false);
     }
   }
 
-  async function handleLogin(username, password) {
-    if (!keyring) return;
+  async function handleLogin(payload) {
     setBusy(true);
     setError("");
-    setMigrationInfo("");
-    setPasswordStatus({ type: "idle", message: "" });
-    setNotificationStatus({ type: "idle", message: "" });
-
     try {
-      const auth = await authenticateAdmin(keyring, username, password);
-      const migratedCount = await migrateLegacySubmissions(auth.keyring.publicKey);
-
-      clearLockState();
-      setKeyring(auth.keyring);
-      setPrivateKey(auth.privateKey);
-      setAdminUsername(auth.keyring.auth.username);
-      await refreshSubmissions(auth.privateKey);
-
-      if (auth.upgraded) {
-        setMigrationInfo(
-          "Ancien coffre migre vers le format compte admin username/password.",
-        );
-      } else if (migratedCount > 0) {
-        setMigrationInfo(
-          `${migratedCount} anciennes demande(s) ont ete migrees vers le stockage chiffre.`,
-        );
-      }
-    } catch {
-      const state = registerFailedLogin();
-      if (state.lockUntil > Date.now()) {
-        setError("Trop de tentatives. Acces temporairement verrouille.");
-      } else {
-        setError("Identifiant ou mot de passe invalide.");
+      const result = await loginAdmin(payload);
+      setAdminUsername(result.username);
+      setLoginLockMs(0);
+      await refreshDashboard();
+      setStage("panel");
+    } catch (apiError) {
+      setError(getAuthErrorMessage(apiError.code));
+      const remaining = Number(apiError.payload?.remainingMs || 0);
+      if (remaining > 0) {
+        setLoginLockMs(remaining);
       }
     } finally {
       setBusy(false);
     }
   }
 
-  function handleLogout() {
-    setPrivateKey(null);
+  async function handleLogout() {
+    setBusy(true);
+    try {
+      await logoutAdmin();
+    } catch {
+      // Ignore logout failures and continue local reset.
+    } finally {
+      setBusy(false);
+    }
+
     setSubmissions([]);
-    setMigrationInfo("");
+    setAdminUsername("");
+    setSmtpConfig(defaultSmtpConfig);
     setPasswordStatus({ type: "idle", message: "" });
-    setNotificationStatus({ type: "idle", message: "" });
+    setSmtpStatus({ type: "idle", message: "" });
     setError("");
-  }
-
-  async function persistSubmissions(nextSubmissions) {
-    if (!keyring?.publicKey) return;
-    setBusy(true);
-    try {
-      await saveEncryptedSubmissions(nextSubmissions, keyring.publicKey);
-      setSubmissions(nextSubmissions);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  function updateStatus(id, status) {
-    const next = submissions.map((item) =>
-      item.id === id ? { ...item, status } : item,
-    );
-    persistSubmissions(next);
-  }
-
-  function deleteSubmission(id) {
-    const next = submissions.filter((item) => item.id !== id);
-    persistSubmissions(next);
+    setStage("login");
   }
 
   async function handleChangePassword(currentPassword, nextPassword) {
-    if (!keyring || !adminUsername) return false;
     setBusy(true);
     setPasswordStatus({ type: "idle", message: "" });
-
     try {
-      const updated = await changeAdminPassword(
-        keyring,
-        adminUsername,
-        currentPassword,
-        nextPassword,
-      );
-      setKeyring(updated);
+      await changeAdminPassword({ currentPassword, nextPassword });
       setPasswordStatus({
         type: "success",
         message: "Mot de passe modifie avec succes.",
       });
       return true;
-    } catch {
+    } catch (apiError) {
       setPasswordStatus({
         type: "error",
-        message: "Mot de passe actuel incorrect.",
+        message: getAuthErrorMessage(apiError.code),
       });
       return false;
     } finally {
@@ -793,144 +910,125 @@ export default function AdminPage() {
     }
   }
 
-  async function handleSaveNotificationSettings(nextConfig) {
+  async function handleSaveSmtpConfig(nextConfig) {
     setBusy(true);
-    setNotificationStatus({ type: "idle", message: "" });
-
+    setSmtpStatus({ type: "idle", message: "" });
     try {
-      const saved = saveNotificationConfig(nextConfig);
-      setNotificationConfig(saved);
-      setNotificationStatus({
+      const result = await saveSmtpConfig(nextConfig);
+      setSmtpConfig(result.config || defaultSmtpConfig);
+      setSmtpStatus({
         type: "success",
-        message: "Configuration notifications enregistree.",
+        message: "Configuration SMTP enregistree.",
       });
-    } catch (error) {
-      setNotificationStatus({
+      return true;
+    } catch (apiError) {
+      setSmtpStatus({
         type: "error",
-        message: getNotificationErrorMessage(error?.message),
+        message: getSmtpErrorMessage(apiError.code),
       });
+      return false;
     } finally {
       setBusy(false);
     }
   }
 
-  async function handleSendNotificationTest(nextConfig) {
+  async function handleTestSmtp(nextConfig) {
     setBusy(true);
-    setNotificationStatus({ type: "idle", message: "" });
-
+    setSmtpStatus({ type: "idle", message: "" });
     try {
-      const saved = saveNotificationConfig(nextConfig);
-      setNotificationConfig(saved);
-
-      const testSubmission = {
-        id: `test_${Date.now()}`,
-        date: new Date().toISOString(),
-        fullName: "Test Notification",
-        phone: "0600000000",
-        email: "test@example.com",
-        message: "Ceci est un message de test depuis le panneau admin.",
-        status: "new",
-      };
-      const result = await notifyNewSubmission(testSubmission, saved);
-
-      if (result.status === "sent") {
-        setNotificationStatus({
-          type: "success",
-          message: "Notification de test envoyee.",
-        });
-        return;
-      }
-
-      if (result.status === "failed") {
-        setNotificationStatus({
-          type: "error",
-          message:
-            result.code && result.code > 0
-              ? `Echec webhook (HTTP ${result.code}).`
-              : "Echec webhook (reseau ou timeout).",
-        });
-        return;
-      }
-
-      if (result.status === "invalid-config") {
-        setNotificationStatus({
-          type: "error",
-          message: getNotificationErrorMessage(result.reason),
-        });
-        return;
-      }
-
-      setNotificationStatus({
-        type: "error",
-        message: "Notifications desactivees.",
+      const result = await saveSmtpConfig(nextConfig);
+      setSmtpConfig(result.config || defaultSmtpConfig);
+      await sendSmtpTest();
+      setSmtpStatus({
+        type: "success",
+        message: "Email SMTP de test envoye.",
       });
-    } catch (error) {
-      setNotificationStatus({
+      return true;
+    } catch (apiError) {
+      setSmtpStatus({
         type: "error",
-        message: getNotificationErrorMessage(error?.message),
+        message: getSmtpErrorMessage(apiError.code),
       });
+      return false;
     } finally {
       setBusy(false);
     }
   }
 
-  function resetAdmin() {
-    const confirmed = window.confirm(
-      "Reinitialiser l'admin supprime toutes les donnees locales chiffrees. Continuer ?",
-    );
-    if (!confirmed) return;
-    wipeAdminVault();
-    setPrivateKey(null);
-    setSubmissions([]);
-    setKeyring(null);
-    setAdminUsername("");
-    setBusy(false);
-    setError("");
-    setMigrationInfo("");
-    setPasswordStatus({ type: "idle", message: "" });
-    setNotificationStatus({ type: "idle", message: "" });
-    setNotificationConfig(getNotificationConfig());
+  async function handleUpdateStatus(id, status) {
+    setBusy(true);
+    try {
+      await updateSubmissionStatus(id, status);
+      setSubmissions((current) =>
+        current.map((item) => (item.id === id ? { ...item, status } : item)),
+      );
+    } catch {
+      // Ignore UI notification to keep admin usable.
+    } finally {
+      setBusy(false);
+    }
   }
 
-  if (!isConfigured) {
-    return <SetupForm onSetup={setupDefaultAdmin} busy={busy} error={error} />;
+  async function handleDeleteSubmission(id) {
+    setBusy(true);
+    try {
+      await deleteSubmission(id);
+      setSubmissions((current) => current.filter((item) => item.id !== id));
+    } catch {
+      // Ignore UI notification to keep admin usable.
+    } finally {
+      setBusy(false);
+    }
   }
 
-  if (!isUnlocked) {
+  if (stage === "loading") {
     return (
-      <LoginForm
-        onLogin={handleLogin}
-        onReset={resetAdmin}
+      <section className="page-hero">
+        <div className="container">
+          <p className="eyebrow">Administration</p>
+          <h1>Chargement...</h1>
+        </div>
+      </section>
+    );
+  }
+
+  if (stage === "setup") {
+    return (
+      <SetupForm
+        suggestedUsername={suggestedUsername}
         busy={busy}
         error={error}
+        onSubmit={handleSetup}
+      />
+    );
+  }
+
+  if (stage === "login") {
+    return (
+      <LoginForm
+        defaultUsername={suggestedUsername}
+        busy={busy}
+        error={error}
+        lockMs={loginLockMs}
+        onSubmit={handleLogin}
       />
     );
   }
 
   return (
-    <>
-      {migrationInfo ? (
-        <section className="section">
-          <div className="container">
-            <p className="success">{migrationInfo}</p>
-          </div>
-        </section>
-      ) : null}
-      <AdminPanel
-        adminUsername={adminUsername}
-        submissions={submissions}
-        busy={busy}
-        onLogout={handleLogout}
-        onWipeVault={resetAdmin}
-        onChangePassword={handleChangePassword}
-        passwordStatus={passwordStatus}
-        notificationConfig={notificationConfig}
-        notificationStatus={notificationStatus}
-        onSaveNotificationConfig={handleSaveNotificationSettings}
-        onSendNotificationTest={handleSendNotificationTest}
-        onUpdateStatus={updateStatus}
-        onDeleteSubmission={deleteSubmission}
-      />
-    </>
+    <AdminPanel
+      adminUsername={adminUsername}
+      submissions={submissions}
+      busy={busy}
+      onLogout={handleLogout}
+      onChangePassword={handleChangePassword}
+      passwordStatus={passwordStatus}
+      smtpConfig={smtpConfig}
+      smtpStatus={smtpStatus}
+      onSaveSmtpConfig={handleSaveSmtpConfig}
+      onTestSmtp={handleTestSmtp}
+      onUpdateStatus={handleUpdateStatus}
+      onDeleteSubmission={handleDeleteSubmission}
+    />
   );
 }
