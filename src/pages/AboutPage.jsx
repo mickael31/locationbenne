@@ -16,7 +16,7 @@ export default function AboutPage() {
 
       <section className="section">
         <div className="container split">
-          <img className="fade-in-left" src={about.images[0]} alt="\u00C9quipe sur chantier" />
+          <img className="fade-in-left" src={about.images[0]} alt="Équipe sur chantier" />
           <div className="fade-in-right">
             <p className="eyebrow">{about.companyTitle}</p>
             <h2>{about.companyHeading}</h2>

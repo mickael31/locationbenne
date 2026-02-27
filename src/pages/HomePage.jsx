@@ -29,7 +29,7 @@ export default function HomePage() {
 
       <section className="section">
         <div className="container split">
-          <img className="fade-in-left" src={home.intro.image} alt="\u00C9quipe Location Benne Occitanie" />
+          <img className="fade-in-left" src={home.intro.image} alt="Équipe Location Benne Occitanie" />
           <div className="fade-in-right">
             <h2>{home.intro.title}</h2>
             <p>{home.intro.text}</p>
@@ -129,7 +129,7 @@ export default function HomePage() {
 
       <section className="section">
         <div className="container">
-          <h2 className="fade-in">Questions Fr\u00E9quemment Pos\u00E9es</h2>
+          <h2 className="fade-in">Questions Fréquemment Posées</h2>
           <div className="faq-list">
             {home.faqs.map((faq) => (
               <details className="fade-in" key={faq.question}>

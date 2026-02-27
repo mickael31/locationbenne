@@ -80,7 +80,7 @@ export default function ContactPage() {
               />
             </label>
             <label>
-              Num\u00E9ro de t\u00E9l\u00E9phone (obligatoire)
+              Numéro de téléphone (obligatoire)
               <input
                 required
                 type="tel"
@@ -107,7 +107,7 @@ export default function ContactPage() {
                 required
                 name="message"
                 rows={6}
-                placeholder="D\u00E9crivez votre besoin de benne en Occitanie"
+                placeholder="Décrivez votre besoin de benne en Occitanie"
                 value={form.message}
                 onChange={updateField}
               />
@@ -117,7 +117,7 @@ export default function ContactPage() {
             </button>
             {sent ? (
               <p className="success">
-                Merci pour votre demande de location ! Nous vous r\u00E9pondrons
+                Merci pour votre demande de location ! Nous vous répondrons
                 rapidement.
               </p>
             ) : null}

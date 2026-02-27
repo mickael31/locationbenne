@@ -56,7 +56,7 @@ function Footer() {
     <footer className="site-footer">
       <div className="footer-inner">
         <NavLink to="/politique-de-confidentialite">
-          Politique de confidentialit\u00E9
+          Politique de confidentialité
         </NavLink>
         <p>Droit d'auteur \u00A9 2026 Location Benne Occitanie</p>
       </div>
