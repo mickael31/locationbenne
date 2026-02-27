@@ -1,6 +1,6 @@
 ﻿export const company = {
   name: "Location Benne Occitanie",
-  email: "mesnierdu82@gmail.com",
+  email: "contact@location-benne-occitanie.fr",
   phoneDisplay: "+33 6 79 98 41 26",
   phoneLocalDisplay: "06.79.98.41.26",
   phoneRaw: "+33679984126",
@@ -300,12 +300,12 @@ export const privacy = {
         "Retrait du consentement",
       ],
       footer:
-        "Pour exercer vos droits, écrivez-nous à : mesnierdu82@gmail.com ou via le formulaire de contact du site.",
+        "Pour exercer vos droits, écrivez-nous à : contact@location-benne-occitanie.fr ou via le formulaire de contact du site.",
     },
     {
       title: "9. Contact",
       paragraphs: [
-        "Pour toute question concernant la politique de confidentialité, contactez-nous à : mesnierdu82@gmail.com",
+        "Pour toute question concernant la politique de confidentialité, contactez-nous à : contact@location-benne-occitanie.fr",
       ],
     },
   ],

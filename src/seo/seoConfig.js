@@ -38,7 +38,7 @@ const PAGE_SEO = {
     description:
       "Découvrez l'expertise de Location Benne Occitanie, son histoire, son équipe et son engagement pour un service de qualité.",
     image: "/images/2025/08/ChatGPT-Image-4-aout-2025-21_26_42.png",
-    imageAlt: "Equipe Location Benne Occitanie sur chantier",
+    imageAlt: "Équipe Location Benne Occitanie sur chantier",
   },
   "/services": {
     title: "Services | Location Benne Occitanie",
@@ -53,7 +53,7 @@ const PAGE_SEO = {
       "Consultez notre gamme de bennes 3 m³, 7 m³, 10 m³ et 15 m³ pour tous vos chantiers et débarras en Occitanie.",
     image:
       "/images/2025/08/ChatGPT-Image-6-aout-2025-17_06_30-e1754492942287.png",
-    imageAlt: "Gamme de bennes 3 a 15 m3 en Occitanie",
+    imageAlt: "Gamme de bennes 3 à 15 m³ en Occitanie",
   },
   "/contact": {
     title: "Contact | Location Benne Occitanie",
@@ -67,13 +67,13 @@ const PAGE_SEO = {
     description:
       "Consultez notre politique de confidentialité et vos droits concernant le traitement des données personnelles.",
     image: "/images/2025/08/cropped-Logo_de_Benne_Occitanie-removebg-preview.png",
-    imageAlt: "Politique de confidentialite - Location Benne Occitanie",
+    imageAlt: "Politique de confidentialité - Location Benne Occitanie",
   },
   "*": {
     title: "Page non trouvée | Location Benne Occitanie",
     description: "La page demandée n'existe pas.",
     image: "/images/2025/08/cropped-Logo_de_Benne_Occitanie-removebg-preview.png",
-    imageAlt: "Page non trouvee - Location Benne Occitanie",
+    imageAlt: "Page non trouvée - Location Benne Occitanie",
     robots: "noindex,nofollow",
   },
 };

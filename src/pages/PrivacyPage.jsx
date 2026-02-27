@@ -8,10 +8,10 @@ export default function PrivacyPage() {
     <>
       <section className="page-hero page-hero-privacy">
         <div className="container">
-          <p className="eyebrow">Confidentialite</p>
-          <h1>Politique de confidentialite</h1>
+          <p className="eyebrow">Confidentialité</p>
+          <h1>Politique de confidentialité</h1>
           <p className="privacy-hero-lead">
-            Nous traitons vos donnees uniquement pour repondre a vos demandes
+            Nous traitons vos données uniquement pour répondre à vos demandes
             et assurer nos prestations de location de bennes, dans le respect
             du RGPD.
           </p>
@@ -22,16 +22,16 @@ export default function PrivacyPage() {
       <section className="section">
         <div className="container privacy-summary-grid">
           <article className="privacy-summary-card fade-in">
-            <h2>Donnees limitees</h2>
-            <p>Nous collectons uniquement les informations necessaires a votre demande.</p>
+            <h2>Données limitées</h2>
+            <p>Nous collectons uniquement les informations nécessaires à votre demande.</p>
           </article>
           <article className="privacy-summary-card fade-in stagger-1">
             <h2>Usage clair</h2>
-            <p>Vos informations servent a traiter vos demandes, jamais a etre revendues.</p>
+            <p>Vos informations servent à traiter vos demandes, jamais à être revendues.</p>
           </article>
           <article className="privacy-summary-card fade-in stagger-2">
             <h2>Vos droits</h2>
-            <p>Vous pouvez demander acces, modification ou suppression de vos donnees.</p>
+            <p>Vous pouvez demander accès, modification ou suppression de vos données.</p>
           </article>
         </div>
       </section>
@@ -63,13 +63,13 @@ export default function PrivacyPage() {
       <section className="section">
         <div className="container">
           <article className="privacy-contact-card fade-in">
-            <h2>Besoin d'un renseignement sur vos donnees ?</h2>
+            <h2>Besoin d'un renseignement sur vos données ?</h2>
             <p>
-              Contactez-nous directement pour toute demande relative a la
-              confidentialite de vos informations.
+              Contactez-nous directement pour toute demande relative à la
+              confidentialité de vos informations.
             </p>
             <a href={`mailto:${company.email}`} className="btn btn-primary">
-              Ecrire a {company.email}
+              Écrire à {company.email}
             </a>
           </article>
         </div>

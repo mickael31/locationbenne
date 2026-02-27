@@ -16,13 +16,13 @@ const defaultForm = {
 
 const benneTypeOptions = [
   "Gravats",
-  "Dechets verts",
-  "Debarras maison",
-  "Dechets de chantier melanges",
+  "Déchets verts",
+  "Débarras maison",
+  "Déchets de chantier mélangés",
   "Encombrants",
 ];
 
-const volumeOptions = ["3 m3", "7 m3", "10 m3", "15 m3"];
+const volumeOptions = ["3 m³", "7 m³", "10 m³", "15 m³"];
 
 export default function ContactPage() {
   const [form, setForm] = useState(defaultForm);
@@ -76,15 +76,15 @@ export default function ContactPage() {
           <p className="eyebrow">{contact.eyebrow}</p>
           <h1>{contact.title}</h1>
           <p className="contact-hero-lead">
-            Une equipe locale disponible pour organiser votre location de benne
-            sans perte de temps, du devis a l&apos;enlevement.
+            Une équipe locale disponible pour organiser votre location de benne
+            sans perte de temps, du devis à l&apos;enlèvement.
           </p>
           <div className="services-hero-actions">
             <a href={`tel:${company.phoneRaw}`} className="btn btn-primary">
               Appeler {company.phoneLocalDisplay}
             </a>
             <a href={`mailto:${company.email}`} className="btn btn-light">
-              Ecrire par email
+              Écrire par email
             </a>
           </div>
         </div>
@@ -92,7 +92,7 @@ export default function ContactPage() {
 
       <section className="contact-highlights">
         <div className="container contact-highlights-grid">
-          <article className="contact-highlight-item fade-in">Reponse rapide</article>
+          <article className="contact-highlight-item fade-in">Réponse rapide</article>
           <article className="contact-highlight-item fade-in stagger-1">
             Devis gratuit
           </article>
@@ -100,7 +100,7 @@ export default function ContactPage() {
             Intervention Occitanie
           </article>
           <article className="contact-highlight-item fade-in stagger-3">
-            Suivi de A a Z
+            Suivi de A à Z
           </article>
         </div>
       </section>
@@ -108,12 +108,12 @@ export default function ContactPage() {
       <section className="section">
         <div className="container contact-grid contact-grid-pro">
           <article className="card contact-info-card fade-in">
-            <p className="service-tag">Coordonnees</p>
+            <p className="service-tag">Coordonnées</p>
             <h2>{contact.sectionTitle}</h2>
             <p className="contact-card-lead">{contact.sectionSubtitle}</p>
             <div className="contact-lines">
               <p>
-                <span>Telephone</span>
+                <span>Téléphone</span>
                 <a href={`tel:${company.phoneRaw}`}>{company.phoneLocalDisplay}</a>
               </p>
               <p>
@@ -131,18 +131,18 @@ export default function ContactPage() {
                 <p>Montauban, Toulouse, Albi et alentours.</p>
               </article>
               <article>
-                <h3>Delais habituels</h3>
-                <p>Livraison possible sous 24h a 48h selon disponibilite.</p>
+                <h3>Délais habituels</h3>
+                <p>Livraison possible sous 24h à 48h selon disponibilité.</p>
               </article>
             </div>
           </article>
 
           {isSubmitted ? (
             <article className="card contact-success-card fade-in stagger-2">
-              <p className="contact-success-icon">Demande envoyee</p>
+              <p className="contact-success-icon">Demande envoyée</p>
               <h2>Merci, votre demande est bien partie</h2>
               <p>
-                Nous avons bien recu vos informations. L&apos;equipe vous
+                Nous avons bien reçu vos informations. L&apos;équipe vous
                 recontacte rapidement.
               </p>
               <div className="contact-success-actions">
@@ -180,7 +180,7 @@ export default function ContactPage() {
                 />
               </label>
               <label>
-                Numero de telephone (obligatoire)
+                Numéro de téléphone (obligatoire)
                 <input
                   required
                   type="tel"
@@ -196,7 +196,7 @@ export default function ContactPage() {
                   required
                   type="email"
                   name="email"
-                  placeholder="Ex: nom@exemple.com"
+                  placeholder="Ex: contact@location-benne-occitanie.fr"
                   value={form.email}
                   onChange={updateField}
                 />
@@ -253,7 +253,7 @@ export default function ContactPage() {
                   required
                   name="message"
                   rows={6}
-                  placeholder="Decrivez votre besoin de benne en Occitanie"
+                  placeholder="Décrivez votre besoin de benne en Occitanie"
                   value={form.message}
                   onChange={updateField}
                 />
@@ -270,7 +270,7 @@ export default function ContactPage() {
 
               {submitStatus === "error" ? (
                 <p className="admin-error">
-                  Votre demande n&apos;a pas pu etre envoyee.
+                  Votre demande n&apos;a pas pu être envoyée.
                 </p>
               ) : null}
             </form>

@@ -9,12 +9,12 @@ export default function NotFoundPage() {
           <p className="not-found-code">404</p>
           <h1>Page introuvable</h1>
           <p>
-            Le lien demande n'existe pas ou a ete deplace. Vous pouvez revenir
-            a l'accueil ou nous contacter directement.
+            Le lien demandé n'existe pas ou a été déplacé. Vous pouvez revenir
+            à l'accueil ou nous contacter directement.
           </p>
           <div className="button-row">
             <NavLink to="/" className="btn btn-primary">
-              Retour a l'accueil
+              Retour à l'accueil
             </NavLink>
             <NavLink to="/contact" className="btn btn-light">
               Nous contacter
