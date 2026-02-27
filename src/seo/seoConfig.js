@@ -4,6 +4,8 @@ export const SITE_ORIGIN = "https://location-benne-occitanie.fr";
 export const SITE_NAME = company.name;
 export const DEFAULT_IMAGE =
   "/images/2025/08/ChatGPT-Image-5-aout-2025-01_57_25-1024x683.png";
+export const DEFAULT_IMAGE_ALT =
+  "Location de benne en Occitanie - Location Benne Occitanie";
 
 const ROUTE_LABELS = {
   "/": "Accueil",
@@ -27,6 +29,7 @@ const PAGE_SEO = {
       "location benne albi",
       "évacuation déchets",
     ],
+    imageAlt: "Camion de location de benne en Occitanie",
     includeLocalBusiness: true,
     includeFaq: true,
   },
@@ -35,12 +38,14 @@ const PAGE_SEO = {
     description:
       "Découvrez l'expertise de Location Benne Occitanie, son histoire, son équipe et son engagement pour un service de qualité.",
     image: "/images/2025/08/ChatGPT-Image-4-aout-2025-21_26_42.png",
+    imageAlt: "Equipe Location Benne Occitanie sur chantier",
   },
   "/services": {
     title: "Services | Location Benne Occitanie",
     description:
       "Nos services : location de bennes, évacuation de déchets, devis gratuits et accompagnement personnalisé en Occitanie.",
     image: "/images/2025/08/ChatGPT-Image-4-aout-2025-23_35_24-1024x683.png",
+    imageAlt: "Services de location de bennes en Occitanie",
   },
   "/357-2": {
     title: "Bennes 3 à 15 m³ | Location Benne Occitanie",
@@ -48,23 +53,27 @@ const PAGE_SEO = {
       "Consultez notre gamme de bennes 3 m³, 7 m³, 10 m³ et 15 m³ pour tous vos chantiers et débarras en Occitanie.",
     image:
       "/images/2025/08/ChatGPT-Image-6-aout-2025-17_06_30-e1754492942287.png",
+    imageAlt: "Gamme de bennes 3 a 15 m3 en Occitanie",
   },
   "/contact": {
     title: "Contact | Location Benne Occitanie",
     description:
       "Contactez Location Benne Occitanie pour votre demande de location de benne. Réponse rapide et devis gratuit.",
     image: "/images/2025/08/cropped-Logo_de_Benne_Occitanie-removebg-preview.png",
+    imageAlt: "Contact Location Benne Occitanie",
   },
   "/politique-de-confidentialite": {
     title: "Politique de confidentialité | Location Benne Occitanie",
     description:
       "Consultez notre politique de confidentialité et vos droits concernant le traitement des données personnelles.",
     image: "/images/2025/08/cropped-Logo_de_Benne_Occitanie-removebg-preview.png",
+    imageAlt: "Politique de confidentialite - Location Benne Occitanie",
   },
   "*": {
     title: "Page non trouvée | Location Benne Occitanie",
     description: "La page demandée n'existe pas.",
     image: "/images/2025/08/cropped-Logo_de_Benne_Occitanie-removebg-preview.png",
+    imageAlt: "Page non trouvee - Location Benne Occitanie",
     robots: "noindex,nofollow",
   },
 };
@@ -72,6 +81,12 @@ const PAGE_SEO = {
 function withTrailingSlash(pathname) {
   if (pathname === "/") return "/";
   return pathname.endsWith("/") ? pathname : `${pathname}/`;
+}
+
+function normalizePathname(pathname) {
+  const value = String(pathname || "/").trim();
+  if (!value || value === "/") return "/";
+  return value.replace(/\/+$/, "");
 }
 
 export function toAbsoluteUrl(pathOrUrl) {
@@ -83,17 +98,20 @@ export function toAbsoluteUrl(pathOrUrl) {
 }
 
 export function getPageSeo(pathname) {
-  return PAGE_SEO[pathname] ?? PAGE_SEO["*"];
+  const normalized = normalizePathname(pathname);
+  return PAGE_SEO[normalized] ?? PAGE_SEO["*"];
 }
 
 export function getCanonicalUrl(pathname) {
-  return `${SITE_ORIGIN}${withTrailingSlash(pathname)}`;
+  const normalized = normalizePathname(pathname);
+  return `${SITE_ORIGIN}${withTrailingSlash(normalized)}`;
 }
 
 function getBreadcrumb(pathname) {
+  const normalized = normalizePathname(pathname);
   const crumbs = [{ name: ROUTE_LABELS["/"], path: "/" }];
-  if (pathname !== "/" && ROUTE_LABELS[pathname]) {
-    crumbs.push({ name: ROUTE_LABELS[pathname], path: pathname });
+  if (normalized !== "/" && ROUTE_LABELS[normalized]) {
+    crumbs.push({ name: ROUTE_LABELS[normalized], path: normalized });
   }
   return crumbs;
 }

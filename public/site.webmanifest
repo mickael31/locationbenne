@@ -3,9 +3,9 @@
   "short_name": "Benne Occitanie",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5f4ef",
-  "theme_color": "#cd5d11",
-  "lang": "fr",
+  "background_color": "#eef2f5",
+  "theme_color": "#f2aa00",
+  "lang": "fr-FR",
   "icons": [
     {
       "src": "/images/2025/08/Logo_de_Benne_Occitanie-removebg-preview-150x150.png",

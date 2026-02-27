@@ -1,6 +1,7 @@
 ﻿import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import {
+  DEFAULT_IMAGE_ALT,
   getCanonicalUrl,
   getPageSeo,
   getSeoGraph,
@@ -53,6 +54,7 @@ export default function SeoManager() {
     const seo = getPageSeo(pathname);
     const canonical = getCanonicalUrl(pathname);
     const ogImage = toAbsoluteUrl(seo.image);
+    const imageAlt = seo.imageAlt || DEFAULT_IMAGE_ALT;
     const robots = seo.robots ?? "index,follow";
 
     document.title = seo.title;
@@ -64,6 +66,7 @@ export default function SeoManager() {
       removeMeta("name", "keywords");
     }
     upsertMeta("name", "robots", robots);
+    upsertMeta("name", "googlebot", robots);
 
     upsertMeta("property", "og:title", seo.title);
     upsertMeta("property", "og:description", seo.description);
@@ -72,11 +75,14 @@ export default function SeoManager() {
     upsertMeta("property", "og:url", canonical);
     upsertMeta("property", "og:locale", "fr_FR");
     upsertMeta("property", "og:image", ogImage);
+    upsertMeta("property", "og:image:secure_url", ogImage);
+    upsertMeta("property", "og:image:alt", imageAlt);
 
     upsertMeta("name", "twitter:card", "summary_large_image");
     upsertMeta("name", "twitter:title", seo.title);
     upsertMeta("name", "twitter:description", seo.description);
     upsertMeta("name", "twitter:image", ogImage);
+    upsertMeta("name", "twitter:image:alt", imageAlt);
 
     upsertLink("canonical", canonical);
     upsertLink("alternate", canonical, { hreflang: "fr-FR" });

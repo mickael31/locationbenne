@@ -1211,6 +1211,35 @@ details[open] summary::after {
   font-weight: 600;
 }
 
+.contact-success-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  justify-content: center;
+}
+
+.contact-success-icon {
+  margin: 0;
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 0.28rem 0.62rem;
+  border-radius: 999px;
+  background: #e8f6ea;
+  color: #20692c;
+  border: 1px solid #8cc595;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.contact-success-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.2rem;
+}
+
 .contact-form label {
   display: grid;
   gap: 0.42rem;

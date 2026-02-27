@@ -11,6 +11,38 @@ function Header() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [location.pathname]);
 
+  useEffect(() => {
+    function handleContactLinkClick(event) {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const contactLink = target.closest('a[href^="tel:"], a[href^="mailto:"]');
+      if (!contactLink) return;
+
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return;
+      }
+
+      const href = contactLink.getAttribute("href");
+      if (!href) return;
+
+      event.preventDefault();
+      window.location.assign(href);
+    }
+
+    document.addEventListener("click", handleContactLinkClick);
+    return () => {
+      document.removeEventListener("click", handleContactLinkClick);
+    };
+  }, []);
+
   return (
     <header className="site-header">
       <div className="top-bar">

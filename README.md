@@ -1,88 +1,62 @@
-# Location Benne Occitanie - React + Node
+# Location Benne Occitanie
 
-Ce projet contient:
-
-- Frontend React/Vite (site public)
-- Envoi formulaire possible en direct via EmailJS (compatible hebergement statique)
-- Backend Node/Express (API contact + envoi email MailerSend/SMTP)
-
-La partie admin a ete retiree.
+Site React/Vite avec formulaire de contact envoi email via **EmailJS** (compatible hebergement statique IONOS).
 
 ## Prerequis
 
 - Node.js 18+
 - npm 9+
 
-## Variables d'environnement
+## Installation
 
-Copie `.env.example` vers `.env` puis adapte les valeurs.
+```bash
+npm install
+```
 
-Obligatoire:
+## Configuration utile
 
-- `APP_ENCRYPTION_KEY`: cle secrete utilisee pour chiffrer les donnees stockees cote serveur.
+Copie `.env.example` vers `.env`.
 
-Recommande:
-
-- `APP_DATA_DIR`: dossier persistant pour les donnees serveur (`state.json`).
-
-Configuration email MailerSend (recommande):
-
-- `MAILERSEND_ENABLED=true`
-- `MAILERSEND_API_KEY`
-- `MAILERSEND_TEMPLATE_ID`
-- `MAILERSEND_FROM_EMAIL`
-- `MAILERSEND_FROM_NAME`
-- `MAILERSEND_RECIPIENTS` (emails separes par virgule)
-
-Configuration EmailJS (mode statique IONOS recommande):
+Variables importantes pour le formulaire:
 
 - `VITE_CONTACT_PROVIDER=emailjs`
 - `VITE_EMAILJS_ENABLED=true`
 - `VITE_EMAILJS_PUBLIC_KEY`
 - `VITE_EMAILJS_SERVICE_ID`
 - `VITE_EMAILJS_TEMPLATE_ID`
-- `VITE_API_BASE_URL` (laisser vide pour mode 100% frontend)
 
-Configuration email SMTP (fallback):
+Le projet est deja preconfigure avec:
 
-- `SMTP_PREFILL_ENABLED=true`
-- `SMTP_PREFILL_HOST`
-- `SMTP_PREFILL_PORT`
-- `SMTP_PREFILL_SECURE`
-- `SMTP_PREFILL_USERNAME`
-- `SMTP_PREFILL_PASSWORD`
-- `SMTP_PREFILL_FROM_EMAIL`
-- `SMTP_PREFILL_RECIPIENTS` (emails separes par virgule)
+- Service: `smtp_contact`
+- Template: `template_full`
+- Public key: `JZnrgJVTyt3Fy_rX7`
 
-## Developpement local
+## Lancer en local (frontend)
 
 ```bash
-npm install
-npm run dev:full
+npm run dev
 ```
 
-- Frontend: `http://localhost:5173`
-- API backend: `http://localhost:3001`
+Frontend: `http://localhost:5173`
 
-## Build + production
+## Build
 
 ```bash
 npm run build
-npm start
 ```
 
-Le serveur Node:
+Le build genere `dist/` pour le deploiement statique.
 
-- expose l'API sous `/api/*`
-- sert le build frontend `dist/`
-- gere les routes SPA
+## Formulaire
 
-## Endpoint principal
+Variables envoyees au template EmailJS:
 
-- `POST /api/contact/submit`
-
-Notes:
-
-- Si `VITE_CONTACT_PROVIDER=emailjs` et que les IDs EmailJS sont renseignes, le formulaire envoie en direct via EmailJS.
-- Si MailerSend est active et configure, l'API envoie via MailerSend.
-- Si MailerSend echoue et que SMTP est configure, l'API tente SMTP en secours.
+- `fullName`
+- `phone`
+- `email`
+- `city`
+- `benneType`
+- `volume`
+- `message`
+- `sent_at`
+- `page_url`
