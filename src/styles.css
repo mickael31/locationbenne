@@ -893,6 +893,22 @@ summary + p {
   margin-bottom: 1.2rem;
 }
 
+.admin-notification-card {
+  margin-bottom: 1.2rem;
+}
+
+.admin-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-weight: 600;
+}
+
+.admin-checkbox input {
+  width: 18px;
+  height: 18px;
+}
+
 .admin-inline-actions {
   display: flex;
   gap: 0.6rem;

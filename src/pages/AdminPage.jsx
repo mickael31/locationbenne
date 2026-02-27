@@ -6,12 +6,15 @@ import {
   createDefaultAdminKeyring,
   DEFAULT_ADMIN_PASSWORD,
   DEFAULT_ADMIN_USERNAME,
+  getNotificationConfig,
   getKeyring,
   getRemainingLockMs,
   isAdminPasswordStrong,
   loadDecryptedSubmissions,
   migrateLegacySubmissions,
+  notifyNewSubmission,
   registerFailedLogin,
+  saveNotificationConfig,
   saveEncryptedSubmissions,
   wipeAdminVault,
 } from "../security/adminVault";
@@ -34,6 +37,31 @@ function formatRemaining(secondsTotal) {
   return `${minutes.toString().padStart(2, "0")}:${seconds
     .toString()
     .padStart(2, "0")}`;
+}
+
+function recipientsToText(recipients) {
+  if (!Array.isArray(recipients)) return "";
+  return recipients.join("\n");
+}
+
+function textToRecipients(value) {
+  return String(value || "")
+    .split(/[\n,;]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function getNotificationErrorMessage(reason) {
+  if (reason === "invalid-webhook-url") {
+    return "URL webhook invalide (HTTPS requis, sauf localhost en dev).";
+  }
+  if (reason === "missing-recipients") {
+    return "Ajoute au moins un destinataire email.";
+  }
+  if (reason === "invalid-recipient-email") {
+    return "Un ou plusieurs emails destinataires sont invalides.";
+  }
+  return "Configuration notification invalide.";
 }
 
 function SetupForm({ onSetup, busy, error }) {
@@ -217,6 +245,102 @@ function ChangePasswordCard({ onSubmit, busy, status }) {
   );
 }
 
+function NotificationSettingsCard({
+  config,
+  onSave,
+  onSendTest,
+  busy,
+  status,
+}) {
+  const [enabled, setEnabled] = useState(Boolean(config?.enabled));
+  const [webhookUrl, setWebhookUrl] = useState(config?.webhookUrl || "");
+  const [recipientsInput, setRecipientsInput] = useState(() =>
+    recipientsToText(config?.recipients),
+  );
+
+  useEffect(() => {
+    setEnabled(Boolean(config?.enabled));
+    setWebhookUrl(config?.webhookUrl || "");
+    setRecipientsInput(recipientsToText(config?.recipients));
+  }, [config]);
+
+  function getDraft() {
+    return {
+      enabled,
+      webhookUrl,
+      recipients: textToRecipients(recipientsInput),
+    };
+  }
+
+  async function handleSave(event) {
+    event.preventDefault();
+    await onSave(getDraft());
+  }
+
+  async function handleSendTest() {
+    await onSendTest(getDraft());
+  }
+
+  return (
+    <article className="card admin-notification-card">
+      <h3>Notifications email des nouvelles demandes</h3>
+      <p className="security-note">
+        Utilise un webhook HTTPS (n8n, Make, Zapier, serveur perso) qui se
+        charge d'envoyer les emails. Aucun mot de passe SMTP n'est stocke ici.
+      </p>
+      <form className="email-compose" onSubmit={handleSave}>
+        <label className="admin-checkbox">
+          <input
+            type="checkbox"
+            checked={enabled}
+            onChange={(event) => setEnabled(event.target.checked)}
+          />
+          Activer les notifications automatiques
+        </label>
+
+        <label className="admin-input-label">
+          URL webhook
+          <input
+            type="url"
+            value={webhookUrl}
+            onChange={(event) => setWebhookUrl(event.target.value)}
+            placeholder="https://votre-relai-email.exemple/webhook"
+            disabled={!enabled}
+          />
+        </label>
+
+        <label className="admin-input-label">
+          Destinataires (1 email par ligne, ou separes par virgule)
+          <textarea
+            rows={4}
+            value={recipientsInput}
+            onChange={(event) => setRecipientsInput(event.target.value)}
+            placeholder={"admin@exemple.com\nops@exemple.com"}
+            disabled={!enabled}
+          />
+        </label>
+
+        {status.type === "error" ? <p className="admin-error">{status.message}</p> : null}
+        {status.type === "success" ? <p className="success">{status.message}</p> : null}
+
+        <div className="admin-inline-actions">
+          <button type="submit" className="btn btn-primary" disabled={busy}>
+            {busy ? "Sauvegarde..." : "Sauvegarder la configuration"}
+          </button>
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={handleSendTest}
+            disabled={busy || !enabled}
+          >
+            Envoyer un test
+          </button>
+        </div>
+      </form>
+    </article>
+  );
+}
+
 function EmailModal({ submission, onClose, onSend }) {
   const [subject, setSubject] = useState("Re: Demande de location de benne");
   const [body, setBody] = useState(
@@ -278,6 +402,10 @@ function AdminPanel({
   onWipeVault,
   onChangePassword,
   passwordStatus,
+  notificationConfig,
+  notificationStatus,
+  onSaveNotificationConfig,
+  onSendNotificationTest,
   onUpdateStatus,
   onDeleteSubmission,
 }) {
@@ -330,6 +458,13 @@ function AdminPanel({
             onSubmit={onChangePassword}
             busy={busy}
             status={passwordStatus}
+          />
+          <NotificationSettingsCard
+            config={notificationConfig}
+            status={notificationStatus}
+            onSave={onSaveNotificationConfig}
+            onSendTest={onSendNotificationTest}
+            busy={busy}
           />
 
           <div className="stat-grid">
@@ -474,6 +609,13 @@ export default function AdminPage() {
     type: "idle",
     message: "",
   });
+  const [notificationConfig, setNotificationConfig] = useState(() =>
+    getNotificationConfig(),
+  );
+  const [notificationStatus, setNotificationStatus] = useState({
+    type: "idle",
+    message: "",
+  });
 
   const isConfigured = Boolean(keyring);
   const isUnlocked = Boolean(privateKey);
@@ -518,6 +660,7 @@ export default function AdminPage() {
     setError("");
     setMigrationInfo("");
     setPasswordStatus({ type: "idle", message: "" });
+    setNotificationStatus({ type: "idle", message: "" });
 
     try {
       const created = await createDefaultAdminKeyring();
@@ -556,6 +699,7 @@ export default function AdminPage() {
     setError("");
     setMigrationInfo("");
     setPasswordStatus({ type: "idle", message: "" });
+    setNotificationStatus({ type: "idle", message: "" });
 
     try {
       const auth = await authenticateAdmin(keyring, username, password);
@@ -593,6 +737,7 @@ export default function AdminPage() {
     setSubmissions([]);
     setMigrationInfo("");
     setPasswordStatus({ type: "idle", message: "" });
+    setNotificationStatus({ type: "idle", message: "" });
     setError("");
   }
 
@@ -648,6 +793,87 @@ export default function AdminPage() {
     }
   }
 
+  async function handleSaveNotificationSettings(nextConfig) {
+    setBusy(true);
+    setNotificationStatus({ type: "idle", message: "" });
+
+    try {
+      const saved = saveNotificationConfig(nextConfig);
+      setNotificationConfig(saved);
+      setNotificationStatus({
+        type: "success",
+        message: "Configuration notifications enregistree.",
+      });
+    } catch (error) {
+      setNotificationStatus({
+        type: "error",
+        message: getNotificationErrorMessage(error?.message),
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleSendNotificationTest(nextConfig) {
+    setBusy(true);
+    setNotificationStatus({ type: "idle", message: "" });
+
+    try {
+      const saved = saveNotificationConfig(nextConfig);
+      setNotificationConfig(saved);
+
+      const testSubmission = {
+        id: `test_${Date.now()}`,
+        date: new Date().toISOString(),
+        fullName: "Test Notification",
+        phone: "0600000000",
+        email: "test@example.com",
+        message: "Ceci est un message de test depuis le panneau admin.",
+        status: "new",
+      };
+      const result = await notifyNewSubmission(testSubmission, saved);
+
+      if (result.status === "sent") {
+        setNotificationStatus({
+          type: "success",
+          message: "Notification de test envoyee.",
+        });
+        return;
+      }
+
+      if (result.status === "failed") {
+        setNotificationStatus({
+          type: "error",
+          message:
+            result.code && result.code > 0
+              ? `Echec webhook (HTTP ${result.code}).`
+              : "Echec webhook (reseau ou timeout).",
+        });
+        return;
+      }
+
+      if (result.status === "invalid-config") {
+        setNotificationStatus({
+          type: "error",
+          message: getNotificationErrorMessage(result.reason),
+        });
+        return;
+      }
+
+      setNotificationStatus({
+        type: "error",
+        message: "Notifications desactivees.",
+      });
+    } catch (error) {
+      setNotificationStatus({
+        type: "error",
+        message: getNotificationErrorMessage(error?.message),
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function resetAdmin() {
     const confirmed = window.confirm(
       "Reinitialiser l'admin supprime toutes les donnees locales chiffrees. Continuer ?",
@@ -662,6 +888,8 @@ export default function AdminPage() {
     setError("");
     setMigrationInfo("");
     setPasswordStatus({ type: "idle", message: "" });
+    setNotificationStatus({ type: "idle", message: "" });
+    setNotificationConfig(getNotificationConfig());
   }
 
   if (!isConfigured) {
@@ -696,6 +924,10 @@ export default function AdminPage() {
         onWipeVault={resetAdmin}
         onChangePassword={handleChangePassword}
         passwordStatus={passwordStatus}
+        notificationConfig={notificationConfig}
+        notificationStatus={notificationStatus}
+        onSaveNotificationConfig={handleSaveNotificationSettings}
+        onSendNotificationTest={handleSendNotificationTest}
         onUpdateStatus={updateStatus}
         onDeleteSubmission={deleteSubmission}
       />

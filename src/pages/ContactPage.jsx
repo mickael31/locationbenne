@@ -2,7 +2,7 @@ import { useState } from "react";
 import SectionCta from "../components/SectionCta";
 import { company, contact } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
-import { addEncryptedSubmission } from "../security/adminVault";
+import { addEncryptedSubmission, notifyNewSubmission } from "../security/adminVault";
 
 const defaultForm = {
   fullName: "",
@@ -28,7 +28,12 @@ export default function ContactPage() {
     try {
       const result = await addEncryptedSubmission(form);
       if (result.status === "stored") {
-        setSubmitStatus("stored");
+        const notify = await notifyNewSubmission(result.submission);
+        if (notify.status === "failed" || notify.status === "invalid-config") {
+          setSubmitStatus("stored-notify-warning");
+        } else {
+          setSubmitStatus("stored");
+        }
       } else if (result.status === "keyring-missing") {
         setSubmitStatus("keyring-missing");
       } else {
@@ -124,6 +129,12 @@ export default function ContactPage() {
                 de manière chiffrée.
               </p>
             ) : null}
+            {submitStatus === "stored-notify-warning" ? (
+              <p className="admin-lock">
+                Demande enregistree de maniere chiffree, mais la notification email
+                admin n'a pas pu etre envoyee.
+              </p>
+            ) : null}
             {submitStatus === "keyring-missing" ? (
               <p className="admin-error">
                 Stockage chiffré indisponible : le coffre admin doit être initialisé
@@ -143,3 +154,4 @@ export default function ContactPage() {
     </>
   );
 }
+

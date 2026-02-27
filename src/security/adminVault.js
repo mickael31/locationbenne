@@ -3,6 +3,7 @@ const SUBMISSIONS_STORAGE_KEY = "contact_submissions_secure_v1";
 const LEGACY_SUBMISSIONS_STORAGE_KEY = "contact_submissions";
 const LEGACY_AUTH_KEY = "admin_auth";
 const LOGIN_GUARD_KEY = "admin_login_guard_v1";
+const NOTIFICATION_CONFIG_STORAGE_KEY = "admin_notification_config_v1";
 
 export const DEFAULT_ADMIN_USERNAME = "mickcbo";
 export const DEFAULT_ADMIN_PASSWORD = "admin123";
@@ -11,6 +12,7 @@ const VAULT_KDF_ITERATIONS = 350000;
 const AUTH_KDF_ITERATIONS = 220000;
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCK_WINDOW_MS = 15 * 60 * 1000;
+const WEBHOOK_REQUEST_TIMEOUT_MS = 10 * 1000;
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
@@ -63,6 +65,113 @@ function toIsoNow() {
 
 function normalizeUsername(value) {
   return String(value || "").trim().toLowerCase();
+}
+
+function splitRecipientInput(input) {
+  if (Array.isArray(input)) {
+    return input;
+  }
+  return String(input || "").split(/[\n,;]+/);
+}
+
+function normalizeRecipientEmail(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function dedupe(values) {
+  return Array.from(new Set(values));
+}
+
+function normalizeNotificationConfig(rawConfig) {
+  const rawRecipients = splitRecipientInput(rawConfig?.recipients);
+  const recipients = dedupe(
+    rawRecipients
+      .map((item) => normalizeRecipientEmail(item))
+      .filter(Boolean),
+  );
+
+  return {
+    enabled: Boolean(rawConfig?.enabled),
+    webhookUrl: String(rawConfig?.webhookUrl || "").trim(),
+    recipients,
+    updatedAt: String(rawConfig?.updatedAt || toIsoNow()),
+  };
+}
+
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(String(value || ""));
+}
+
+function isAllowedWebhookUrl(value) {
+  try {
+    const url = new URL(value);
+    if (url.protocol === "https:") return true;
+    if (
+      url.protocol === "http:" &&
+      ["localhost", "127.0.0.1"].includes(url.hostname)
+    ) {
+      return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+function assertValidNotificationConfig(config) {
+  if (!config.enabled) {
+    return;
+  }
+
+  if (!isAllowedWebhookUrl(config.webhookUrl)) {
+    throw new Error("invalid-webhook-url");
+  }
+
+  if (!Array.isArray(config.recipients) || config.recipients.length === 0) {
+    throw new Error("missing-recipients");
+  }
+
+  if (config.recipients.some((email) => !isValidEmail(email))) {
+    throw new Error("invalid-recipient-email");
+  }
+}
+
+function sanitizeSubmissionForNotification(rawSubmission) {
+  return {
+    id: String(rawSubmission?.id || ""),
+    date: String(rawSubmission?.date || toIsoNow()),
+    fullName: String(rawSubmission?.fullName || ""),
+    phone: String(rawSubmission?.phone || ""),
+    email: String(rawSubmission?.email || ""),
+    message: String(rawSubmission?.message || ""),
+    status: String(rawSubmission?.status || "new"),
+  };
+}
+
+async function postNotification(config, payload) {
+  const controller = new AbortController();
+  const timerId = setTimeout(() => controller.abort(), WEBHOOK_REQUEST_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(config.webhookUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      return { status: "failed", code: response.status };
+    }
+
+    return { status: "sent", code: response.status };
+  } catch {
+    return { status: "failed", code: 0 };
+  } finally {
+    clearTimeout(timerId);
+  }
 }
 
 function timingSafeEqual(leftBytes, rightBytes) {
@@ -287,6 +396,20 @@ export function getKeyring() {
   return readJsonStorage(KEYRING_STORAGE_KEY, null);
 }
 
+export function getNotificationConfig() {
+  return normalizeNotificationConfig(
+    readJsonStorage(NOTIFICATION_CONFIG_STORAGE_KEY, {}),
+  );
+}
+
+export function saveNotificationConfig(rawConfig) {
+  const normalized = normalizeNotificationConfig(rawConfig);
+  assertValidNotificationConfig(normalized);
+  const withTimestamp = { ...normalized, updatedAt: toIsoNow() };
+  writeJsonStorage(NOTIFICATION_CONFIG_STORAGE_KEY, withTimestamp);
+  return withTimestamp;
+}
+
 export function isAdminPasswordStrong(password) {
   if (!password || password.length < 8) return false;
   const hasLower = /[a-z]/.test(password);
@@ -490,7 +613,38 @@ export async function addEncryptedSubmission(rawSubmission) {
   existing.unshift(encrypted);
   writeJsonStorage(SUBMISSIONS_STORAGE_KEY, existing);
 
-  return { status: "stored" };
+  return { status: "stored", submission };
+}
+
+export async function notifyNewSubmission(rawSubmission, configOverride) {
+  const config = configOverride
+    ? normalizeNotificationConfig(configOverride)
+    : getNotificationConfig();
+
+  if (!config.enabled) {
+    return { status: "disabled" };
+  }
+
+  try {
+    assertValidNotificationConfig(config);
+  } catch (error) {
+    return {
+      status: "invalid-config",
+      reason: error?.message || "invalid-config",
+    };
+  }
+
+  const submission = sanitizeSubmissionForNotification(rawSubmission);
+  const payload = {
+    v: 1,
+    event: "contact_submission_created",
+    createdAt: toIsoNow(),
+    recipients: config.recipients,
+    submission,
+    source: typeof window !== "undefined" ? window.location.origin : "unknown",
+  };
+
+  return postNotification(config, payload);
 }
 
 export async function loadDecryptedSubmissions(privateKey) {
@@ -555,4 +709,5 @@ export function wipeAdminVault() {
   localStorage.removeItem(LEGACY_SUBMISSIONS_STORAGE_KEY);
   localStorage.removeItem(LEGACY_AUTH_KEY);
   localStorage.removeItem(LOGIN_GUARD_KEY);
+  localStorage.removeItem(NOTIFICATION_CONFIG_STORAGE_KEY);
 }
