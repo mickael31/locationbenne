@@ -69,12 +69,6 @@ const PAGE_SEO = {
     image: "/images/2025/08/ChatGPT-Image-4-aout-2025-19_24_04.png",
     robots: "noindex,follow",
   },
-  "/admin": {
-    title: "Administration | Location Benne Occitanie",
-    description: "Panneau d'administration - acces restreint.",
-    image: "/images/2025/08/cropped-Logo_de_Benne_Occitanie-removebg-preview.png",
-    robots: "noindex,nofollow",
-  },
   "*": {
     title: "Page non trouvee | Location Benne Occitanie",
     description: "La page demandee n'existe pas.",

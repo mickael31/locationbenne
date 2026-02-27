@@ -49,33 +49,81 @@ export default function ContactPage() {
 
   return (
     <>
-      <section className="page-hero">
+      <section className="page-hero page-hero-contact">
         <div className="container">
           <p className="eyebrow">{contact.eyebrow}</p>
           <h1>{contact.title}</h1>
-          <p>{contact.subtitle}</p>
+          <p className="contact-hero-lead">
+            Une equipe locale disponible pour organiser votre location de benne
+            sans perte de temps, du devis a l'enlevement.
+          </p>
+          <div className="services-hero-actions">
+            <a href={`tel:${company.phoneRaw}`} className="btn btn-primary">
+              Appeler {company.phoneLocalDisplay}
+            </a>
+            <a href={`mailto:${company.email}`} className="btn btn-light">
+              Ecrire par email
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section className="contact-highlights">
+        <div className="container contact-highlights-grid">
+          <article className="contact-highlight-item fade-in">Reponse rapide</article>
+          <article className="contact-highlight-item fade-in stagger-1">
+            Devis gratuit
+          </article>
+          <article className="contact-highlight-item fade-in stagger-2">
+            Intervention Occitanie
+          </article>
+          <article className="contact-highlight-item fade-in stagger-3">
+            Suivi de A a Z
+          </article>
         </div>
       </section>
 
       <section className="section">
-        <div className="container contact-grid">
-          <article className="card fade-in">
+        <div className="container contact-grid contact-grid-pro">
+          <article className="card contact-info-card fade-in">
+            <p className="service-tag">Coordonnees</p>
             <h2>{contact.sectionTitle}</h2>
-            <p>
-              <a href={`tel:${company.phoneRaw}`}>{company.phoneLocalDisplay}</a>
-            </p>
-            <p>
-              <a href={`mailto:${company.email}`}>{company.email}</a>
-            </p>
-            <p>{company.address}</p>
-            <p>{contact.sectionSubtitle}</p>
+            <p className="contact-card-lead">{contact.sectionSubtitle}</p>
+            <div className="contact-lines">
+              <p>
+                <span>Telephone</span>
+                <a href={`tel:${company.phoneRaw}`}>{company.phoneLocalDisplay}</a>
+              </p>
+              <p>
+                <span>Email</span>
+                <a href={`mailto:${company.email}`}>{company.email}</a>
+              </p>
+              <p>
+                <span>Adresse</span>
+                {company.address}
+              </p>
+            </div>
+            <div className="contact-meta-grid">
+              <article>
+                <h3>Zones couvertes</h3>
+                <p>Montauban, Toulouse, Albi et alentours.</p>
+              </article>
+              <article>
+                <h3>Delais habituels</h3>
+                <p>Livraison possible sous 24h a 48h selon disponibilite.</p>
+              </article>
+            </div>
           </article>
 
           <form
-            className="card contact-form fade-in stagger-2"
+            className="card contact-form contact-form-pro fade-in stagger-2"
             onSubmit={submitForm}
           >
             <h2>{contact.formTitle}</h2>
+            <p className="contact-form-lead">
+              Donnez-nous les infos principales de votre besoin et nous vous
+              recontactons rapidement.
+            </p>
             <label>
               Nom complet (obligatoire)
               <input

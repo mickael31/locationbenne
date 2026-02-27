@@ -682,6 +682,10 @@ app.get("/api/health", (_req, res) => {
   res.json({ ok: true, timestamp: isoNow() });
 });
 
+app.use("/api/admin", (_req, res) => {
+  res.status(404).json({ error: "not-found" });
+});
+
 app.get("/api/admin/bootstrap", (_req, res) => {
   const state = loadState();
   res.json({

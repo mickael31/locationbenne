@@ -1,11 +1,11 @@
-# Location Benne Occitanie - Full Stack (React + Node)
+# Location Benne Occitanie - React + Node
 
-Ce projet contient maintenant:
+Ce projet contient:
 
-- Frontend React/Vite (site public + `/admin`)
-- Backend Node/Express (API, auth admin, SMTP, stockage chiffre des demandes)
+- Frontend React/Vite (site public)
+- Backend Node/Express (API contact + envoi email SMTP)
 
-Le backend et le frontend se deploient ensemble dans le meme projet.
+La partie admin a ete retiree.
 
 ## Prerequis
 
@@ -16,46 +16,36 @@ Le backend et le frontend se deploient ensemble dans le meme projet.
 
 Copie `.env.example` vers `.env` puis adapte les valeurs.
 
-Variable obligatoire en production:
+Obligatoire:
 
-- `APP_ENCRYPTION_KEY`: cle secrete utilisee pour chiffrer les donnees stockees par le serveur.
+- `APP_ENCRYPTION_KEY`: cle secrete utilisee pour chiffrer les donnees stockees cote serveur.
 
-Variable fortement recommandee:
+Recommande:
 
 - `APP_DATA_DIR`: dossier persistant pour les donnees serveur (`state.json`).
-  Exemple: `APP_DATA_DIR=/home/<user>/app-data/location-benne`
 
-Variables de preconfiguration au deploiement:
+Configuration email SMTP (sans interface admin):
 
-- `DEFAULT_ADMIN_USERNAME`: login admin par defaut.
-- `DEFAULT_ADMIN_PASSWORD`: mot de passe admin par defaut.
-- `AUTO_BOOTSTRAP_ADMIN=true`: cree automatiquement le compte admin au premier demarrage.
-- `ADMIN_PREFILL_PASSWORD=true`: pre-remplit le mot de passe dans l'UI admin (a activer seulement si necessaire).
-- `SMTP_PREFILL_ENABLED=true`: applique une configuration SMTP initiale au premier demarrage.
-- `SMTP_PREFILL_HOST`, `SMTP_PREFILL_PORT`, `SMTP_PREFILL_SECURE`
-- `SMTP_PREFILL_USERNAME`, `SMTP_PREFILL_PASSWORD`
-- `SMTP_PREFILL_FROM_EMAIL`, `SMTP_PREFILL_RECIPIENTS`
+- `SMTP_PREFILL_ENABLED=true`
+- `SMTP_PREFILL_HOST`
+- `SMTP_PREFILL_PORT`
+- `SMTP_PREFILL_SECURE`
+- `SMTP_PREFILL_USERNAME`
+- `SMTP_PREFILL_PASSWORD`
+- `SMTP_PREFILL_FROM_EMAIL`
+- `SMTP_PREFILL_RECIPIENTS` (emails separes par virgule)
 
 ## Developpement local
 
-Installer les dependances:
-
 ```bash
 npm install
-```
-
-Lancer frontend + backend:
-
-```bash
 npm run dev:full
 ```
 
 - Frontend: `http://localhost:5173`
 - API backend: `http://localhost:3001`
 
-Le proxy Vite redirige `/api` vers le backend.
-
-## Build + lancement production
+## Build + production
 
 ```bash
 npm run build
@@ -64,49 +54,10 @@ npm start
 
 Le serveur Node:
 
-- expose les endpoints API sous `/api/*`
-- sert automatiquement le build frontend `dist/`
-- gere aussi les routes SPA (`/admin`, `/contact`, etc.)
-- stocke l'etat admin et les demandes dans `APP_DATA_DIR/state.json`
+- expose l'API sous `/api/*`
+- sert le build frontend `dist/`
+- gere les routes SPA
 
-## Mise en route admin
-
-1. Ouvre `/admin`
-2. Si non configure, cree le compte admin
-3. Connecte-toi
-4. Configure SMTP dans l'admin:
-   - host, port, secure
-   - username/password SMTP
-   - from email
-   - destinataires (un ou plusieurs)
-5. Envoie un test SMTP
-
-Ensuite, chaque nouvelle demande depuis le formulaire contact:
-
-- est stockee cote serveur de maniere chiffree
-- declenche un email admin automatique (si SMTP actif)
-
-## Demarrage avec pre-remplissage
-
-Pour que tout soit deja rempli apres deploiement:
-
-1. Definis `DEFAULT_ADMIN_USERNAME`, `DEFAULT_ADMIN_PASSWORD` et `AUTO_BOOTSTRAP_ADMIN=true`.
-2. Definis les variables `SMTP_PREFILL_*` et `SMTP_PREFILL_ENABLED=true`.
-3. Redemarre l'application Node.
-4. Ouvre `/admin`: la connexion est deja pre-remplie si `ADMIN_PREFILL_PASSWORD=true`.
-
-## Endpoints principaux
+## Endpoint principal
 
 - `POST /api/contact/submit`
-- `GET /api/admin/bootstrap`
-- `POST /api/admin/bootstrap`
-- `POST /api/admin/login`
-- `POST /api/admin/logout`
-- `GET /api/admin/me`
-- `POST /api/admin/change-password`
-- `GET /api/admin/submissions`
-- `PATCH /api/admin/submissions/:id/status`
-- `DELETE /api/admin/submissions/:id`
-- `GET /api/admin/smtp-config`
-- `PUT /api/admin/smtp-config`
-- `POST /api/admin/smtp-test`
