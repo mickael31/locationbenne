@@ -58,7 +58,7 @@ function Footer() {
         <NavLink to="/politique-de-confidentialite">
           Politique de confidentialité
         </NavLink>
-        <p>Droit d'auteur \u00A9 2026 Location Benne Occitanie</p>
+        <p>Droit d'auteur © 2026 Location Benne Occitanie</p>
       </div>
     </footer>
   );
