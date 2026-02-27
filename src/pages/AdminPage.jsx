@@ -96,15 +96,26 @@ function getSmtpErrorMessage(code) {
   return "Configuration SMTP invalide.";
 }
 
-function SetupForm({ suggestedUsername, busy, error, onSubmit }) {
+function SetupForm({
+  suggestedUsername,
+  suggestedPassword,
+  busy,
+  error,
+  onSubmit,
+}) {
   const [username, setUsername] = useState(suggestedUsername || "admin");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [password, setPassword] = useState(suggestedPassword || "");
+  const [confirmPassword, setConfirmPassword] = useState(suggestedPassword || "");
   const [localError, setLocalError] = useState("");
 
   useEffect(() => {
     setUsername(suggestedUsername || "admin");
   }, [suggestedUsername]);
+
+  useEffect(() => {
+    setPassword(suggestedPassword || "");
+    setConfirmPassword(suggestedPassword || "");
+  }, [suggestedPassword]);
 
   async function submit(event) {
     event.preventDefault();
@@ -189,13 +200,24 @@ function SetupForm({ suggestedUsername, busy, error, onSubmit }) {
   );
 }
 
-function LoginForm({ defaultUsername, busy, error, lockMs, onSubmit }) {
+function LoginForm({
+  defaultUsername,
+  defaultPassword,
+  busy,
+  error,
+  lockMs,
+  onSubmit,
+}) {
   const [username, setUsername] = useState(defaultUsername || "admin");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState(defaultPassword || "");
 
   useEffect(() => {
     setUsername(defaultUsername || "admin");
   }, [defaultUsername]);
+
+  useEffect(() => {
+    setPassword(defaultPassword || "");
+  }, [defaultPassword]);
 
   async function submit(event) {
     event.preventDefault();
@@ -761,6 +783,7 @@ export default function AdminPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [suggestedUsername, setSuggestedUsername] = useState("admin");
+  const [suggestedPassword, setSuggestedPassword] = useState("");
   const [adminUsername, setAdminUsername] = useState("");
   const [submissions, setSubmissions] = useState([]);
   const [smtpConfig, setSmtpConfig] = useState(defaultSmtpConfig);
@@ -785,6 +808,7 @@ export default function AdminPage() {
         if (!mounted) return;
 
         setSuggestedUsername(boot.suggestedUsername || "admin");
+        setSuggestedPassword(boot.suggestedPassword || "");
         if (!boot.configured) {
           setStage("setup");
           return;
@@ -996,6 +1020,7 @@ export default function AdminPage() {
     return (
       <SetupForm
         suggestedUsername={suggestedUsername}
+        suggestedPassword={suggestedPassword}
         busy={busy}
         error={error}
         onSubmit={handleSetup}
@@ -1007,6 +1032,7 @@ export default function AdminPage() {
     return (
       <LoginForm
         defaultUsername={suggestedUsername}
+        defaultPassword={suggestedPassword}
         busy={busy}
         error={error}
         lockMs={loginLockMs}

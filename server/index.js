@@ -12,6 +12,14 @@ function parseIntEnv(name, fallback) {
   return fallback;
 }
 
+function parseBoolEnv(name, fallback = false) {
+  const rawValue = String(process.env[name] || "").trim().toLowerCase();
+  if (!rawValue) return fallback;
+  if (["1", "true", "yes", "on"].includes(rawValue)) return true;
+  if (["0", "false", "no", "off"].includes(rawValue)) return false;
+  return fallback;
+}
+
 function isoNow() {
   return new Date().toISOString();
 }
@@ -100,7 +108,9 @@ function buildRecipientList(input) {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = path.resolve(__dirname, "..");
 const DIST_DIR = path.resolve(ROOT_DIR, "dist");
-const DATA_DIR = path.resolve(ROOT_DIR, "server-data");
+const DATA_DIR = path.resolve(
+  process.env.APP_DATA_DIR || path.resolve(ROOT_DIR, "server-data"),
+);
 const DATA_FILE = path.resolve(DATA_DIR, "state.json");
 
 const NODE_ENV = process.env.NODE_ENV || "development";
@@ -118,6 +128,27 @@ const CONTACT_RATE_MAX = 20;
 const VALID_SUBMISSION_STATUS = new Set(["new", "replied", "archived"]);
 const DEFAULT_BOOTSTRAP_USERNAME = normalizeUsername(
   process.env.DEFAULT_ADMIN_USERNAME || "admin",
+);
+const DEFAULT_BOOTSTRAP_PASSWORD = String(
+  process.env.DEFAULT_ADMIN_PASSWORD || "",
+).trim();
+const AUTO_BOOTSTRAP_ADMIN = parseBoolEnv("AUTO_BOOTSTRAP_ADMIN", false);
+const ADMIN_PREFILL_PASSWORD = parseBoolEnv("ADMIN_PREFILL_PASSWORD", false);
+const SMTP_PREFILL_ENABLED = parseBoolEnv("SMTP_PREFILL_ENABLED", false);
+const SMTP_PREFILL_HOST = normalizeText(process.env.SMTP_PREFILL_HOST || "", 255);
+const SMTP_PREFILL_PORT = parseIntEnv("SMTP_PREFILL_PORT", 587);
+const SMTP_PREFILL_SECURE = parseBoolEnv("SMTP_PREFILL_SECURE", false);
+const SMTP_PREFILL_USERNAME = normalizeText(
+  process.env.SMTP_PREFILL_USERNAME || "",
+  255,
+);
+const SMTP_PREFILL_PASSWORD = String(process.env.SMTP_PREFILL_PASSWORD || "").trim();
+const SMTP_PREFILL_FROM_EMAIL = normalizeText(
+  process.env.SMTP_PREFILL_FROM_EMAIL || "",
+  255,
+).toLowerCase();
+const SMTP_PREFILL_RECIPIENTS = buildRecipientList(
+  process.env.SMTP_PREFILL_RECIPIENTS || "",
 );
 
 const ENCRYPTION_KEY = deriveSecretKey(
@@ -340,6 +371,24 @@ function setSmtpConfigInState(state, nextConfig) {
   };
 }
 
+function getEnvSmtpPrefillConfig() {
+  if (!SMTP_PREFILL_ENABLED) return null;
+
+  return normalizeSmtpConfig(
+    {
+      enabled: true,
+      host: SMTP_PREFILL_HOST,
+      port: SMTP_PREFILL_PORT,
+      secure: SMTP_PREFILL_SECURE,
+      username: SMTP_PREFILL_USERNAME,
+      password: SMTP_PREFILL_PASSWORD,
+      fromEmail: SMTP_PREFILL_FROM_EMAIL,
+      recipients: SMTP_PREFILL_RECIPIENTS,
+    },
+    null,
+  );
+}
+
 function sanitizeSmtpConfigForClient(config) {
   return {
     enabled: config.enabled,
@@ -352,6 +401,51 @@ function sanitizeSmtpConfigForClient(config) {
     hasPassword: Boolean(config.password),
     updatedAt: config.updatedAt || "",
   };
+}
+
+function applyDeploymentPrefill() {
+  let state = loadState();
+  let hasChanges = false;
+
+  if (!state.admin && AUTO_BOOTSTRAP_ADMIN) {
+    if (!isStrongPassword(DEFAULT_BOOTSTRAP_PASSWORD)) {
+      console.warn(
+        "AUTO_BOOTSTRAP_ADMIN ignored: DEFAULT_ADMIN_PASSWORD is missing or too weak.",
+      );
+    } else {
+      state = {
+        ...state,
+        admin: {
+          username: DEFAULT_BOOTSTRAP_USERNAME,
+          password: hashPassword(DEFAULT_BOOTSTRAP_PASSWORD),
+          createdAt: isoNow(),
+          updatedAt: isoNow(),
+        },
+      };
+      hasChanges = true;
+      console.log("Admin account bootstrapped from environment variables.");
+    }
+  }
+
+  if (!state.smtpConfig) {
+    const smtpPrefill = getEnvSmtpPrefillConfig();
+    if (smtpPrefill) {
+      try {
+        validateSmtpConfig(smtpPrefill);
+        state = setSmtpConfigInState(state, smtpPrefill);
+        hasChanges = true;
+        console.log("SMTP configuration prefilled from environment variables.");
+      } catch (error) {
+        console.warn(
+          `SMTP prefill ignored: ${error?.message || "invalid smtp values"}.`,
+        );
+      }
+    }
+  }
+
+  if (hasChanges) {
+    saveState(state);
+  }
 }
 
 function mapSubmissionEnvelopeToObject(envelope) {
@@ -593,6 +687,9 @@ app.get("/api/admin/bootstrap", (_req, res) => {
   res.json({
     configured: Boolean(state.admin),
     suggestedUsername: DEFAULT_BOOTSTRAP_USERNAME,
+    suggestedPassword: ADMIN_PREFILL_PASSWORD
+      ? DEFAULT_BOOTSTRAP_PASSWORD
+      : "",
   });
 });
 
@@ -899,8 +996,10 @@ app.use((error, _req, res, _next) => {
 });
 
 ensureStateFile();
+applyDeploymentPrefill();
 app.listen(PORT, () => {
   console.log(`Backend listening on http://localhost:${PORT}`);
+  console.log(`Data file: ${DATA_FILE}`);
   if (NODE_ENV !== "production" && !process.env.APP_ENCRYPTION_KEY) {
     console.warn(
       "APP_ENCRYPTION_KEY is not set; using a development fallback key.",

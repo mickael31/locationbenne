@@ -20,6 +20,22 @@ Variable obligatoire en production:
 
 - `APP_ENCRYPTION_KEY`: cle secrete utilisee pour chiffrer les donnees stockees par le serveur.
 
+Variable fortement recommandee:
+
+- `APP_DATA_DIR`: dossier persistant pour les donnees serveur (`state.json`).
+  Exemple: `APP_DATA_DIR=/home/<user>/app-data/location-benne`
+
+Variables de preconfiguration au deploiement:
+
+- `DEFAULT_ADMIN_USERNAME`: login admin par defaut.
+- `DEFAULT_ADMIN_PASSWORD`: mot de passe admin par defaut.
+- `AUTO_BOOTSTRAP_ADMIN=true`: cree automatiquement le compte admin au premier demarrage.
+- `ADMIN_PREFILL_PASSWORD=true`: pre-remplit le mot de passe dans l'UI admin (a activer seulement si necessaire).
+- `SMTP_PREFILL_ENABLED=true`: applique une configuration SMTP initiale au premier demarrage.
+- `SMTP_PREFILL_HOST`, `SMTP_PREFILL_PORT`, `SMTP_PREFILL_SECURE`
+- `SMTP_PREFILL_USERNAME`, `SMTP_PREFILL_PASSWORD`
+- `SMTP_PREFILL_FROM_EMAIL`, `SMTP_PREFILL_RECIPIENTS`
+
 ## Developpement local
 
 Installer les dependances:
@@ -51,6 +67,7 @@ Le serveur Node:
 - expose les endpoints API sous `/api/*`
 - sert automatiquement le build frontend `dist/`
 - gere aussi les routes SPA (`/admin`, `/contact`, etc.)
+- stocke l'etat admin et les demandes dans `APP_DATA_DIR/state.json`
 
 ## Mise en route admin
 
@@ -68,6 +85,15 @@ Ensuite, chaque nouvelle demande depuis le formulaire contact:
 
 - est stockee cote serveur de maniere chiffree
 - declenche un email admin automatique (si SMTP actif)
+
+## Demarrage avec pre-remplissage
+
+Pour que tout soit deja rempli apres deploiement:
+
+1. Definis `DEFAULT_ADMIN_USERNAME`, `DEFAULT_ADMIN_PASSWORD` et `AUTO_BOOTSTRAP_ADMIN=true`.
+2. Definis les variables `SMTP_PREFILL_*` et `SMTP_PREFILL_ENABLED=true`.
+3. Redemarre l'application Node.
+4. Ouvre `/admin`: la connexion est deja pre-remplie si `ADMIN_PREFILL_PASSWORD=true`.
 
 ## Endpoints principaux
 
