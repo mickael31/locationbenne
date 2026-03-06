@@ -1,6 +1,36 @@
 ﻿import { company, privacy } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
 import { getMailtoHref } from "../contactLinks";
+import { Fragment } from "react";
+
+function renderContactText(text) {
+  const value = String(text || "");
+  const email = company.email;
+
+  if (!value.includes(email)) {
+    return value;
+  }
+
+  const parts = value.split(email);
+
+  return parts.flatMap((part, index) => {
+    const segment = [];
+
+    if (part) {
+      segment.push(<Fragment key={`text-${index}`}>{part}</Fragment>);
+    }
+
+    if (index < parts.length - 1) {
+      segment.push(
+        <a key={`email-${index}`} href={getMailtoHref()}>
+          {email}
+        </a>,
+      );
+    }
+
+    return segment;
+  });
+}
 
 export default function PrivacyPage() {
   useScrollReveal();
@@ -46,16 +76,16 @@ export default function PrivacyPage() {
             >
               <h2>{section.title}</h2>
               {section.paragraphs.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
+                <p key={paragraph}>{renderContactText(paragraph)}</p>
               ))}
               {section.list ? (
                 <ul>
                   {section.list.map((item) => (
-                    <li key={item}>{item}</li>
+                    <li key={item}>{renderContactText(item)}</li>
                   ))}
                 </ul>
               ) : null}
-              {section.footer ? <p>{section.footer}</p> : null}
+              {section.footer ? <p>{renderContactText(section.footer)}</p> : null}
             </article>
           ))}
         </div>

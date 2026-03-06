@@ -168,6 +168,7 @@ p {
   right: 0;
   bottom: -7px;
   height: 7px;
+  pointer-events: none;
   background: repeating-linear-gradient(
     -45deg,
     var(--brand) 0,
@@ -178,6 +179,8 @@ p {
 }
 
 .top-bar a {
+  position: relative;
+  z-index: 1;
   transition: color 0.2s;
 }
 
