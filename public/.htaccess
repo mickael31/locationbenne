@@ -1,6 +1,9 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+  ErrorDocument 404 /404.html
+
+  RewriteRule ^357-2/?$ /bennes/ [R=301,L]
 
   # Prevent rewrite loops on index
   RewriteRule ^index\.html$ - [L]

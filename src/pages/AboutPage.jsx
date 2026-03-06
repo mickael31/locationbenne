@@ -1,5 +1,6 @@
-﻿import { NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import SectionCta from "../components/SectionCta";
+import SiteImage from "../components/SiteImage";
 import { about, company } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
 
@@ -37,7 +38,14 @@ export default function AboutPage() {
 
       <section className="section">
         <div className="container split about-block">
-          <img className="fade-in-left" src={about.images[0]} alt="Équipe sur chantier" />
+          <SiteImage
+            className="fade-in-left"
+            src={about.images[0]}
+            alt="Équipe sur chantier"
+            width={1024}
+            height={1024}
+            sizes="(max-width: 980px) 92vw, 44vw"
+          />
           <div className="fade-in-right">
             <p className="eyebrow">{about.companyTitle}</p>
             <h2>{about.companyHeading}</h2>
@@ -61,7 +69,14 @@ export default function AboutPage() {
 
       <section className="section">
         <div className="container split reverse about-block">
-          <img className="fade-in-right" src={about.images[1]} alt="Historique de l'entreprise" />
+          <SiteImage
+            className="fade-in-right"
+            src={about.images[1]}
+            alt="Historique de l'entreprise"
+            width={1024}
+            height={683}
+            sizes="(max-width: 980px) 92vw, 44vw"
+          />
           <div className="fade-in-left">
             <p className="eyebrow">{about.storyTitle}</p>
             <h2>{about.storyHeading}</h2>
@@ -72,7 +87,14 @@ export default function AboutPage() {
 
       <section className="section alt">
         <div className="container split about-block">
-          <img className="fade-in-left" src={about.images[2]} alt="Experts locaux" />
+          <SiteImage
+            className="fade-in-left"
+            src={about.images[2]}
+            alt="Experts locaux"
+            width={1024}
+            height={1024}
+            sizes="(max-width: 980px) 92vw, 44vw"
+          />
           <div className="fade-in-right">
             <p className="eyebrow">{about.teamTitle}</p>
             <h2>{about.teamHeading}</h2>

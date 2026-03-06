@@ -1,5 +1,6 @@
-﻿import { NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import SectionCta from "../components/SectionCta";
+import SiteImage from "../components/SiteImage";
 import { bennes, company } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
 
@@ -49,12 +50,18 @@ export default function BennesPage() {
         <div className="container">
           <h2 className="fade-in">{bennes.heading}</h2>
           <div className="cards bennes-cards-pro">
-            {bennes.types.map((item, i) => (
+            {bennes.types.map((item) => (
               <article
-                className={`card benne-card benne-card-pro scale-in stagger-${i + 1}`}
+                className={`card benne-card benne-card-pro scale-in`}
                 key={item.title}
               >
-                <img src={item.image} alt={item.title} />
+                <SiteImage
+                  src={item.image}
+                  alt={item.title}
+                  width={1024}
+                  height={item.title === "Benne 3 m³" ? 872 : 1024}
+                  sizes="(max-width: 640px) 92vw, (max-width: 1100px) 44vw, 340px"
+                />
                 <p className="service-tag">{item.title.replace("Benne ", "Volume ")}</p>
                 <h3>{item.title}</h3>
                 <p>{item.description}</p>

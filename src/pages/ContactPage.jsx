@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getMailtoHref } from "../contactLinks";
 import SectionCta from "../components/SectionCta";
 import { company, contact } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
@@ -27,6 +28,7 @@ const volumeOptions = ["3 m³", "7 m³", "10 m³", "15 m³"];
 export default function ContactPage() {
   const [form, setForm] = useState(defaultForm);
   const [submitStatus, setSubmitStatus] = useState("idle");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useScrollReveal();
 
@@ -38,13 +40,10 @@ export default function ContactPage() {
     }
   }
 
-  function prepareNewRequest() {
-    setForm(defaultForm);
-    setSubmitStatus("idle");
-  }
-
   async function submitForm(event) {
     event.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
     try {
       const result = await submitContactForm(form);
@@ -63,11 +62,10 @@ export default function ContactPage() {
       } else {
         setSubmitStatus("error");
       }
+    } finally {
+      setIsSubmitting(false);
     }
   }
-
-  const isSubmitted =
-    submitStatus === "stored" || submitStatus === "stored-notify-warning";
 
   return (
     <>
@@ -83,7 +81,7 @@ export default function ContactPage() {
             <a href={`tel:${company.phoneRaw}`} className="btn btn-primary">
               Appeler {company.phoneLocalDisplay}
             </a>
-            <a href={`mailto:${company.email}`} className="btn btn-light">
+            <a href={getMailtoHref()} className="btn btn-light">
               Écrire par email
             </a>
           </div>
@@ -118,7 +116,7 @@ export default function ContactPage() {
               </p>
               <p>
                 <span>Email</span>
-                <a href={`mailto:${company.email}`}>{company.email}</a>
+                <a href={getMailtoHref()}>{company.email}</a>
               </p>
               <p>
                 <span>Adresse</span>
@@ -137,32 +135,10 @@ export default function ContactPage() {
             </div>
           </article>
 
-          {isSubmitted ? (
-            <article className="card contact-success-card fade-in stagger-2">
-              <p className="contact-success-icon">Demande envoyée</p>
-              <h2>Merci, votre demande est bien partie</h2>
-              <p>
-                Nous avons bien reçu vos informations. L&apos;équipe vous
-                recontacte rapidement.
-              </p>
-              <div className="contact-success-actions">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={prepareNewRequest}
-                >
-                  Envoyer une autre demande
-                </button>
-                <a href={`tel:${company.phoneRaw}`} className="btn btn-primary">
-                  Appeler maintenant
-                </a>
-              </div>
-            </article>
-          ) : (
-            <form
-              className="card contact-form contact-form-pro fade-in stagger-2"
-              onSubmit={submitForm}
-            >
+          <form
+            className="card contact-form contact-form-pro fade-in stagger-2"
+            onSubmit={submitForm}
+          >
               <h2>{contact.formTitle}</h2>
               <p className="contact-form-lead">
                 Donnez-nous les infos principales de votre besoin et nous vous
@@ -174,6 +150,7 @@ export default function ContactPage() {
                   required
                   type="text"
                   name="fullName"
+                  autoComplete="name"
                   placeholder="Ex: Jean Dupont"
                   value={form.fullName}
                   onChange={updateField}
@@ -185,6 +162,8 @@ export default function ContactPage() {
                   required
                   type="tel"
                   name="phone"
+                  autoComplete="tel"
+                  inputMode="tel"
                   placeholder="Ex: 0612345678"
                   value={form.phone}
                   onChange={updateField}
@@ -196,6 +175,7 @@ export default function ContactPage() {
                   required
                   type="email"
                   name="email"
+                  autoComplete="email"
                   placeholder="Ex: contact@location-benne-occitanie.fr"
                   value={form.email}
                   onChange={updateField}
@@ -206,6 +186,7 @@ export default function ContactPage() {
                 <input
                   type="text"
                   name="city"
+                  autoComplete="address-level2"
                   placeholder="Ex: Montauban"
                   value={form.city}
                   onChange={updateField}
@@ -258,23 +239,34 @@ export default function ContactPage() {
                   onChange={updateField}
                 />
               </label>
-              <button type="submit" className="btn btn-primary">
-                Envoyer la demande
+              <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                {isSubmitting ? "Envoi en cours..." : "Envoyer la demande"}
               </button>
 
+              {submitStatus === "stored" ? (
+                <p className="success" role="status" aria-live="polite">
+                  Votre message a bien été envoyé. Nous vous recontactons rapidement.
+                </p>
+              ) : null}
+
+              {submitStatus === "stored-notify-warning" ? (
+                <p className="success" role="status" aria-live="polite">
+                  Votre message a bien été enregistré. Nous revenons vers vous rapidement.
+                </p>
+              ) : null}
+
               {submitStatus === "rate-limit" ? (
-                <p className="admin-lock">
+                <p className="admin-lock" role="status" aria-live="polite">
                   Trop de tentatives. Merci de patienter avant de renvoyer.
                 </p>
               ) : null}
 
               {submitStatus === "error" ? (
-                <p className="admin-error">
+                <p className="admin-error" role="alert">
                   Votre demande n&apos;a pas pu être envoyée.
                 </p>
               ) : null}
             </form>
-          )}
         </div>
       </section>
 

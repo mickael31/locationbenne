@@ -1,5 +1,6 @@
-﻿import { NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import SectionCta from "../components/SectionCta";
+import SiteImage from "../components/SiteImage";
 import { company, home } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
 
@@ -25,7 +26,7 @@ export default function HomePage() {
               <NavLink to="/contact" className="btn btn-primary">
                 Demander un devis
               </NavLink>
-              <NavLink to="/357-2" className="btn btn-ghost">
+              <NavLink to="/bennes" className="btn btn-ghost">
                 Voir les bennes
               </NavLink>
             </div>
@@ -47,7 +48,15 @@ export default function HomePage() {
           </div>
 
           <div className="hero-media fade-in-right">
-            <img src={home.hero.image} alt="Camion benne en Occitanie" />
+            <SiteImage
+              src={home.hero.image}
+              alt="Camion benne en Occitanie"
+              width={1024}
+              height={683}
+              loading="eager"
+              fetchPriority="high"
+              sizes="(max-width: 980px) 92vw, 44vw"
+            />
             <aside className="hero-overlay-card">
               <p className="hero-overlay-title">Urgence chantier ?</p>
               <p className="hero-overlay-text">
@@ -72,7 +81,14 @@ export default function HomePage() {
 
       <section className="section">
         <div className="container split">
-          <img className="fade-in-left" src={home.intro.image} alt="Équipe Location Benne Occitanie" />
+          <SiteImage
+            className="fade-in-left"
+            src={home.intro.image}
+            alt="Équipe Location Benne Occitanie"
+            width={1024}
+            height={1024}
+            sizes="(max-width: 980px) 92vw, 44vw"
+          />
           <div className="fade-in-right">
             <h2>{home.intro.title}</h2>
             <p>{home.intro.text}</p>
@@ -166,6 +182,7 @@ export default function HomePage() {
           <h2 className="fade-in">Ce que nos clients disent de nous</h2>
           <div className="fade-in home-review-wrap">
             <iframe
+              loading="lazy"
               onLoad={(e) => {
                 if (window.iFrameResize) {
                   window.iFrameResize(e.target);

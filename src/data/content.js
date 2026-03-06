@@ -1,18 +1,20 @@
 ﻿export const company = {
   name: "Location Benne Occitanie",
   email: "contact@location-benne-occitanie.fr",
-  phoneDisplay: "+33 6 79 98 41 26",
+  phoneDisplay: "06.79.98.41.26",
   phoneLocalDisplay: "06.79.98.41.26",
   phoneRaw: "+33679984126",
   address: "28 chemin des bernardets 82000 Montauban",
   logo: "/images/2025/08/cropped-Logo_de_Benne_Occitanie-removebg-preview.png",
+  logoHeader:
+    "/images/2025/08/cropped-Logo_de_Benne_Occitanie-removebg-preview-300x208.png",
 };
 
 export const navLinks = [
   { to: "/", label: "Accueil" },
   { to: "/about", label: "À propos" },
   { to: "/contact", label: "Contact" },
-  { to: "/357-2", label: "Bennes" },
+  { to: "/bennes", label: "Bennes" },
   { to: "/services", label: "Services" },
   { to: "/partenaire-elagage", label: "Élagage" },
 ];

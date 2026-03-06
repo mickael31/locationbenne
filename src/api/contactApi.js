@@ -1,5 +1,3 @@
-import emailjs from "@emailjs/browser";
-
 const EMAILJS_DEFAULT_PUBLIC_KEY = "JZnrgJVTyt3Fy_rX7";
 const EMAILJS_DEFAULT_SERVICE_ID = "smtp_contact";
 const EMAILJS_DEFAULT_TEMPLATE_ID = "template_full";
@@ -34,6 +32,7 @@ function buildEmailJsPayload(form) {
 }
 
 async function submitViaEmailJs(form) {
+  const { default: emailjs } = await import("@emailjs/browser");
   const publicKey = String(
     import.meta.env.VITE_EMAILJS_PUBLIC_KEY || EMAILJS_DEFAULT_PUBLIC_KEY,
   ).trim();

@@ -777,6 +777,10 @@ const app = express();
 app.disable("x-powered-by");
 app.use(express.json({ limit: "300kb" }));
 
+app.get(["/357-2", "/357-2/", "/357-2/index.html"], (_req, res) => {
+  res.redirect(301, "/bennes/");
+});
+
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, timestamp: isoNow() });
 });

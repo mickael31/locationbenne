@@ -1,5 +1,6 @@
 ﻿import { company, privacy } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
+import { getMailtoHref } from "../contactLinks";
 
 export default function PrivacyPage() {
   useScrollReveal();
@@ -68,7 +69,7 @@ export default function PrivacyPage() {
               Contactez-nous directement pour toute demande relative à la
               confidentialité de vos informations.
             </p>
-            <a href={`mailto:${company.email}`} className="btn btn-primary">
+            <a href={getMailtoHref()} className="btn btn-primary">
               Écrire à {company.email}
             </a>
           </article>

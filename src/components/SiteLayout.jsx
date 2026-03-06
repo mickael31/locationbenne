@@ -1,23 +1,26 @@
-﻿import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import { getMailtoHref } from "../contactLinks";
+import SiteImage from "./SiteImage";
 import { company, navLinks } from "../data/content";
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const menuId = "site-navigation";
 
   useEffect(() => {
     setMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [location.pathname]);
 
   useEffect(() => {
-    function handleContactLinkClick(event) {
+    function handlePhoneClick(event) {
       const target = event.target;
       if (!(target instanceof Element)) return;
 
-      const contactLink = target.closest('a[href^="tel:"], a[href^="mailto:"]');
-      if (!contactLink) return;
+      const phoneLink = target.closest('a[href^="tel:"]');
+      if (!phoneLink) return;
 
       if (
         event.defaultPrevented ||
@@ -30,40 +33,61 @@ function Header() {
         return;
       }
 
-      const href = contactLink.getAttribute("href");
+      const href = phoneLink.getAttribute("href");
       if (!href) return;
 
       event.preventDefault();
-      window.location.assign(href);
+      const confirmed = window.confirm(
+        `Voulez-vous appeler le ${company.phoneLocalDisplay} ?`,
+      );
+
+      if (confirmed) {
+        window.location.assign(href);
+      }
     }
 
-    document.addEventListener("click", handleContactLinkClick);
+    document.addEventListener("click", handlePhoneClick);
     return () => {
-      document.removeEventListener("click", handleContactLinkClick);
+      document.removeEventListener("click", handlePhoneClick);
     };
   }, []);
 
   return (
     <header className="site-header">
       <div className="top-bar">
-        <a href={`tel:${company.phoneRaw}`}>{company.phoneDisplay}</a>
-        <a href={`mailto:${company.email}`}>{company.email}</a>
+        <a href={`tel:${company.phoneRaw}`}>{company.phoneLocalDisplay}</a>
+        <a href={getMailtoHref()}>{company.email}</a>
       </div>
       <div className="nav-wrap">
         <NavLink className="logo-link" to="/">
-          <img src={company.logo} alt={company.name} />
+          <SiteImage
+            src={company.logoHeader || company.logo}
+            alt={company.name}
+            width={300}
+            height={208}
+            responsive={false}
+            loading="eager"
+            fetchPriority="high"
+          />
           <span>{company.name}</span>
         </NavLink>
         <button
+          type="button"
           className={`menu-toggle${menuOpen ? " open" : ""}`}
-          onClick={() => setMenuOpen((v) => !v)}
-          aria-label="Menu"
+          onClick={() => setMenuOpen((value) => !value)}
+          aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+          aria-expanded={menuOpen}
+          aria-controls={menuId}
         >
           <span />
           <span />
           <span />
         </button>
-        <nav className={menuOpen ? "open" : ""}>
+        <nav
+          id={menuId}
+          className={menuOpen ? "open" : ""}
+          aria-label="Navigation principale"
+        >
           {navLinks.map((link) => (
             <NavLink
               key={link.to}
@@ -101,7 +125,11 @@ export default function SiteLayout({ children }) {
     <>
       <Header />
       <main>{children}</main>
-      <a className="floating-call" href={`tel:${company.phoneRaw}`}>
+      <a
+        className="floating-call"
+        href={`tel:${company.phoneRaw}`}
+        aria-label={`Appeler ${company.phoneLocalDisplay}`}
+      >
         Appeler maintenant
       </a>
       <Footer />
