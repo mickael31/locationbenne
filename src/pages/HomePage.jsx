@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import PhoneFirstNotice from "../components/PhoneFirstNotice";
 import SectionCta from "../components/SectionCta";
 import SiteImage from "../components/SiteImage";
 import { company, home } from "../data/content";
@@ -115,6 +116,12 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="section phone-first-section">
+        <div className="container fade-in">
+          <PhoneFirstNotice />
+        </div>
+      </section>
+
       <section className="section quick-cta">
         <div className="container quick-cta-content fade-in">
           <div>
@@ -210,7 +217,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <SectionCta />
+      <SectionCta showPhoneNotice={false} />
     </>
   );
 }

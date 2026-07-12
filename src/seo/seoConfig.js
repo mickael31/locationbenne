@@ -29,9 +29,9 @@ const PRIMARY_ROUTES = [
     path: "/",
     label: "Accueil",
     title:
-      "Location de benne en Occitanie, Montauban, Toulouse, Albi | Location Benne Occitanie",
+      "Location de benne à Montauban, Toulouse et Albi | Benne Occitanie",
     description:
-      "Location de bennes rapide en Occitanie pour particuliers et professionnels : Montauban, Toulouse, Albi et alentours. Devis gratuit, livraison rapide, évacuation de déchets.",
+      "Location de bennes de 3 à 15 m³ à Montauban, Toulouse, Albi et alentours. Conseil par téléphone, devis gratuit, livraison rapide et évacuation des déchets.",
     image: home.hero.image,
     imageAlt: "Camion de location de benne en Occitanie",
     imageWidth: 1024,
@@ -120,9 +120,9 @@ const PRIMARY_ROUTES = [
   {
     path: "/contact",
     label: "Contact",
-    title: "Devis location de benne en Occitanie | Contact",
+    title: "Devis location de benne en Occitanie par téléphone | Contact",
     description:
-      "Contactez Location Benne Occitanie pour demander un devis gratuit, une livraison rapide et un accompagnement sur votre location de benne.",
+      "Premier échange par téléphone pour comprendre vos déchets, votre volume et vos accès, puis vous conseiller la benne adaptée. Devis gratuit en Occitanie.",
     image: home.hero.image,
     imageAlt: "Demande de devis pour location de benne en Occitanie",
     imageWidth: 1024,
@@ -297,6 +297,8 @@ function getPrimaryServiceSchema() {
     "@type": "Service",
     name: "Location de bennes en Occitanie",
     serviceType: "Location de bennes",
+    description:
+      "Un premier échange par téléphone permet de qualifier le besoin et de recommander la benne adaptée au volume, aux déchets et aux accès.",
     provider: {
       "@id": `${SITE_ORIGIN}/#localbusiness`,
     },
@@ -304,6 +306,7 @@ function getPrimaryServiceSchema() {
     availableChannel: {
       "@type": "ServiceChannel",
       serviceUrl: `${SITE_ORIGIN}/contact/`,
+      servicePhone: getContactPointSchema(),
       availableLanguage: ["fr-FR"],
     },
   };

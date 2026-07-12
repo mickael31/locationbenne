@@ -72,7 +72,7 @@ export const home = {
   process: [
     {      title: "Étape 1 : Demande",
       description:
-        "Contactez-nous pour discuter de vos besoins et obtenir un devis personnalisé.",
+        "Appelez-nous avant de choisir : nous vérifions vos déchets, le volume et l'accès au chantier pour vous conseiller la bonne benne.",
     },
     {      title: "Étape 2 : Livraison",
       description:
@@ -125,6 +125,11 @@ export const home = {
       question: "Le devis est-il gratuit ?",
       answer:
         "Oui, nous proposons des devis gratuits et sans engagement pour toutes les demandes de location.",
+    },
+    {
+      question: "Comment être sûr de choisir la bonne benne ?",
+      answer:
+        "Que vous nous appeliez ou remplissiez le formulaire, nous échangeons par téléphone avant de confirmer la location. Nous vérifions le type de déchets, le volume, l'accès et vos délais afin de vous conseiller la bonne benne.",
     },
   ],
 };

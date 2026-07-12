@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { getMailtoHref } from "../contactLinks";
+import PhoneFirstNotice from "../components/PhoneFirstNotice";
 import SectionCta from "../components/SectionCta";
 import { company, contact } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
@@ -16,6 +17,7 @@ const defaultForm = {
 };
 
 const benneTypeOptions = [
+  "Je ne sais pas - à définir par téléphone",
   "Gravats",
   "Déchets verts",
   "Débarras maison",
@@ -23,7 +25,13 @@ const benneTypeOptions = [
   "Encombrants",
 ];
 
-const volumeOptions = ["3 m³", "7 m³", "10 m³", "15 m³"];
+const volumeOptions = [
+  "Je ne sais pas - à définir par téléphone",
+  "3 m³",
+  "7 m³",
+  "10 m³",
+  "15 m³",
+];
 
 export default function ContactPage() {
   const [form, setForm] = useState(defaultForm);
@@ -88,6 +96,12 @@ export default function ContactPage() {
         </div>
       </section>
 
+      <section className="section phone-first-section">
+        <div className="container fade-in">
+          <PhoneFirstNotice />
+        </div>
+      </section>
+
       <section className="contact-highlights">
         <div className="container contact-highlights-grid">
           <article className="contact-highlight-item fade-in">Réponse rapide</article>
@@ -141,8 +155,8 @@ export default function ContactPage() {
           >
               <h2>{contact.formTitle}</h2>
               <p className="contact-form-lead">
-                Donnez-nous les infos principales de votre besoin et nous vous
-                recontactons rapidement.
+                Vous hésitez sur le type ou le volume ? Choisissez « Je ne sais pas » :
+                nous vous appellerons pour déterminer ensemble la benne adaptée.
               </p>
               <label>
                 Nom complet (obligatoire)
@@ -270,7 +284,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <SectionCta />
+      <SectionCta showPhoneNotice={false} />
     </>
   );
 }

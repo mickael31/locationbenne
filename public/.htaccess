@@ -4,12 +4,4 @@
   ErrorDocument 404 /404.html
 
   RewriteRule ^357-2/?$ /bennes/ [R=301,L]
-
-  # Prevent rewrite loops on index
-  RewriteRule ^index\.html$ - [L]
-
-  # SPA fallback (React Router)
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
 </IfModule>

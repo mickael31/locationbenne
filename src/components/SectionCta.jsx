@@ -1,10 +1,12 @@
 ﻿import { NavLink } from "react-router-dom";
 import { company } from "../data/content";
+import PhoneFirstNotice from "./PhoneFirstNotice";
 
-export default function SectionCta() {
+export default function SectionCta({ showPhoneNotice = true }) {
   return (
     <section className="cta-section">
       <div className="container cta-content">
+        {showPhoneNotice ? <PhoneFirstNotice compact /> : null}
         <h2>Ne laissez pas vos encombrants s'accumuler !</h2>
         <p>
           Contactez-nous dès aujourd'hui pour un devis gratuit et rapide sur la
