@@ -1,6 +1,6 @@
 # Location Benne Occitanie
 
-Site React/Vite avec API Express pour les demandes de contact. Un mode EmailJS explicite reste disponible pour l'hebergement statique IONOS.
+Site React/Vite avec formulaire de contact EmailJS, compatible avec l'hebergement statique IONOS. Une API Express locale reste disponible en option.
 
 ## Prerequis
 
@@ -17,20 +17,17 @@ npm install
 
 Copie `.env.example` vers `.env`.
 
-Par defaut, le formulaire utilise l'API du serveur:
-
-- `VITE_CONTACT_PROVIDER=api`
-- `VITE_API_BASE_URL` peut pointer vers un serveur separe
-
-Pour un deploiement statique sans serveur, EmailJS doit etre active explicitement:
+Par defaut, le formulaire utilise EmailJS avec la configuration du site. Vous pouvez remplacer ces valeurs dans `.env` si besoin:
 
 - `VITE_CONTACT_PROVIDER=emailjs`
-- `VITE_EMAILJS_ENABLED=true`
 - `VITE_EMAILJS_PUBLIC_KEY`
 - `VITE_EMAILJS_SERVICE_ID`
 - `VITE_EMAILJS_TEMPLATE_ID`
 
-Ces trois identifiants ne possedent aucune valeur par defaut dans le code. Le workflow IONOS les lit depuis les secrets GitHub du meme nom et bloque le build si la configuration est incomplete.
+Pour utiliser l'API Express en local ou sur un serveur, configurez:
+
+- `VITE_CONTACT_PROVIDER=api`
+- `VITE_API_BASE_URL` peut pointer vers un serveur separe
 
 Pour un serveur en production, le bootstrap administrateur HTTP est desactive par defaut. Cree le premier compte avec `AUTO_BOOTSTRAP_ADMIN=true`, `DEFAULT_ADMIN_USERNAME` et un `DEFAULT_ADMIN_PASSWORD` robuste, puis desactive ces variables apres le premier demarrage.
 
@@ -43,7 +40,7 @@ npm run dev:full
 Application: `http://localhost:5173`
 API: `http://localhost:3001`
 
-`npm run dev` lance uniquement le frontend et ne suffit pas pour tester le formulaire avec le provider `api`.
+`npm run dev` suffit pour tester le formulaire EmailJS. Utilisez `npm run dev:full` lorsque `VITE_CONTACT_PROVIDER=api`.
 
 ## Build
 

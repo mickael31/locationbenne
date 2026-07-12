@@ -1,4 +1,7 @@
-import { resolveContactProvider } from "./contactProvider";
+import {
+  getEmailJsConfiguration,
+  resolveContactProvider,
+} from "./contactProvider";
 
 function getApiUrl(pathname) {
   const baseUrl = String(import.meta.env.VITE_API_BASE_URL || "").trim();
@@ -23,9 +26,9 @@ function buildEmailJsPayload(form) {
 
 async function submitViaEmailJs(form, environment) {
   const { default: emailjs } = await import("@emailjs/browser");
-  const publicKey = String(environment.VITE_EMAILJS_PUBLIC_KEY).trim();
-  const serviceId = String(environment.VITE_EMAILJS_SERVICE_ID).trim();
-  const templateId = String(environment.VITE_EMAILJS_TEMPLATE_ID).trim();
+  const { publicKey, serviceId, templateId } = getEmailJsConfiguration(
+    environment,
+  );
 
   const payload = buildEmailJsPayload(form);
 
