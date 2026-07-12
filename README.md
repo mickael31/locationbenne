@@ -1,11 +1,11 @@
 # Location Benne Occitanie
 
-Site React/Vite avec formulaire de contact envoi email via **EmailJS** (compatible hebergement statique IONOS).
+Site React/Vite avec API Express pour les demandes de contact. Un mode EmailJS explicite reste disponible pour l'hebergement statique IONOS.
 
 ## Prerequis
 
-- Node.js 18+
-- npm 9+
+- Node.js 20+
+- npm 10+
 
 ## Installation
 
@@ -17,7 +17,12 @@ npm install
 
 Copie `.env.example` vers `.env`.
 
-Variables importantes pour le formulaire:
+Par defaut, le formulaire utilise l'API du serveur:
+
+- `VITE_CONTACT_PROVIDER=api`
+- `VITE_API_BASE_URL` peut pointer vers un serveur separe
+
+Pour un deploiement statique sans serveur, EmailJS doit etre active explicitement:
 
 - `VITE_CONTACT_PROVIDER=emailjs`
 - `VITE_EMAILJS_ENABLED=true`
@@ -25,19 +30,20 @@ Variables importantes pour le formulaire:
 - `VITE_EMAILJS_SERVICE_ID`
 - `VITE_EMAILJS_TEMPLATE_ID`
 
-Le projet est deja preconfigure avec:
+Ces trois identifiants ne possedent aucune valeur par defaut dans le code. Le workflow IONOS les lit depuis les secrets GitHub du meme nom et bloque le build si la configuration est incomplete.
 
-- Service: `smtp_contact`
-- Template: `template_full`
-- Public key: `JZnrgJVTyt3Fy_rX7`
+Pour un serveur en production, le bootstrap administrateur HTTP est desactive par defaut. Cree le premier compte avec `AUTO_BOOTSTRAP_ADMIN=true`, `DEFAULT_ADMIN_USERNAME` et un `DEFAULT_ADMIN_PASSWORD` robuste, puis desactive ces variables apres le premier demarrage.
 
-## Lancer en local (frontend)
+## Lancer en local
 
 ```bash
-npm run dev
+npm run dev:full
 ```
 
-Frontend: `http://localhost:5173`
+Application: `http://localhost:5173`
+API: `http://localhost:3001`
+
+`npm run dev` lance uniquement le frontend et ne suffit pas pour tester le formulaire avec le provider `api`.
 
 ## Build
 
@@ -49,7 +55,7 @@ Le build genere `dist/` pour le deploiement statique.
 
 ## Formulaire
 
-Variables envoyees au template EmailJS:
+Variables envoyees a l'API ou au template EmailJS explicitement configure:
 
 - `fullName`
 - `phone`
