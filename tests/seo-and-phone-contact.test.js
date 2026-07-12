@@ -113,8 +113,12 @@ test("the phone-first notice is visible on key conversion pages", async () => {
   assert.match(sectionCta, /<PhoneFirstNotice/);
 
   const heroNoticePosition = homePage.indexOf("<PhoneFirstNotice compact />");
+  const heroTitlePosition = homePage.indexOf("<h1>{home.hero.title}</h1>");
+  const heroLeadPosition = homePage.indexOf('<p className="hero-lead">');
   const heroKpisPosition = homePage.indexOf('<div className="hero-kpis">');
   assert.ok(heroNoticePosition > 0);
+  assert.ok(heroTitlePosition < heroNoticePosition);
+  assert.ok(heroNoticePosition < heroLeadPosition);
   assert.ok(heroNoticePosition < heroKpisPosition);
   assert.equal((homePage.match(/<PhoneFirstNotice/g) || []).length, 1);
 });

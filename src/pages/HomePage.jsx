@@ -16,6 +16,7 @@ export default function HomePage() {
           <div className="hero-copy fade-in-left">
             <p className="eyebrow">{home.hero.eyebrow}</p>
             <h1>{home.hero.title}</h1>
+            <PhoneFirstNotice compact />
             <p className="hero-lead">{home.hero.description}</p>
 
             <ul className="hero-points">
@@ -32,8 +33,6 @@ export default function HomePage() {
                 Voir les bennes
               </NavLink>
             </div>
-
-            <PhoneFirstNotice compact />
 
             <div className="hero-kpis">
               <article className="hero-kpi">
