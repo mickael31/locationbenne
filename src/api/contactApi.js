@@ -1,14 +1,4 @@
-const EMAILJS_DEFAULT_PUBLIC_KEY = "JZnrgJVTyt3Fy_rX7";
-const EMAILJS_DEFAULT_SERVICE_ID = "smtp_contact";
-const EMAILJS_DEFAULT_TEMPLATE_ID = "template_full";
-
-function parseBool(value, fallback = false) {
-  const normalized = String(value || "").trim().toLowerCase();
-  if (!normalized) return fallback;
-  if (["1", "true", "yes", "on"].includes(normalized)) return true;
-  if (["0", "false", "no", "off"].includes(normalized)) return false;
-  return fallback;
-}
+import { resolveContactProvider } from "./contactProvider";
 
 function getApiUrl(pathname) {
   const baseUrl = String(import.meta.env.VITE_API_BASE_URL || "").trim();
@@ -31,17 +21,11 @@ function buildEmailJsPayload(form) {
   };
 }
 
-async function submitViaEmailJs(form) {
+async function submitViaEmailJs(form, environment) {
   const { default: emailjs } = await import("@emailjs/browser");
-  const publicKey = String(
-    import.meta.env.VITE_EMAILJS_PUBLIC_KEY || EMAILJS_DEFAULT_PUBLIC_KEY,
-  ).trim();
-  const serviceId = String(
-    import.meta.env.VITE_EMAILJS_SERVICE_ID || EMAILJS_DEFAULT_SERVICE_ID,
-  ).trim();
-  const templateId = String(
-    import.meta.env.VITE_EMAILJS_TEMPLATE_ID || EMAILJS_DEFAULT_TEMPLATE_ID,
-  ).trim();
+  const publicKey = String(environment.VITE_EMAILJS_PUBLIC_KEY).trim();
+  const serviceId = String(environment.VITE_EMAILJS_SERVICE_ID).trim();
+  const templateId = String(environment.VITE_EMAILJS_TEMPLATE_ID).trim();
 
   const payload = buildEmailJsPayload(form);
 
@@ -88,25 +72,11 @@ async function submitViaApi(form) {
 }
 
 export async function submitContactForm(form) {
-  const provider = String(import.meta.env.VITE_CONTACT_PROVIDER || "emailjs")
-    .trim()
-    .toLowerCase();
-  const emailJsEnabled =
-    provider === "emailjs" ||
-    parseBool(import.meta.env.VITE_EMAILJS_ENABLED, true);
-  const emailJsConfigured =
-    String(
-      import.meta.env.VITE_EMAILJS_PUBLIC_KEY || EMAILJS_DEFAULT_PUBLIC_KEY,
-    ).trim() &&
-    String(
-      import.meta.env.VITE_EMAILJS_SERVICE_ID || EMAILJS_DEFAULT_SERVICE_ID,
-    ).trim() &&
-    String(
-      import.meta.env.VITE_EMAILJS_TEMPLATE_ID || EMAILJS_DEFAULT_TEMPLATE_ID,
-    ).trim();
+  const environment = import.meta.env;
+  const provider = resolveContactProvider(environment);
 
-  if (emailJsEnabled && emailJsConfigured) {
-    return submitViaEmailJs(form);
+  if (provider === "emailjs") {
+    return submitViaEmailJs(form, environment);
   }
 
   return submitViaApi(form);

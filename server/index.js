@@ -134,7 +134,10 @@ const DEFAULT_BOOTSTRAP_PASSWORD = String(
   process.env.DEFAULT_ADMIN_PASSWORD || "",
 ).trim();
 const AUTO_BOOTSTRAP_ADMIN = parseBoolEnv("AUTO_BOOTSTRAP_ADMIN", false);
-const ADMIN_PREFILL_PASSWORD = parseBoolEnv("ADMIN_PREFILL_PASSWORD", false);
+const HTTP_ADMIN_BOOTSTRAP_ENABLED = parseBoolEnv(
+  "HTTP_ADMIN_BOOTSTRAP_ENABLED",
+  NODE_ENV !== "production",
+);
 const SMTP_PREFILL_ENABLED = parseBoolEnv("SMTP_PREFILL_ENABLED", false);
 const SMTP_PREFILL_HOST = normalizeText(process.env.SMTP_PREFILL_HOST || "", 255);
 const SMTP_PREFILL_PORT = parseIntEnv("SMTP_PREFILL_PORT", 587);
@@ -785,22 +788,20 @@ app.get("/api/health", (_req, res) => {
   res.json({ ok: true, timestamp: isoNow() });
 });
 
-app.use("/api/admin", (_req, res) => {
-  res.status(404).json({ error: "not-found" });
-});
-
 app.get("/api/admin/bootstrap", (_req, res) => {
   const state = loadState();
   res.json({
     configured: Boolean(state.admin),
-    suggestedUsername: DEFAULT_BOOTSTRAP_USERNAME,
-    suggestedPassword: ADMIN_PREFILL_PASSWORD
-      ? DEFAULT_BOOTSTRAP_PASSWORD
-      : "",
+    httpBootstrapEnabled: HTTP_ADMIN_BOOTSTRAP_ENABLED,
   });
 });
 
 app.post("/api/admin/bootstrap", (req, res) => {
+  if (!HTTP_ADMIN_BOOTSTRAP_ENABLED) {
+    res.status(403).json({ error: "bootstrap-disabled" });
+    return;
+  }
+
   const state = loadState();
   if (state.admin) {
     res.status(409).json({ error: "admin-already-configured" });
@@ -1124,6 +1125,10 @@ app.post("/api/contact/submit", async (req, res) => {
   }
 });
 
+app.use("/api", (_req, res) => {
+  res.status(404).json({ error: "not-found" });
+});
+
 if (fs.existsSync(DIST_DIR)) {
   app.use(express.static(DIST_DIR));
 }
@@ -1135,7 +1140,7 @@ app.get("*", (req, res, next) => {
   }
 
   if (fs.existsSync(DIST_DIR)) {
-    res.sendFile(path.join(DIST_DIR, "index.html"));
+    res.status(404).sendFile(path.join(DIST_DIR, "404.html"));
     return;
   }
 
@@ -1143,6 +1148,15 @@ app.get("*", (req, res, next) => {
 });
 
 app.use((error, _req, res, _next) => {
+  if (error?.type === "entity.parse.failed") {
+    res.status(400).json({ error: "invalid-json" });
+    return;
+  }
+  if (error?.type === "entity.too.large") {
+    res.status(413).json({ error: "payload-too-large" });
+    return;
+  }
+
   console.error("Unhandled server error:", error);
   res.status(500).json({ error: "internal-server-error" });
 });
