@@ -4,14 +4,16 @@ import SiteLayout from "./components/SiteLayout";
 import HomePage from "./pages/HomePage";
 import SeoManager from "./components/SeoManager";
 
-const AboutPage = lazy(() => import("./pages/AboutPage"));
-const BennesPage = lazy(() => import("./pages/BennesPage"));
-const ContactPage = lazy(() => import("./pages/ContactPage"));
-const LocationPage = lazy(() => import("./pages/LocationPage"));
-const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
-const PartnerPage = lazy(() => import("./pages/PartnerPage"));
-const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
-const ServicesPage = lazy(() => import("./pages/ServicesPage"));
+const clientPages = {
+  AboutPage: lazy(() => import("./pages/AboutPage")),
+  BennesPage: lazy(() => import("./pages/BennesPage")),
+  ContactPage: lazy(() => import("./pages/ContactPage")),
+  LocationPage: lazy(() => import("./pages/LocationPage")),
+  NotFoundPage: lazy(() => import("./pages/NotFoundPage")),
+  PartnerPage: lazy(() => import("./pages/PartnerPage")),
+  PrivacyPage: lazy(() => import("./pages/PrivacyPage")),
+  ServicesPage: lazy(() => import("./pages/ServicesPage")),
+};
 
 function RouteFallback() {
   return (
@@ -23,7 +25,18 @@ function RouteFallback() {
   );
 }
 
-export default function App() {
+export default function App({ pages = clientPages }) {
+  const {
+    AboutPage,
+    BennesPage,
+    ContactPage,
+    LocationPage,
+    NotFoundPage,
+    PartnerPage,
+    PrivacyPage,
+    ServicesPage,
+  } = pages;
+
   return (
     <>
       <SeoManager />

@@ -3,6 +3,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { getMailtoHref } from "../contactLinks";
 import SiteImage from "./SiteImage";
 import { company, navLinks } from "../data/content";
+import { locationPages } from "../data/locationPages";
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -111,10 +112,25 @@ function Footer() {
   return (
     <footer className="site-footer">
       <div className="footer-inner">
-        <NavLink to="/politique-de-confidentialite">
-          Politique de confidentialité
-        </NavLink>
-        <p>Droit d'auteur © 2026 Location Benne Occitanie</p>
+        <div className="footer-business">
+          <strong>{company.name}</strong>
+          <span>{company.address}</span>
+          <a href={`tel:${company.phoneRaw}`}>{company.phoneLocalDisplay}</a>
+        </div>
+        <nav className="footer-locations" aria-label="Zones desservies">
+          <strong>Location de benne par ville</strong>
+          {locationPages.map((locationPage) => (
+            <NavLink key={locationPage.key} to={locationPage.path}>
+              {locationPage.city}
+            </NavLink>
+          ))}
+        </nav>
+        <div className="footer-legal">
+          <NavLink to="/politique-de-confidentialite">
+            Politique de confidentialité
+          </NavLink>
+          <p>Droit d'auteur © 2026 Location Benne Occitanie</p>
+        </div>
       </div>
     </footer>
   );

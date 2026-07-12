@@ -2,9 +2,10 @@ import {
   existsSync,
   mkdirSync,
   readFileSync,
+  rmSync,
   writeFileSync,
 } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import {
   DEFAULT_IMAGE_ALT,
   DEFAULT_IMAGE_HEIGHT,
@@ -26,7 +27,7 @@ const DIST_INDEX = join(DIST_DIR, "index.html");
 const SOURCE_HTACCESS = "public/.htaccess";
 const SEO_HEAD_PATTERN =
   /<!-- SEO_HEAD_START -->[\s\S]*?<!-- SEO_HEAD_END -->/;
-const BUILD_DATE = new Date().toISOString().slice(0, 10);
+const { renderApp } = await import("../.ssr/entry-server.js");
 
 function escapeHtml(value) {
   return String(value || "")
@@ -127,26 +128,38 @@ function injectSeoBlock(html, seoBlock) {
   return html.replace(SEO_HEAD_PATTERN, seoBlock);
 }
 
+function injectAppHtml(html, appHtml) {
+  const emptyRoot = /<div id="root"><\/div>/;
+  if (!emptyRoot.test(html)) {
+    throw new Error("Empty app root not found in dist/index.html");
+  }
+
+  return html.replace(emptyRoot, `<div id="root">${appHtml}</div>`);
+}
+
 function renderRouteHtml(templateHtml, pathname) {
   const seo = getPageSeo(pathname);
   const canonical = getCanonicalUrl(pathname);
   const graph = getSeoGraph(pathname);
 
-  return injectSeoBlock(
-    templateHtml,
-    renderSeoBlock({
-      title: seo.title,
-      description: seo.description,
-      robots: seo.robots || DEFAULT_ROBOTS,
-      keywords: seo.keywords,
-      canonical,
-      image: toAbsoluteUrl(seo.image),
-      imageAlt: seo.imageAlt,
-      imageWidth: seo.imageWidth,
-      imageHeight: seo.imageHeight,
-      imageType: seo.imageType,
-      graph,
-    }),
+  return injectAppHtml(
+    injectSeoBlock(
+      templateHtml,
+      renderSeoBlock({
+        title: seo.title,
+        description: seo.description,
+        robots: seo.robots || DEFAULT_ROBOTS,
+        keywords: seo.keywords,
+        canonical,
+        image: toAbsoluteUrl(seo.image),
+        imageAlt: seo.imageAlt,
+        imageWidth: seo.imageWidth,
+        imageHeight: seo.imageHeight,
+        imageType: seo.imageType,
+        graph,
+      }),
+    ),
+    renderApp(pathname),
   );
 }
 
@@ -169,21 +182,24 @@ function render404Html(templateHtml) {
     ],
   };
 
-  return injectSeoBlock(
-    templateHtml,
-    renderSeoBlock({
-      title: seo.title,
-      description: seo.description,
-      robots: seo.robots,
-      keywords: [],
-      canonical: `${SITE_ORIGIN}/404.html`,
-      image: toAbsoluteUrl(seo.image),
-      imageAlt: seo.imageAlt,
-      imageWidth: seo.imageWidth,
-      imageHeight: seo.imageHeight,
-      imageType: seo.imageType,
-      graph,
-    }),
+  return injectAppHtml(
+    injectSeoBlock(
+      templateHtml,
+      renderSeoBlock({
+        title: seo.title,
+        description: seo.description,
+        robots: seo.robots,
+        keywords: [],
+        canonical: `${SITE_ORIGIN}/404.html`,
+        image: toAbsoluteUrl(seo.image),
+        imageAlt: seo.imageAlt,
+        imageWidth: seo.imageWidth,
+        imageHeight: seo.imageHeight,
+        imageType: seo.imageType,
+        graph,
+      }),
+    ),
+    renderApp("/route-introuvable"),
   );
 }
 
@@ -222,7 +238,7 @@ function renderRedirectHtml(fromPath, toPath) {
       imageType: targetSeo.imageType,
       graph,
     }).replace(/^/gm, "    ")}
-    <script>window.location.replace(${JSON.stringify(targetUrl)});</script>
+    <script>window.location.replace(${serializeJsonLd(targetUrl)});</script>
   </head>
   <body>
     <p>Redirection vers <a href="${escapeAttribute(targetUrl)}">${escapeHtml(
@@ -236,8 +252,7 @@ function renderRedirectHtml(fromPath, toPath) {
 function renderSitemapXml() {
   const urls = INDEXABLE_ROUTES.map(
     (route) => `  <url>
-    <loc>${getCanonicalUrl(route.path)}</loc>
-    <lastmod>${BUILD_DATE}</lastmod>
+    <loc>${escapeHtml(getCanonicalUrl(route.path))}</loc>
     <changefreq>${route.changefreq}</changefreq>
     <priority>${route.priority}</priority>
   </url>`,
@@ -260,7 +275,13 @@ Sitemap: ${SITE_ORIGIN}/sitemap.xml
 }
 
 function writeRouteFile(relativePath, html) {
-  const target = join(DIST_DIR, relativePath);
+  const distRoot = resolve(DIST_DIR);
+  const target = resolve(distRoot, relativePath);
+  const relativeTarget = relative(distRoot, target);
+  if (relativeTarget.startsWith("..") || isAbsolute(relativeTarget)) {
+    throw new Error(`Refusing to write outside ${DIST_DIR}: ${relativePath}`);
+  }
+
   mkdirSync(dirname(target), { recursive: true });
   writeFileSync(target, html);
 }
@@ -294,3 +315,4 @@ for (const redirect of LEGACY_ROUTE_REDIRECTS) {
 writeRouteFile("404.html", render404Html(templateHtml));
 writeRouteFile("sitemap.xml", renderSitemapXml());
 writeRouteFile("robots.txt", renderRobotsTxt());
+rmSync(".ssr", { recursive: true, force: true });

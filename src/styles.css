@@ -1548,12 +1548,28 @@ details[open] summary::after {
   margin: 0 auto;
   min-height: 80px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
   color: var(--muted);
   flex-wrap: wrap;
   padding: 1rem 0;
+}
+
+.footer-business,
+.footer-locations,
+.footer-legal {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.footer-business span {
+  max-width: 22rem;
+}
+
+.footer-locations {
+  width: auto;
+  margin-left: 0;
 }
 
 .footer-inner a {
