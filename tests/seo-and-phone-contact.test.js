@@ -61,6 +61,12 @@ test("the phone-first notice is visible on key conversion pages", async () => {
   assert.match(homePage, /<PhoneFirstNotice/);
   assert.match(contactPage, /<PhoneFirstNotice/);
   assert.match(sectionCta, /<PhoneFirstNotice/);
+
+  const heroNoticePosition = homePage.indexOf("<PhoneFirstNotice compact />");
+  const heroKpisPosition = homePage.indexOf('<div className="hero-kpis">');
+  assert.ok(heroNoticePosition > 0);
+  assert.ok(heroNoticePosition < heroKpisPosition);
+  assert.equal((homePage.match(/<PhoneFirstNotice/g) || []).length, 1);
 });
 
 test("unknown frontend routes return the generated 404 page with status 404", async () => {

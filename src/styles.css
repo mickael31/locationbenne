@@ -577,6 +577,24 @@ nav a:hover {
   color: #fff !important;
 }
 
+.hero-copy .phone-first-notice {
+  margin: 1rem 0 0;
+  display: block;
+  border-color: #f2bc12;
+  border-radius: 12px;
+  padding: 0.9rem;
+  background: linear-gradient(135deg, #18232d, #2c3b49);
+  box-shadow: 0 12px 24px rgba(26, 35, 45, 0.2);
+}
+
+.hero-copy .phone-first-notice h2 {
+  font-size: 1.2rem;
+}
+
+.hero-copy .phone-first-notice .btn {
+  margin-top: 0.75rem;
+}
+
 .process-grid {
   margin-top: 1.45rem;
   display: grid;

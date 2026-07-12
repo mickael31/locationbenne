@@ -32,6 +32,8 @@ export default function HomePage() {
               </NavLink>
             </div>
 
+            <PhoneFirstNotice compact />
+
             <div className="hero-kpis">
               <article className="hero-kpi">
                 <strong>24-48h</strong>
@@ -113,12 +115,6 @@ export default function HomePage() {
               </article>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="section phone-first-section">
-        <div className="container fade-in">
-          <PhoneFirstNotice />
         </div>
       </section>
 
