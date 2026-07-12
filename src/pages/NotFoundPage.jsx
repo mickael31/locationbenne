@@ -16,7 +16,7 @@ export default function NotFoundPage() {
             <NavLink to="/" className="btn btn-primary">
               Retour à l'accueil
             </NavLink>
-            <NavLink to="/contact" className="btn btn-light">
+            <NavLink to="/contact/" className="btn btn-light">
               Nous contacter
             </NavLink>
             <a href={`tel:${company.phoneRaw}`} className="btn btn-ghost">

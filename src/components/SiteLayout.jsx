@@ -4,6 +4,7 @@ import { getMailtoHref } from "../contactLinks";
 import SiteImage from "./SiteImage";
 import { company, navLinks } from "../data/content";
 import { locationPages } from "../data/locationPages";
+import { getBreadcrumbItems } from "../seo/seoConfig";
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -68,7 +69,6 @@ function Header() {
             height={208}
             responsive={false}
             loading="eager"
-            fetchPriority="high"
           />
           <span>{company.name}</span>
         </NavLink>
@@ -93,6 +93,7 @@ function Header() {
             <NavLink
               key={link.to}
               to={link.to}
+              end={link.to === "/"}
               className={({ isActive }) => (isActive ? "active" : "")}
               onClick={() => setMenuOpen(false)}
             >
@@ -100,7 +101,7 @@ function Header() {
             </NavLink>
           ))}
         </nav>
-        <NavLink to="/contact" className="btn btn-primary small">
+        <NavLink to="/contact/" className="btn btn-primary small">
           Demander un devis
         </NavLink>
       </div>
@@ -126,7 +127,7 @@ function Footer() {
           ))}
         </nav>
         <div className="footer-legal">
-          <NavLink to="/politique-de-confidentialite">
+          <NavLink to="/politique-de-confidentialite/">
             Politique de confidentialité
           </NavLink>
           <p>Droit d'auteur © 2026 Location Benne Occitanie</p>
@@ -136,15 +137,50 @@ function Footer() {
   );
 }
 
+function Breadcrumbs({ pathname }) {
+  if (pathname === "/") return null;
+
+  const items = getBreadcrumbItems(pathname);
+  if (items.length < 2) return null;
+
+  return (
+    <nav className="breadcrumb" aria-label="Fil d'Ariane">
+      <ol className="container breadcrumb-list">
+        {items.map((item, index) => {
+          const isCurrentPage = index === items.length - 1 && item.path !== "/";
+
+          return (
+            <li key={`${item.path}-${item.name}`}>
+              {isCurrentPage ? (
+                <span aria-current="page">{item.name}</span>
+              ) : (
+                <NavLink to={item.path}>{item.name}</NavLink>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
+}
+
 export default function SiteLayout({ children }) {
+  const location = useLocation();
+
   return (
     <>
+      <a className="skip-link" href="#main-content">
+        Aller au contenu principal
+      </a>
       <Header />
-      <main>{children}</main>
+      <main id="main-content" tabIndex="-1">
+        <Breadcrumbs pathname={location.pathname} />
+        {children}
+      </main>
       <a
         className="floating-call"
         href={`tel:${company.phoneRaw}`}
-        aria-label={`Appeler ${company.phoneLocalDisplay}`}
+        aria-label={`Appeler maintenant : ${company.phoneLocalDisplay}`}
       >
         Appeler maintenant
       </a>

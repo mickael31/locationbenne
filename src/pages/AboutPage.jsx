@@ -18,7 +18,7 @@ export default function AboutPage() {
             parfaitement adapté à chaque chantier en Occitanie.
           </p>
           <div className="services-hero-actions">
-            <NavLink to="/contact" className="btn btn-primary">
+            <NavLink to="/contact/" className="btn btn-primary">
               Demander un devis
             </NavLink>
             <a href={`tel:${company.phoneRaw}`} className="btn btn-light">
@@ -41,7 +41,7 @@ export default function AboutPage() {
           <SiteImage
             className="fade-in-left"
             src={about.images[0]}
-            alt="Équipe sur chantier"
+            alt="Illustration d'un professionnel contrôlant une benne"
             width={1024}
             height={1024}
             sizes="(max-width: 980px) 92vw, 44vw"
@@ -72,7 +72,7 @@ export default function AboutPage() {
           <SiteImage
             className="fade-in-right"
             src={about.images[1]}
-            alt="Historique de l'entreprise"
+            alt="Camion transportant une benne en Occitanie"
             width={1024}
             height={683}
             sizes="(max-width: 980px) 92vw, 44vw"
@@ -90,7 +90,7 @@ export default function AboutPage() {
           <SiteImage
             className="fade-in-left"
             src={about.images[2]}
-            alt="Experts locaux"
+            alt="Illustration d'une benne de chantier"
             width={1024}
             height={1024}
             sizes="(max-width: 980px) 92vw, 44vw"
@@ -100,10 +100,10 @@ export default function AboutPage() {
             <h2>{about.teamHeading}</h2>
             <p>{about.teamText}</p>
             <div className="service-actions">
-              <NavLink to="/services" className="btn btn-secondary small">
+              <NavLink to="/services/" className="btn btn-secondary small">
                 Voir nos services
               </NavLink>
-              <NavLink to="/contact" className="btn btn-ghost small">
+              <NavLink to="/contact/" className="btn btn-ghost small">
                 Nous contacter
               </NavLink>
             </div>

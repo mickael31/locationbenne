@@ -22,7 +22,7 @@ export default function LocationPage({ locationKey }) {
             <a href={`tel:${company.phoneRaw}`} className="btn btn-primary">
               Appeler {company.phoneLocalDisplay}
             </a>
-            <NavLink to="/contact" className="btn btn-light">
+            <NavLink to="/contact/" className="btn btn-light">
               Demander un devis
             </NavLink>
           </div>
@@ -66,10 +66,10 @@ export default function LocationPage({ locationKey }) {
             ))}
           </div>
           <div className="location-links fade-in">
-            <NavLink to="/bennes" className="btn btn-secondary">
+            <NavLink to="/bennes/" className="btn btn-secondary">
               Comparer les volumes de bennes
             </NavLink>
-            <NavLink to="/services" className="btn btn-ghost">
+            <NavLink to="/services/" className="btn btn-ghost">
               Découvrir nos services
             </NavLink>
           </div>
@@ -77,6 +77,24 @@ export default function LocationPage({ locationKey }) {
       </section>
 
       <section className="section alt">
+        <div className="container">
+          <p className="eyebrow fade-in">Pose de la benne à {page.city}</p>
+          <h2 className="fade-in">Préparer l'emplacement et la voirie</h2>
+          <div className="cards">
+            {page.preparation.map((item, index) => (
+              <article
+                className={`card scale-in stagger-${index + 1}`}
+                key={item.title}
+              >
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
         <div className="container">
           <h2 className="fade-in">Questions fréquentes</h2>
           <div className="faq-list">

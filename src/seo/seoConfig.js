@@ -20,15 +20,22 @@ export const DEFAULT_IMAGE_HEIGHT = 683;
 export const DEFAULT_IMAGE_TYPE = "image/png";
 export const DEFAULT_ROBOTS =
   "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1";
+export const HOME_HERO_PRELOAD = home.hero.image.replace(/\.png$/i, ".avif");
+export const HOME_HERO_PRELOAD_SRCSET = [
+  `${home.hero.image.replace(/\.png$/i, "-480w.avif")} 480w`,
+  `${home.hero.image.replace(/\.png$/i, "-768w.avif")} 768w`,
+  `${HOME_HERO_PRELOAD} 1024w`,
+].join(", ");
+export const HOME_HERO_SIZES = "(max-width: 980px) 92vw, 44vw";
 
 export const LEGACY_ROUTE_REDIRECTS = [
-  { from: "/357-2", to: "/bennes" },
+  { from: "/357-2", to: "/bennes/" },
 ];
 
 const DEFAULT_AREA_SERVED = ["Montauban", "Toulouse", "Albi", "Occitanie"];
 
 const locationRoutes = locationPages.map((page) => ({
-  path: page.path,
+  path: withTrailingSlash(page.path),
   label: `Location de benne à ${page.city}`,
   title: page.seo.title,
   description: page.seo.description,
@@ -36,14 +43,9 @@ const locationRoutes = locationPages.map((page) => ({
   imageAlt: `Location de benne à ${page.city}`,
   imageWidth: 1024,
   imageHeight: 683,
-  keywords: page.seo.keywords,
+  lastModified: page.lastModified,
   schemaType: "WebPage",
-  changefreq: "monthly",
-  priority: "0.8",
-  includeLocalBusiness: true,
   includePrimaryService: true,
-  includeFaq: true,
-  faqs: page.faqs,
   areaServed: [page.city, "Occitanie"],
   serviceName: `Location de benne à ${page.city}`,
 }));
@@ -60,42 +62,25 @@ const PRIMARY_ROUTES = [
     imageAlt: "Camion de location de benne en Occitanie",
     imageWidth: 1024,
     imageHeight: 683,
-    keywords: [
-      "location benne occitanie",
-      "location benne montauban",
-      "location benne toulouse",
-      "location benne albi",
-      "location de benne",
-      "evacuation dechets chantier",
-    ],
+    lastModified: "2026-07-12",
     schemaType: "WebPage",
-    changefreq: "weekly",
-    priority: "1.0",
-    includeLocalBusiness: true,
-    includeFaq: true,
     includePrimaryService: true,
   },
   {
-    path: "/about",
+    path: "/about/",
     label: "À propos",
     title: "À propos de Location Benne Occitanie | Entreprise locale",
     description:
       "Découvrez l'entreprise Location Benne Occitanie, son expertise terrain, son histoire et son engagement pour un service fiable et réactif.",
     image: about.images[0],
-    imageAlt: "Équipe Location Benne Occitanie sur chantier",
+    imageAlt: "Illustration d'un professionnel contrôlant une benne",
     imageWidth: 1024,
     imageHeight: 1024,
-    keywords: [
-      "entreprise location benne occitanie",
-      "location benne montauban entreprise",
-      "expert gestion dechets occitanie",
-    ],
+    lastModified: "2026-07-12",
     schemaType: "AboutPage",
-    changefreq: "monthly",
-    priority: "0.8",
   },
   {
-    path: "/services",
+    path: "/services/",
     label: "Services",
     title:
       "Location de bennes, évacuation de déchets et devis | Services",
@@ -105,20 +90,12 @@ const PRIMARY_ROUTES = [
     imageAlt: "Services de location de bennes en Occitanie",
     imageWidth: 1024,
     imageHeight: 683,
-    keywords: [
-      "services location benne",
-      "evacuation dechets occitanie",
-      "devis benne montauban",
-      "location benne chantier",
-    ],
+    lastModified: "2026-07-12",
     schemaType: "CollectionPage",
-    changefreq: "monthly",
-    priority: "0.9",
     includeServiceCatalog: true,
-    includeLocalBusiness: true,
   },
   {
-    path: "/bennes",
+    path: "/bennes/",
     label: "Bennes",
     title:
       "Bennes 3, 7, 10 et 15 m³ à louer en Occitanie | Location Benne Occitanie",
@@ -128,21 +105,12 @@ const PRIMARY_ROUTES = [
     imageAlt: "Bennes 3 à 15 m³ disponibles en Occitanie",
     imageWidth: 1024,
     imageHeight: 872,
-    keywords: [
-      "benne 3 m3",
-      "benne 7 m3",
-      "benne 10 m3",
-      "benne 15 m3",
-      "location benne gravats occitanie",
-    ],
+    lastModified: "2026-07-12",
     schemaType: "CollectionPage",
-    changefreq: "weekly",
-    priority: "0.9",
     includeBenneCatalog: true,
-    includeLocalBusiness: true,
   },
   {
-    path: "/contact",
+    path: "/contact/",
     label: "Contact",
     title: "Devis location de benne en Occitanie par téléphone | Contact",
     description:
@@ -151,40 +119,25 @@ const PRIMARY_ROUTES = [
     imageAlt: "Demande de devis pour location de benne en Occitanie",
     imageWidth: 1024,
     imageHeight: 683,
-    keywords: [
-      "contact location benne occitanie",
-      "devis benne montauban",
-      "devis benne toulouse",
-    ],
+    lastModified: "2026-07-12",
     schemaType: "ContactPage",
-    changefreq: "monthly",
-    priority: "0.8",
-    includeContactPage: true,
-    includeLocalBusiness: true,
   },
   {
-    path: "/partenaire-elagage",
+    path: "/partenaire-elagage/",
     label: "Élagage",
     title:
       "Élagage et abattage en Tarn-et-Garonne | Natur'Elag 82 et benne",
     description:
       "Découvrez l'activité partenaire d'élagage et d'abattage Natur'Elag 82, coordonnée avec la location de benne pour simplifier vos chantiers extérieurs.",
     image: "/images/2025/08/ChatGPT-Image-4-aout-2025-22_15_10-1024x683.png",
-    imageAlt: "Travaux d'élagage avec partenaire local en Tarn-et-Garonne",
+    imageAlt: "Camion transportant une benne en Occitanie",
     imageWidth: 1024,
     imageHeight: 683,
-    keywords: [
-      "elagage tarn et garonne",
-      "abattage arbres 82",
-      "partenaire elagage montauban",
-      "natur elag 82",
-    ],
+    lastModified: "2026-07-12",
     schemaType: "WebPage",
-    changefreq: "monthly",
-    priority: "0.6",
   },
   {
-    path: "/politique-de-confidentialite",
+    path: "/politique-de-confidentialite/",
     label: "Politique de confidentialité",
     title: "Politique de confidentialité | Location Benne Occitanie",
     description:
@@ -193,9 +146,8 @@ const PRIMARY_ROUTES = [
     imageAlt: "Politique de confidentialité - Location Benne Occitanie",
     imageWidth: 1024,
     imageHeight: 683,
+    lastModified: "2026-07-12",
     schemaType: "WebPage",
-    changefreq: "yearly",
-    priority: "0.3",
   },
   ...locationRoutes,
 ];
@@ -208,16 +160,18 @@ const NOT_FOUND_SEO = {
   imageWidth: DEFAULT_IMAGE_WIDTH,
   imageHeight: DEFAULT_IMAGE_HEIGHT,
   imageType: DEFAULT_IMAGE_TYPE,
-  robots: "noindex,nofollow",
+  robots: "noindex,follow",
+  canonical: null,
   schemaType: "WebPage",
 };
 
-const ROUTE_MAP = new Map(PRIMARY_ROUTES.map((route) => [route.path, route]));
+const ROUTE_MAP = new Map(
+  PRIMARY_ROUTES.map((route) => [normalizePathname(route.path), route]),
+);
 
 export const INDEXABLE_ROUTES = PRIMARY_ROUTES.map((route) => ({
-  path: route.path,
-  changefreq: route.changefreq,
-  priority: route.priority,
+  path: withTrailingSlash(route.path),
+  lastmod: route.lastModified,
 }));
 
 function normalizePathname(pathname) {
@@ -235,11 +189,11 @@ function getKnownRoute(pathname) {
   return ROUTE_MAP.get(normalizePathname(pathname)) || null;
 }
 
-function getBreadcrumb(pathname) {
+export function getBreadcrumbItems(pathname) {
   const route = getKnownRoute(pathname);
   const crumbs = [{ name: "Accueil", path: "/" }];
   if (route && route.path !== "/") {
-    crumbs.push({ name: route.label, path: route.path });
+    crumbs.push({ name: route.label, path: withTrailingSlash(route.path) });
   }
   return crumbs;
 }
@@ -255,13 +209,16 @@ function getContactPointSchema(areaServed = DEFAULT_AREA_SERVED) {
   };
 }
 
-function getOrganizationSchema() {
+function getBusinessSchema() {
   return {
-    "@type": "Organization",
-    "@id": `${SITE_ORIGIN}/#organization`,
+    "@type": ["LocalBusiness", "Organization"],
+    "@id": `${SITE_ORIGIN}/#business`,
     name: SITE_NAME,
     url: `${SITE_ORIGIN}/`,
-    logo: toAbsoluteUrl(company.logo),
+    image: toAbsoluteUrl(home.hero.image),
+    logo: toAbsoluteUrl("/images/icons/icon-512.png"),
+    description:
+      "Location de bennes et évacuation de déchets pour particuliers et professionnels à Montauban, Toulouse, Albi et dans les secteurs desservis en Occitanie.",
     email: company.email,
     telephone: company.phoneRaw,
     address: {
@@ -272,6 +229,7 @@ function getOrganizationSchema() {
       addressRegion: "Occitanie",
       addressCountry: "FR",
     },
+    areaServed: DEFAULT_AREA_SERVED,
     contactPoint: [getContactPointSchema()],
   };
 }
@@ -284,51 +242,25 @@ function getWebSiteSchema() {
     url: `${SITE_ORIGIN}/`,
     inLanguage: SITE_LANGUAGE,
     publisher: {
-      "@id": `${SITE_ORIGIN}/#organization`,
+      "@id": `${SITE_ORIGIN}/#business`,
     },
-  };
-}
-
-function getLocalBusinessSchema(areaServed = DEFAULT_AREA_SERVED) {
-  return {
-    "@type": "LocalBusiness",
-    "@id": `${SITE_ORIGIN}/#localbusiness`,
-    name: SITE_NAME,
-    url: `${SITE_ORIGIN}/`,
-    image: toAbsoluteUrl(home.hero.image),
-    logo: toAbsoluteUrl(company.logo),
-    email: company.email,
-    telephone: company.phoneRaw,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "28 chemin des bernardets",
-      postalCode: "82000",
-      addressLocality: "Montauban",
-      addressRegion: "Occitanie",
-      addressCountry: "FR",
-    },
-    areaServed,
-    serviceType: [
-      "Location de bennes",
-      "Évacuation de déchets",
-      "Devis gratuit",
-    ],
-    contactPoint: [getContactPointSchema(areaServed)],
   };
 }
 
 function getPrimaryServiceSchema({
+  canonical,
   areaServed = DEFAULT_AREA_SERVED,
   serviceName = "Location de bennes en Occitanie",
 } = {}) {
   return {
     "@type": "Service",
+    "@id": `${canonical}#service`,
     name: serviceName,
     serviceType: "Location de bennes",
     description:
       "Un premier échange par téléphone permet de qualifier le besoin et de recommander la benne adaptée au volume, aux déchets et aux accès.",
     provider: {
-      "@id": `${SITE_ORIGIN}/#localbusiness`,
+      "@id": `${SITE_ORIGIN}/#business`,
     },
     areaServed,
     availableChannel: {
@@ -340,23 +272,10 @@ function getPrimaryServiceSchema({
   };
 }
 
-function getFaqSchema(faqs = home.faqs) {
-  return {
-    "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.answer,
-      },
-    })),
-  };
-}
-
-function getServiceCatalogSchema() {
+function getServiceCatalogSchema(canonical) {
   return {
     "@type": "ItemList",
+    "@id": `${canonical}#service-catalog`,
     name: "Services de Location Benne Occitanie",
     itemListElement: servicesPage.items.map((item, index) => ({
       "@type": "ListItem",
@@ -366,7 +285,7 @@ function getServiceCatalogSchema() {
         name: item.title,
         description: item.description,
         provider: {
-          "@id": `${SITE_ORIGIN}/#localbusiness`,
+          "@id": `${SITE_ORIGIN}/#business`,
         },
         areaServed: ["Montauban", "Toulouse", "Albi", "Occitanie"],
       },
@@ -374,9 +293,10 @@ function getServiceCatalogSchema() {
   };
 }
 
-function getBenneCatalogSchema() {
+function getBenneCatalogSchema(canonical) {
   return {
     "@type": "ItemList",
+    "@id": `${canonical}#benne-catalog`,
     name: "Volumes de bennes disponibles en Occitanie",
     itemListElement: bennes.types.map((item, index) => ({
       "@type": "ListItem",
@@ -386,7 +306,7 @@ function getBenneCatalogSchema() {
         name: item.title,
         description: item.description,
         provider: {
-          "@id": `${SITE_ORIGIN}/#localbusiness`,
+          "@id": `${SITE_ORIGIN}/#business`,
         },
         areaServed: ["Montauban", "Toulouse", "Albi", "Occitanie"],
       },
@@ -394,21 +314,11 @@ function getBenneCatalogSchema() {
   };
 }
 
-function getContactPageSchema(canonical) {
-  return {
-    "@type": "ContactPage",
-    name: "Contact Location Benne Occitanie",
-    url: canonical,
-    mainEntity: {
-      "@id": `${SITE_ORIGIN}/#organization`,
-    },
-  };
-}
-
-function getBreadcrumbSchema(pathname) {
-  const list = getBreadcrumb(pathname);
+function getBreadcrumbSchema(pathname, canonical) {
+  const list = getBreadcrumbItems(pathname);
   return {
     "@type": "BreadcrumbList",
+    "@id": `${canonical}#breadcrumb`,
     itemListElement: list.map((item, index) => ({
       "@type": "ListItem",
       position: index + 1,
@@ -421,6 +331,7 @@ function getBreadcrumbSchema(pathname) {
 function getWebPageSchema(pathname, seo, canonical) {
   return {
     "@type": seo.schemaType || "WebPage",
+    "@id": `${canonical}#webpage`,
     name: seo.title,
     url: canonical,
     inLanguage: SITE_LANGUAGE,
@@ -429,7 +340,7 @@ function getWebPageSchema(pathname, seo, canonical) {
       "@id": `${SITE_ORIGIN}/#website`,
     },
     about: {
-      "@id": `${SITE_ORIGIN}/#organization`,
+      "@id": `${SITE_ORIGIN}/#business`,
     },
   };
 }
@@ -475,35 +386,40 @@ export function getCanonicalUrl(pathname) {
 export function getSeoGraph(pathname) {
   const seo = getPageSeo(pathname);
   const canonical = getCanonicalUrl(pathname);
-  const graph = [
-    getOrganizationSchema(),
-    getWebSiteSchema(),
-    getWebPageSchema(pathname, seo, canonical),
-    getBreadcrumbSchema(pathname),
-  ];
+  const route = getKnownRoute(pathname);
+  const graph = [getBusinessSchema()];
 
-  if (seo.includeLocalBusiness) {
-    graph.push(getLocalBusinessSchema(seo.areaServed));
+  if (!route) {
+    return {
+      "@context": "https://schema.org",
+      "@graph": graph,
+    };
   }
+
+  if (route?.path === "/") {
+    graph.push(getWebSiteSchema());
+  }
+
+  graph.push(getWebPageSchema(pathname, seo, canonical));
+
+  if (getBreadcrumbItems(pathname).length > 1) {
+    graph.push(getBreadcrumbSchema(pathname, canonical));
+  }
+
   if (seo.includePrimaryService) {
     graph.push(
       getPrimaryServiceSchema({
+        canonical,
         areaServed: seo.areaServed,
         serviceName: seo.serviceName,
       }),
     );
   }
-  if (seo.includeFaq) {
-    graph.push(getFaqSchema(seo.faqs));
-  }
   if (seo.includeServiceCatalog) {
-    graph.push(getServiceCatalogSchema());
+    graph.push(getServiceCatalogSchema(canonical));
   }
   if (seo.includeBenneCatalog) {
-    graph.push(getBenneCatalogSchema());
-  }
-  if (seo.includeContactPage) {
-    graph.push(getContactPageSchema(canonical));
+    graph.push(getBenneCatalogSchema(canonical));
   }
 
   return {

@@ -12,11 +12,11 @@
 
 export const navLinks = [
   { to: "/", label: "Accueil" },
-  { to: "/about", label: "À propos" },
-  { to: "/contact", label: "Contact" },
-  { to: "/bennes", label: "Bennes" },
-  { to: "/services", label: "Services" },
-  { to: "/partenaire-elagage", label: "Élagage" },
+  { to: "/about/", label: "À propos" },
+  { to: "/contact/", label: "Contact" },
+  { to: "/bennes/", label: "Bennes" },
+  { to: "/services/", label: "Services" },
+  { to: "/partenaire-elagage/", label: "Élagage" },
 ];
 
 export const home = {
@@ -87,7 +87,7 @@ export const home = {
     {
       title: "Simplicité & Rapidité",
       description:
-        "Réservation facile et livraison express de votre benne partout en Occitanie, pour tous vos chantiers et débarras.",
+        "Réservation simple et organisation réactive dans les secteurs desservis en Occitanie, pour vos chantiers et débarras.",
     },
     {
       title: "Tarifs transparents",
@@ -114,7 +114,7 @@ export const home = {
     {
       question: "Intervenez-vous uniquement à Montauban ?",
       answer:
-        "Non, nous intervenons sur Montauban, Toulouse, Albi et les communes alentours dans toute l'Occitanie.",
+        "Non, nous intervenons à Montauban, Toulouse, Albi et dans les secteurs alentour que nous pouvons desservir. Appelez-nous avec l'adresse du chantier pour confirmer la disponibilité.",
     },
     {
       question: "En combien de temps pouvez-vous livrer une benne ?",
@@ -166,10 +166,11 @@ export const about = {
 
 export const servicesPage = {
   eyebrow: "Nos Services",
-  title: "Location de Bennes pour vos Besoins",
+  title: "Location de bennes et évacuation de déchets en Occitanie",
   items: [
     {
       title: "Location de Bennes",
+      imageAlt: "Illustration d'une benne de chantier",
       description:
         "Nous proposons des bennes adaptées à tous vos besoins, que ce soit pour des travaux de construction, de rénovation ou d'évacuation de déchets. Nos équipes vous conseilleront sur la taille adéquate et assureront une livraison rapide pour vous permettre de commencer vos travaux sans délai.",
       image:
@@ -177,6 +178,7 @@ export const servicesPage = {
     },
     {
       title: "Évacuation de Déchets",
+      imageAlt: "Chargement de déchets dans une benne avant enlèvement",
       description:
         "Notre service d'évacuation de déchets est conçu pour vous aider à vous débarrasser efficacement de toutes sortes de gravats et encombrants. Nous nous chargeons de la collecte et du transport vers les sites de traitement, garantissant une gestion écologique de vos déchets et le respect des normes environnementales.",
       image:
@@ -184,6 +186,7 @@ export const servicesPage = {
     },
     {
       title: "Devis Gratuits",
+      imageAlt: "Professionnel présentant un devis gratuit",
       description:
         "Nous offrons des devis gratuits pour toutes nos prestations. Grâce à notre approche transparente, vous pouvez évaluer nos services sans engagement et choisir la solution qui correspond le mieux à vos besoins, le tout dans un délai rapide et efficace.",
       image:
@@ -191,6 +194,7 @@ export const servicesPage = {
     },
     {
       title: "Service Client Personnalisé",
+      imageAlt: "Illustration d'une benne de chantier",
       description:
         "Notre équipe est à votre disposition pour répondre à toutes vos questions et vous fournir un service client personnalisé. Nous nous engageons à vous assister tout au long de votre projet, garantissant une satisfaction totale grâce à notre expertise et notre soutien constant.",
       image:
@@ -233,7 +237,7 @@ export const partnerPage = {
 
 export const bennes = {
   eyebrow: "Nos bennes de 3 à 15 m³",
-  title: "Location pour tous vos besoins",
+  title: "Location de bennes de 3 à 15 m³ pour tous vos besoins",
   heading: "Notre gamme de bennes en détail",
   intro:
     "Découvrez notre gamme complète de bennes à louer de 3 à 15 m³, adaptées à tous vos besoins : travaux, débarras, chantiers, déchets verts ou gravats. Nous livrons rapidement sur Montauban, Toulouse, Albi et toute la région Occitanie, pour particuliers et professionnels.",
@@ -262,7 +266,7 @@ export const bennes = {
     {
       title: "Benne 15 m³",
       description:
-        "Le choix des gros chantiers et des professionnels exigeants ! La benne 15 m³ répond aux besoins les plus importants : chantiers de démolition, nettoyage d'entrepôts, débarras de bâtiments entiers ou grands travaux d'entreprise. Son volume généreux limite les rotations, ce qui est idéal pour optimiser votre temps et vos coûts. Capable d'accueillir tout-venant, gravats, déchets industriels ou mobiliers volumineux, elle est le partenaire indispensable des opérations de grande envergure. Pour tous vos grands projets, la benne 15 m³ est la solution la plus efficace et la plus rentable !",
+        "Le choix des gros chantiers et des volumes importants ! La benne 15 m³ peut convenir à une démolition, au nettoyage d'un entrepôt, au débarras d'un bâtiment ou à de grands travaux. Son volume généreux peut limiter les rotations. Le type de déchets, leur poids et les mélanges éventuels sont toujours vérifiés avec vous avant confirmation afin de valider une solution compatible avec le chantier.",
       image:
         "/images/2025/08/ChatGPT-Image-6-aout-2025-17_24_50.png",
     },
@@ -271,7 +275,7 @@ export const bennes = {
 
 export const contact = {
   eyebrow: "Contact",
-  title: "Nous sommes là pour vous aider",
+  title: "Demandez votre devis de location de benne",
   subtitle: "Entrer en contact",
   sectionTitle: "Nous contacter facilement",
   sectionSubtitle:

@@ -4,6 +4,9 @@ import {
   DEFAULT_IMAGE_ALT,
   DEFAULT_IMAGE_TYPE,
   DEFAULT_ROBOTS,
+  HOME_HERO_PRELOAD,
+  HOME_HERO_PRELOAD_SRCSET,
+  HOME_HERO_SIZES,
   SITE_LANGUAGE,
   SITE_LOCALE,
   SITE_NAME,
@@ -66,12 +69,42 @@ function upsertLink(rel, href, extra = {}) {
   tag.setAttribute("href", href);
 }
 
+function removeLink(rel, extra = {}) {
+  const extraSelector = Object.entries(extra)
+    .map(([key, value]) => `[${key}="${value}"]`)
+    .join("");
+  document.head.querySelector(`link[rel="${rel}"]${extraSelector}`)?.remove();
+}
+
+function syncHomeHeroPreload(isHome) {
+  let tag = document.getElementById("seo-home-hero-preload");
+
+  if (!isHome) {
+    tag?.remove();
+    return;
+  }
+
+  if (!tag) {
+    tag = document.createElement("link");
+    tag.id = "seo-home-hero-preload";
+    document.head.appendChild(tag);
+  }
+
+  tag.setAttribute("rel", "preload");
+  tag.setAttribute("as", "image");
+  tag.setAttribute("type", "image/avif");
+  tag.setAttribute("fetchpriority", "high");
+  tag.setAttribute("href", HOME_HERO_PRELOAD);
+  tag.setAttribute("imagesrcset", HOME_HERO_PRELOAD_SRCSET);
+  tag.setAttribute("imagesizes", HOME_HERO_SIZES);
+}
+
 export default function SeoManager() {
   const { pathname } = useLocation();
 
   useEffect(() => {
     const seo = getPageSeo(pathname);
-    const canonical = getCanonicalUrl(pathname);
+    const canonical = seo.canonical === null ? null : getCanonicalUrl(pathname);
     const ogImage = toAbsoluteUrl(seo.image);
     const imageAlt = seo.imageAlt || DEFAULT_IMAGE_ALT;
     const robots = seo.robots ?? DEFAULT_ROBOTS;
@@ -80,7 +113,6 @@ export default function SeoManager() {
     document.documentElement.lang = SITE_LANGUAGE;
 
     setMeta("name", "description", seo.description);
-    setMeta("name", "keywords", seo.keywords?.join(", "));
     setMeta("name", "robots", robots);
     setMeta("name", "googlebot", robots);
 
@@ -104,9 +136,12 @@ export default function SeoManager() {
     setMeta("name", "twitter:image:alt", imageAlt);
     setMeta("name", "twitter:url", canonical);
 
-    upsertLink("canonical", canonical);
-    upsertLink("alternate", canonical, { hreflang: "fr-FR" });
-    upsertLink("alternate", canonical, { hreflang: "x-default" });
+    if (canonical) {
+      upsertLink("canonical", canonical);
+    } else {
+      removeLink("canonical");
+    }
+    syncHomeHeroPreload(pathname === "/");
 
     const graph = getSeoGraph(pathname);
     let jsonLdTag = document.getElementById("seo-json-ld");

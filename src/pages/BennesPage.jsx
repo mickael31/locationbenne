@@ -22,7 +22,7 @@ export default function BennesPage() {
           <h1>{bennes.title}</h1>
           <p className="bennes-hero-lead">{bennes.intro}</p>
           <div className="services-hero-actions">
-            <NavLink to="/contact" className="btn btn-primary">
+            <NavLink to="/contact/" className="btn btn-primary">
               Demander un devis
             </NavLink>
             <a href={`tel:${company.phoneRaw}`} className="btn btn-light">
@@ -39,7 +39,7 @@ export default function BennesPage() {
               key={item.title}
               className={`bennes-volume-item fade-in stagger-${i + 1}`}
             >
-              <h3>{item.title}</h3>
+              <h2>{item.title}</h2>
               <p>{benneUsage[item.title]}</p>
             </article>
           ))}
@@ -66,7 +66,7 @@ export default function BennesPage() {
                 <h3>{item.title}</h3>
                 <p>{item.description}</p>
                 <div className="service-actions">
-                  <NavLink to="/contact" className="btn btn-secondary small">
+                  <NavLink to="/contact/" className="btn btn-secondary small">
                     Choisir cette benne
                   </NavLink>
                 </div>

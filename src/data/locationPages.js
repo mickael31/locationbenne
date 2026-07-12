@@ -4,10 +4,24 @@ const sharedChecklist = [
   "L'accès du camion et l'emplacement de la benne",
 ];
 
+function createPreparationGuidance(city, localContext) {
+  return [
+    {
+      title: `Décrire le lieu de pose à ${city}`,
+      description: localContext,
+    },
+    {
+      title: "Vérifier les règles de voirie",
+      description: `À ${city}, si la benne doit occuper une chaussée, un trottoir ou une place de stationnement, renseignez-vous en amont auprès de la collectivité compétente sur l'autorisation éventuellement requise et les conditions de signalisation ou de protection.`,
+    },
+  ];
+}
+
 export const locationPages = [
   {
     key: "montauban",
-    path: "/location-benne-montauban",
+    path: "/location-benne-montauban/",
+    lastModified: "2026-07-12",
     city: "Montauban",
     eyebrow: "Location de benne à Montauban",
     title: "Location de benne à Montauban : un conseil adapté à votre chantier",
@@ -33,6 +47,10 @@ export const locationPages = [
       },
     ],
     checklist: sharedChecklist,
+    preparation: createPreparationGuidance(
+      "Montauban",
+      "Précisez si la pose est prévue dans une cour, devant une maison, près d'une dépendance ou sur un terrain à Montauban. Nous pourrons ainsi parler de la largeur d'accès, de la stabilité du sol et de l'espace nécessaire aux manœuvres du camion.",
+    ),
     faqs: [
       {
         question: "Comment choisir une benne pour un chantier à Montauban ?",
@@ -49,17 +67,12 @@ export const locationPages = [
       title: "Location de benne à Montauban | Devis et conseil téléphone",
       description:
         "Location de benne à Montauban pour gravats, débarras et déchets verts. Premier échange par téléphone, conseil sur le volume, devis gratuit et livraison organisée.",
-      keywords: [
-        "location benne montauban",
-        "location de benne 82000",
-        "benne gravats montauban",
-        "benne débarras montauban",
-      ],
     },
   },
   {
     key: "toulouse",
-    path: "/location-benne-toulouse",
+    path: "/location-benne-toulouse/",
+    lastModified: "2026-07-12",
     city: "Toulouse",
     eyebrow: "Location de benne à Toulouse",
     title: "Location de benne à Toulouse : préparer l'accès avant la livraison",
@@ -85,6 +98,10 @@ export const locationPages = [
       },
     ],
     checklist: sharedChecklist,
+    preparation: createPreparationGuidance(
+      "Toulouse",
+      "À Toulouse, indiquez si le chantier se trouve dans une rue passante, une cour, une copropriété ou un lotissement. La largeur de l'accès, le stationnement disponible et les obstacles en hauteur sont à examiner avant de choisir l'emplacement.",
+    ),
     faqs: [
       {
         question: "Pourquoi parler de l'accès avant une location de benne à Toulouse ?",
@@ -101,17 +118,12 @@ export const locationPages = [
       title: "Location de benne à Toulouse | Conseil accès et devis gratuit",
       description:
         "Location de benne à Toulouse pour rénovation, débarras et chantier. Nous vérifions par téléphone déchets, volume et accès avant de confirmer votre devis gratuit.",
-      keywords: [
-        "location benne toulouse",
-        "location de benne toulouse",
-        "benne chantier toulouse",
-        "benne débarras toulouse",
-      ],
     },
   },
   {
     key: "albi",
-    path: "/location-benne-albi",
+    path: "/location-benne-albi/",
+    lastModified: "2026-07-12",
     city: "Albi",
     eyebrow: "Location de benne à Albi",
     title: "Location de benne à Albi : la solution adaptée à vos déchets",
@@ -137,6 +149,10 @@ export const locationPages = [
       },
     ],
     checklist: sharedChecklist,
+    preparation: createPreparationGuidance(
+      "Albi",
+      "Pour une maison, un jardin ou un local en travaux à Albi, décrivez l'entrée du site et la surface de pose envisagée. Un emplacement stable, dégagé et accessible au camion aide à préparer une livraison sans mauvaise surprise.",
+    ),
     faqs: [
       {
         question: "Quels déchets évoquer avant une location de benne à Albi ?",
@@ -153,12 +169,6 @@ export const locationPages = [
       title: "Location de benne à Albi | Devis, volume et accès vérifiés",
       description:
         "Location de benne à Albi pour travaux, débarras et déchets verts. Premier échange téléphonique, conseil sur le volume, vérification de l'accès et devis gratuit.",
-      keywords: [
-        "location benne albi",
-        "location de benne albi",
-        "benne gravats albi",
-        "benne déchets verts albi",
-      ],
     },
   },
 ];

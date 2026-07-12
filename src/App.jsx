@@ -43,27 +43,39 @@ export default function App({ pages = clientPages }) {
       <SiteLayout>
         <Suspense fallback={<RouteFallback />}>
           <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/bennes" element={<BennesPage />} />
-            <Route path="/357-2" element={<Navigate to="/bennes" replace />} />
-            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/" caseSensitive element={<HomePage />} />
+            <Route path="/about/" caseSensitive element={<AboutPage />} />
+            <Route path="/contact/" caseSensitive element={<ContactPage />} />
+            <Route path="/bennes/" caseSensitive element={<BennesPage />} />
             <Route
-              path="/location-benne-montauban"
+              path="/357-2/"
+              caseSensitive
+              element={<Navigate to="/bennes/" replace />}
+            />
+            <Route path="/services/" caseSensitive element={<ServicesPage />} />
+            <Route
+              path="/location-benne-montauban/"
+              caseSensitive
               element={<LocationPage locationKey="montauban" />}
             />
             <Route
-              path="/location-benne-toulouse"
+              path="/location-benne-toulouse/"
+              caseSensitive
               element={<LocationPage locationKey="toulouse" />}
             />
             <Route
-              path="/location-benne-albi"
+              path="/location-benne-albi/"
+              caseSensitive
               element={<LocationPage locationKey="albi" />}
             />
-            <Route path="/partenaire-elagage" element={<PartnerPage />} />
             <Route
-              path="/politique-de-confidentialite"
+              path="/partenaire-elagage/"
+              caseSensitive
+              element={<PartnerPage />}
+            />
+            <Route
+              path="/politique-de-confidentialite/"
+              caseSensitive
               element={<PrivacyPage />}
             />
             <Route path="*" element={<NotFoundPage />} />

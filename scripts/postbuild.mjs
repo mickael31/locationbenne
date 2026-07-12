@@ -12,6 +12,9 @@ import {
   DEFAULT_IMAGE_TYPE,
   DEFAULT_IMAGE_WIDTH,
   DEFAULT_ROBOTS,
+  HOME_HERO_PRELOAD,
+  HOME_HERO_PRELOAD_SRCSET,
+  HOME_HERO_SIZES,
   INDEXABLE_ROUTES,
   LEGACY_ROUTE_REDIRECTS,
   SITE_ORIGIN,
@@ -48,8 +51,10 @@ function renderSeoBlock({
   title,
   description,
   robots,
-  keywords,
   canonical,
+  preloadImage,
+  preloadImageSrcSet,
+  preloadImageSizes,
   image,
   imageAlt,
   imageWidth,
@@ -62,19 +67,11 @@ function renderSeoBlock({
     `<meta name="description" content="${escapeAttribute(description)}" />`,
     `<meta name="robots" content="${escapeAttribute(robots || DEFAULT_ROBOTS)}" />`,
     `<meta name="googlebot" content="${escapeAttribute(robots || DEFAULT_ROBOTS)}" />`,
-    keywords?.length
-      ? `<meta name="keywords" content="${escapeAttribute(
-          keywords.join(", "),
-        )}" />`
-      : null,
     canonical
       ? `<link rel="canonical" href="${escapeAttribute(canonical)}" />`
       : null,
-    canonical
-      ? `<link rel="alternate" hreflang="fr-FR" href="${escapeAttribute(canonical)}" />`
-      : null,
-    canonical
-      ? `<link rel="alternate" hreflang="x-default" href="${escapeAttribute(canonical)}" />`
+    preloadImage
+      ? `<link id="seo-home-hero-preload" rel="preload" as="image" type="image/avif" fetchpriority="high" href="${escapeAttribute(preloadImage)}" imagesrcset="${escapeAttribute(preloadImageSrcSet)}" imagesizes="${escapeAttribute(preloadImageSizes)}" />`
       : null,
     `<meta property="og:title" content="${escapeAttribute(title)}" />`,
     `<meta property="og:description" content="${escapeAttribute(description)}" />`,
@@ -149,8 +146,11 @@ function renderRouteHtml(templateHtml, pathname) {
         title: seo.title,
         description: seo.description,
         robots: seo.robots || DEFAULT_ROBOTS,
-        keywords: seo.keywords,
         canonical,
+        preloadImage: pathname === "/" ? HOME_HERO_PRELOAD : null,
+        preloadImageSrcSet:
+          pathname === "/" ? HOME_HERO_PRELOAD_SRCSET : null,
+        preloadImageSizes: pathname === "/" ? HOME_HERO_SIZES : null,
         image: toAbsoluteUrl(seo.image),
         imageAlt: seo.imageAlt,
         imageWidth: seo.imageWidth,
@@ -165,22 +165,7 @@ function renderRouteHtml(templateHtml, pathname) {
 
 function render404Html(templateHtml) {
   const seo = getPageSeo("/route-introuvable");
-  const graph = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        name: SITE_NAME,
-        url: `${SITE_ORIGIN}/`,
-      },
-      {
-        "@type": "WebPage",
-        name: seo.title,
-        url: `${SITE_ORIGIN}/404.html`,
-        description: seo.description,
-      },
-    ],
-  };
+  const graph = getSeoGraph("/404.html");
 
   return injectAppHtml(
     injectSeoBlock(
@@ -189,8 +174,7 @@ function render404Html(templateHtml) {
         title: seo.title,
         description: seo.description,
         robots: seo.robots,
-        keywords: [],
-        canonical: `${SITE_ORIGIN}/404.html`,
+        canonical: null,
         image: toAbsoluteUrl(seo.image),
         imageAlt: seo.imageAlt,
         imageWidth: seo.imageWidth,
@@ -213,6 +197,7 @@ function renderRedirectHtml(fromPath, toPath) {
     "@graph": [
       {
         "@type": "WebPage",
+        "@id": `${SITE_ORIGIN}${fromPath}/#webpage`,
         name: title,
         url: `${SITE_ORIGIN}${fromPath}/`,
         description,
@@ -221,7 +206,7 @@ function renderRedirectHtml(fromPath, toPath) {
   };
 
   return `<!doctype html>
-<html lang="fr">
+<html lang="fr-FR">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="refresh" content="0;url=${escapeAttribute(targetUrl)}" />
@@ -229,7 +214,6 @@ function renderRedirectHtml(fromPath, toPath) {
       title,
       description,
       robots: "noindex,follow",
-      keywords: [],
       canonical: targetUrl,
       image: toAbsoluteUrl(targetSeo.image),
       imageAlt: targetSeo.imageAlt,
@@ -253,8 +237,7 @@ function renderSitemapXml() {
   const urls = INDEXABLE_ROUTES.map(
     (route) => `  <url>
     <loc>${escapeHtml(getCanonicalUrl(route.path))}</loc>
-    <changefreq>${route.changefreq}</changefreq>
-    <priority>${route.priority}</priority>
+    <lastmod>${route.lastmod}</lastmod>
   </url>`,
   ).join("\n");
 

@@ -25,7 +25,7 @@ export default function ServicesPage() {
             fiable pour vos besoins d'évacuation de déchets en Occitanie.
           </p>
           <div className="services-hero-actions">
-            <NavLink to="/contact" className="btn btn-primary">
+            <NavLink to="/contact/" className="btn btn-primary">
               Demander un devis
             </NavLink>
             <a href={`tel:${company.phoneRaw}`} className="btn btn-light">
@@ -65,7 +65,7 @@ export default function ServicesPage() {
               >
                 <SiteImage
                   src={item.image}
-                  alt={item.title}
+                  alt={item.imageAlt}
                   width={dimensions.width}
                   height={dimensions.height}
                   sizes="(max-width: 980px) 92vw, 310px"
@@ -75,7 +75,7 @@ export default function ServicesPage() {
                   <h2>{item.title}</h2>
                   <p>{item.description}</p>
                   <div className="service-actions">
-                    <NavLink to="/contact" className="btn btn-secondary small">
+                    <NavLink to="/contact/" className="btn btn-secondary small">
                       Demander ce service
                     </NavLink>
                     <a href={`tel:${company.phoneRaw}`} className="btn btn-ghost small">

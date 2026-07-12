@@ -13,7 +13,7 @@ export default function HomePage() {
     <>
       <section className="hero">
         <div className="container hero-grid hero-grid-pro">
-          <div className="hero-copy fade-in-left">
+          <div className="hero-copy">
             <p className="eyebrow">{home.hero.eyebrow}</p>
             <h1>{home.hero.title}</h1>
             <PhoneFirstNotice compact />
@@ -26,10 +26,10 @@ export default function HomePage() {
             </ul>
 
             <div className="button-row">
-              <NavLink to="/contact" className="btn btn-primary">
+              <NavLink to="/contact/" className="btn btn-primary">
                 Demander un devis
               </NavLink>
-              <NavLink to="/bennes" className="btn btn-ghost">
+              <NavLink to="/bennes/" className="btn btn-ghost">
                 Voir les bennes
               </NavLink>
             </div>
@@ -50,7 +50,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="hero-media fade-in-right">
+          <div className="hero-media">
             <SiteImage
               src={home.hero.image}
               alt="Camion benne en Occitanie"
@@ -108,7 +108,7 @@ export default function HomePage() {
           <SiteImage
             className="fade-in-left"
             src={home.intro.image}
-            alt="Équipe Location Benne Occitanie"
+            alt="Illustration de l'histoire de Benne Occitanie"
             width={1024}
             height={1024}
             sizes="(max-width: 980px) 92vw, 44vw"
@@ -116,7 +116,7 @@ export default function HomePage() {
           <div className="fade-in-right">
             <h2>{home.intro.title}</h2>
             <p>{home.intro.text}</p>
-            <NavLink to="/about" className="btn btn-secondary">
+            <NavLink to="/about/" className="btn btn-secondary">
               En savoir plus
             </NavLink>
           </div>
@@ -146,7 +146,7 @@ export default function HomePage() {
             <p className="quick-cta-note">Un appel suffit pour lancer votre demande.</p>
           </div>
           <div className="button-row">
-            <NavLink to="/contact" className="btn btn-primary">
+            <NavLink to="/contact/" className="btn btn-primary">
               Demander un devis
             </NavLink>
             <a href={`tel:${company.phoneRaw}`} className="btn btn-light">
@@ -207,11 +207,8 @@ export default function HomePage() {
           <div className="fade-in home-review-wrap">
             <iframe
               loading="lazy"
-              onLoad={(e) => {
-                if (window.iFrameResize) {
-                  window.iFrameResize(e.target);
-                }
-              }}
+              width="100%"
+              height="320"
               src="https://2ce195e1bf9e45548064458cdf627318.elf.site"
               className="home-review-frame"
               title="Avis clients - Trustindex"

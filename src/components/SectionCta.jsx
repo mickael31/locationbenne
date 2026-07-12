@@ -13,7 +13,7 @@ export default function SectionCta({ showPhoneNotice = true }) {
           location de bennes.
         </p>
         <div className="cta-actions">
-          <NavLink to="/contact" className="btn btn-light">
+          <NavLink to="/contact/" className="btn btn-light">
             Nous contacter
           </NavLink>
           <a href={`tel:${company.phoneRaw}`} className="btn btn-primary">

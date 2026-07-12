@@ -66,7 +66,7 @@ export default function PartnerPage() {
               >
                 Accéder au site Natur'Elag 82
               </a>
-              <NavLink to="/contact" className="btn btn-ghost small">
+              <NavLink to="/contact/" className="btn btn-ghost small">
                 Demander un devis benne
               </NavLink>
             </div>
