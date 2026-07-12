@@ -3,6 +3,7 @@ import PhoneFirstNotice from "../components/PhoneFirstNotice";
 import SectionCta from "../components/SectionCta";
 import SiteImage from "../components/SiteImage";
 import { company, home } from "../data/content";
+import { locationPages } from "../data/locationPages";
 import useScrollReveal from "../hooks/useScrollReveal";
 
 export default function HomePage() {
@@ -79,6 +80,27 @@ export default function HomePage() {
           <article className="trust-item fade-in stagger-1">Zones urbaines et périurbaines</article>
           <article className="trust-item fade-in stagger-2">Gestion responsable des déchets</article>
           <article className="trust-item fade-in stagger-3">Accompagnement de A à Z</article>
+        </div>
+      </section>
+
+      <section className="section alt">
+        <div className="container">
+          <p className="eyebrow fade-in">Nos zones principales</p>
+          <h2 className="fade-in">Location de benne à Montauban, Toulouse et Albi</h2>
+          <p className="section-lead fade-in">
+            Découvrez les informations utiles pour préparer votre location selon votre ville et contactez-nous pour valider votre besoin.
+          </p>
+          <div className="cards">
+            {locationPages.map((location, index) => (
+              <article className={`card scale-in stagger-${index + 1}`} key={location.path}>
+                <h3>{location.city}</h3>
+                <p>{location.lead}</p>
+                <NavLink to={location.path} className="btn btn-secondary small">
+                  Location de benne à {location.city}
+                </NavLink>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 

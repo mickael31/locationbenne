@@ -3,8 +3,10 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import { home } from "../src/data/content.js";
+import { locationPages } from "../src/data/locationPages.js";
 import {
   INDEXABLE_ROUTES,
+  getCanonicalUrl,
   getPageSeo,
   getSeoGraph,
 } from "../src/seo/seoConfig.js";
@@ -45,6 +47,54 @@ test("structured data exposes the phone channel for the rental service", () => {
   assert.match(service.description, /téléphone/i);
 });
 
+test("local landing pages are indexable with distinct city-focused metadata", () => {
+  const expectedPaths = [
+    "/location-benne-montauban",
+    "/location-benne-toulouse",
+    "/location-benne-albi",
+  ];
+
+  assert.deepEqual(
+    locationPages.map(({ path }) => path),
+    expectedPaths,
+  );
+  assert.deepEqual(
+    expectedPaths.map((path) => INDEXABLE_ROUTES.find((route) => route.path === path)?.path),
+    expectedPaths,
+  );
+
+  for (const page of locationPages) {
+    const seo = getPageSeo(page.path);
+    const graph = getSeoGraph(page.path)["@graph"];
+    const pageSchema = graph.find(
+      (item) => item.url === getCanonicalUrl(page.path),
+    );
+    const service = graph.find((item) => item["@type"] === "Service");
+
+    assert.match(seo.title, new RegExp(page.city, "i"));
+    assert.match(seo.description, new RegExp(page.city, "i"));
+    assert.equal(pageSchema["@type"], "WebPage");
+    assert.ok(service.areaServed.includes(page.city));
+    assert.match(service.description, /téléphone/i);
+  }
+});
+
+test("local landing pages provide unique content and conversion paths", async () => {
+  const [locationPage, app, homePage] = await Promise.all([
+    readFile(new URL("../src/pages/LocationPage.jsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/App.jsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/pages/HomePage.jsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(locationPage, /Appeler .*company\.phoneLocalDisplay/);
+  assert.match(locationPage, /Demander un devis/);
+  assert.match(locationPage, /Questions fréquentes/);
+  assert.match(app, /location-benne-montauban/);
+  assert.match(app, /location-benne-toulouse/);
+  assert.match(app, /location-benne-albi/);
+  assert.match(homePage, /locationPages\.map/);
+});
+
 test("the phone-first notice is visible on key conversion pages", async () => {
   const [notice, homePage, contactPage, sectionCta] = await Promise.all([
     readFile(new URL("../src/components/PhoneFirstNotice.jsx", import.meta.url), "utf8"),
@@ -67,6 +117,16 @@ test("the phone-first notice is visible on key conversion pages", async () => {
   assert.ok(heroNoticePosition > 0);
   assert.ok(heroNoticePosition < heroKpisPosition);
   assert.equal((homePage.match(/<PhoneFirstNotice/g) || []).length, 1);
+});
+
+test("images use the browser-recognized priority attribute", async () => {
+  const siteImage = await readFile(
+    new URL("../src/components/SiteImage.jsx", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(siteImage, /fetchpriority=\{fetchPriority\}/);
+  assert.doesNotMatch(siteImage, /fetchPriority=\{fetchPriority\}/);
 });
 
 test("unknown frontend routes return the generated 404 page with status 404", async () => {

@@ -20,7 +20,7 @@ export default function SiteImage({
     <img
       loading={loading}
       decoding={decoding}
-      fetchPriority={fetchPriority}
+      fetchpriority={fetchPriority}
       style={imageStyle}
       {...props}
     />

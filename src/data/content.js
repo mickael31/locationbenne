@@ -22,9 +22,9 @@ export const navLinks = [
 export const home = {
   hero: {
     eyebrow: "Votre solution",
-    title: "Location de bennes rapide et efficace",
+    title: "Location de bennes à Montauban, Toulouse et Albi",
     description:
-      "Profitez d'un service d'évacuation de gravats et déchets dans toute l'Occitanie : Montauban, Toulouse, Albi, ainsi que toutes les communes alentours.",
+      "Pour vos gravats, encombrants et déchets verts, nous vous conseillons par téléphone avant de confirmer la benne adaptée à votre chantier ou débarras.",
     image:
       "/images/2025/08/ChatGPT-Image-5-aout-2025-01_57_25-1024x683.png",
   },
@@ -144,10 +144,10 @@ export const about = {
     "Depuis sa création, Location Benne Occitanie a su répondre aux besoins variés de ses clients en matière de gestion des déchets. Grâce à des services rapides et efficaces, l'entreprise a pu améliorer la satisfaction et la tranquillité d'esprit de nombreux particuliers et professionnels autour de Montauban, Toulouse et Albi. Chaque intervention vise à optimiser l'espace de vie des clients tout en respectant l'environnement.",
   ],
   counters: [
-    { value: "25+", label: "Années d'expérience" },
-    { value: "1+", label: "Membres de l'équipe" },
-    { value: "99%", label: "Clients satisfaits" },
-    { value: "1000+", label: "Chantiers réalisés" },
+    { value: "3 à 15 m³", label: "Volumes disponibles" },
+    { value: "1er appel", label: "Besoin qualifié" },
+    { value: "Particuliers & pros", label: "Projets accompagnés" },
+    { value: "Occitanie", label: "Zone d'intervention" },
   ],
   storyTitle: "Notre parcours",
   storyHeading: "L'histoire de Location Benne Occitanie",

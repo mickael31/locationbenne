@@ -944,6 +944,23 @@ details[open] summary::after {
   background: linear-gradient(120deg, #171f28 0%, #2f3c49 60%, #16212b 100%);
 }
 
+.page-hero-location {
+  background: linear-gradient(120deg, #17212b 0%, #304153 60%, #17222d 100%);
+}
+
+.location-hero-lead,
+.location-intro > p:not(.eyebrow) {
+  max-width: 78ch;
+}
+
+.location-actions,
+.location-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1.1rem;
+}
+
 .about-hero-lead {
   max-width: 75ch;
   margin-top: 0.2rem;

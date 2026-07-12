@@ -5,6 +5,7 @@ import {
   home,
   servicesPage,
 } from "../data/content.js";
+import { locationPages } from "../data/locationPages.js";
 
 export const SITE_ORIGIN = "https://location-benne-occitanie.fr";
 export const SITE_NAME = company.name;
@@ -23,6 +24,29 @@ export const DEFAULT_ROBOTS =
 export const LEGACY_ROUTE_REDIRECTS = [
   { from: "/357-2", to: "/bennes" },
 ];
+
+const DEFAULT_AREA_SERVED = ["Montauban", "Toulouse", "Albi", "Occitanie"];
+
+const locationRoutes = locationPages.map((page) => ({
+  path: page.path,
+  label: `Location de benne à ${page.city}`,
+  title: page.seo.title,
+  description: page.seo.description,
+  image: home.hero.image,
+  imageAlt: `Location de benne à ${page.city}`,
+  imageWidth: 1024,
+  imageHeight: 683,
+  keywords: page.seo.keywords,
+  schemaType: "WebPage",
+  changefreq: "monthly",
+  priority: "0.8",
+  includeLocalBusiness: true,
+  includePrimaryService: true,
+  includeFaq: true,
+  faqs: page.faqs,
+  areaServed: [page.city, "Occitanie"],
+  serviceName: `Location de benne à ${page.city}`,
+}));
 
 const PRIMARY_ROUTES = [
   {
@@ -173,6 +197,7 @@ const PRIMARY_ROUTES = [
     changefreq: "yearly",
     priority: "0.3",
   },
+  ...locationRoutes,
 ];
 
 const NOT_FOUND_SEO = {
@@ -219,13 +244,13 @@ function getBreadcrumb(pathname) {
   return crumbs;
 }
 
-function getContactPointSchema() {
+function getContactPointSchema(areaServed = DEFAULT_AREA_SERVED) {
   return {
     "@type": "ContactPoint",
     contactType: "customer service",
     email: company.email,
     telephone: company.phoneRaw,
-    areaServed: ["Montauban", "Toulouse", "Albi", "Occitanie"],
+    areaServed,
     availableLanguage: ["fr-FR"],
   };
 }
@@ -264,7 +289,7 @@ function getWebSiteSchema() {
   };
 }
 
-function getLocalBusinessSchema() {
+function getLocalBusinessSchema(areaServed = DEFAULT_AREA_SERVED) {
   return {
     "@type": "LocalBusiness",
     "@id": `${SITE_ORIGIN}/#localbusiness`,
@@ -282,40 +307,43 @@ function getLocalBusinessSchema() {
       addressRegion: "Occitanie",
       addressCountry: "FR",
     },
-    areaServed: ["Montauban", "Toulouse", "Albi", "Occitanie"],
+    areaServed,
     serviceType: [
       "Location de bennes",
       "Évacuation de déchets",
       "Devis gratuit",
     ],
-    contactPoint: [getContactPointSchema()],
+    contactPoint: [getContactPointSchema(areaServed)],
   };
 }
 
-function getPrimaryServiceSchema() {
+function getPrimaryServiceSchema({
+  areaServed = DEFAULT_AREA_SERVED,
+  serviceName = "Location de bennes en Occitanie",
+} = {}) {
   return {
     "@type": "Service",
-    name: "Location de bennes en Occitanie",
+    name: serviceName,
     serviceType: "Location de bennes",
     description:
       "Un premier échange par téléphone permet de qualifier le besoin et de recommander la benne adaptée au volume, aux déchets et aux accès.",
     provider: {
       "@id": `${SITE_ORIGIN}/#localbusiness`,
     },
-    areaServed: ["Montauban", "Toulouse", "Albi", "Occitanie"],
+    areaServed,
     availableChannel: {
       "@type": "ServiceChannel",
       serviceUrl: `${SITE_ORIGIN}/contact/`,
-      servicePhone: getContactPointSchema(),
+      servicePhone: getContactPointSchema(areaServed),
       availableLanguage: ["fr-FR"],
     },
   };
 }
 
-function getFaqSchema() {
+function getFaqSchema(faqs = home.faqs) {
   return {
     "@type": "FAQPage",
-    mainEntity: home.faqs.map((faq) => ({
+    mainEntity: faqs.map((faq) => ({
       "@type": "Question",
       name: faq.question,
       acceptedAnswer: {
@@ -455,13 +483,18 @@ export function getSeoGraph(pathname) {
   ];
 
   if (seo.includeLocalBusiness) {
-    graph.push(getLocalBusinessSchema());
+    graph.push(getLocalBusinessSchema(seo.areaServed));
   }
   if (seo.includePrimaryService) {
-    graph.push(getPrimaryServiceSchema());
+    graph.push(
+      getPrimaryServiceSchema({
+        areaServed: seo.areaServed,
+        serviceName: seo.serviceName,
+      }),
+    );
   }
   if (seo.includeFaq) {
-    graph.push(getFaqSchema());
+    graph.push(getFaqSchema(seo.faqs));
   }
   if (seo.includeServiceCatalog) {
     graph.push(getServiceCatalogSchema());

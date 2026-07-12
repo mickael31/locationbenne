@@ -7,6 +7,7 @@ import SeoManager from "./components/SeoManager";
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const BennesPage = lazy(() => import("./pages/BennesPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
+const LocationPage = lazy(() => import("./pages/LocationPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 const PartnerPage = lazy(() => import("./pages/PartnerPage"));
 const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
@@ -35,6 +36,18 @@ export default function App() {
             <Route path="/bennes" element={<BennesPage />} />
             <Route path="/357-2" element={<Navigate to="/bennes" replace />} />
             <Route path="/services" element={<ServicesPage />} />
+            <Route
+              path="/location-benne-montauban"
+              element={<LocationPage locationKey="montauban" />}
+            />
+            <Route
+              path="/location-benne-toulouse"
+              element={<LocationPage locationKey="toulouse" />}
+            />
+            <Route
+              path="/location-benne-albi"
+              element={<LocationPage locationKey="albi" />}
+            />
             <Route path="/partenaire-elagage" element={<PartnerPage />} />
             <Route
               path="/politique-de-confidentialite"
