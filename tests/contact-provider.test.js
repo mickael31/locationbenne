@@ -16,6 +16,11 @@ test("the contact form uses EmailJS automatically for static deployments", () =>
 
 test("the local API remains available when explicitly selected", () => {
   assert.equal(resolveContactProvider({ VITE_CONTACT_PROVIDER: "api" }), "api");
+  assert.equal(resolveContactProvider({ VITE_CONTACT_PROVIDER: " API " }), "api");
+  assert.throws(
+    () => resolveContactProvider({ VITE_CONTACT_PROVIDER: "unknown" }),
+    /invalid-contact-provider/,
+  );
 });
 
 test("EmailJS environment values override the static deployment defaults", () => {

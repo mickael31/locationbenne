@@ -1,6 +1,7 @@
 node_modules
 dist
 .ssr
+coverage
 server-data
 .env
 .env.local

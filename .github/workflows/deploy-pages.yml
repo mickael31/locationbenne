@@ -34,8 +34,8 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Build
-        run: npm run build
+      - name: Test and build
+        run: npm test
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

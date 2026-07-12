@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, readdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, before, test } from "node:test";
@@ -137,4 +137,71 @@ test("unknown API routes return a consistent JSON 404 response", async () => {
   });
   assert.equal(postResponse.status, 404);
   assert.deepEqual(await postResponse.json(), { error: "not-found" });
+});
+
+test("API responses cannot be indexed and static index files redirect cleanly", async () => {
+  const healthResponse = await fetch(`${baseUrl}/api/health`);
+  assert.equal(healthResponse.headers.get("x-robots-tag"), "noindex, nofollow");
+  assert.equal(healthResponse.headers.get("cache-control"), "no-store");
+
+  for (const [pathname, expectedLocation] of [
+    ["/index.html", "/"],
+    ["/about/index.html", "/about/"],
+    ["/ABOUT/index.html", "/about/"],
+    ["/about/index.html?utm_source=test", "/about/?utm_source=test"],
+    ["/357-2/index.html", "/bennes/"],
+  ]) {
+    const response = await fetch(`${baseUrl}${pathname}`, {
+      redirect: "manual",
+    });
+
+    assert.equal(response.status, 301);
+    assert.equal(response.headers.get("location"), expectedLocation);
+  }
+
+  const uppercaseApiResponse = await fetch(`${baseUrl}/API/test/index.html`, {
+    redirect: "manual",
+  });
+  assert.equal(uppercaseApiResponse.status, 404);
+  assert.equal(uppercaseApiResponse.headers.get("location"), null);
+  assert.equal(
+    uppercaseApiResponse.headers.get("x-robots-tag"),
+    "noindex, nofollow",
+  );
+
+  const uppercasePageResponse = await fetch(`${baseUrl}/ABOUT/?utm_source=test`, {
+    redirect: "manual",
+  });
+  assert.equal(uppercasePageResponse.status, 301);
+  assert.equal(
+    uppercasePageResponse.headers.get("location"),
+    "/about/?utm_source=test",
+  );
+});
+
+test("public pages revalidate while versioned assets use durable caching", async () => {
+  const assetNames = await readdir(new URL("../dist/assets/", import.meta.url));
+  const scriptName = assetNames.find((name) => /-[A-Za-z0-9_-]+\.js$/i.test(name));
+  assert.ok(scriptName);
+
+  const [pageResponse, assetResponse, imageResponse] = await Promise.all([
+    fetch(`${baseUrl}/about/`, {
+      headers: { "Accept-Encoding": "gzip" },
+    }),
+    fetch(`${baseUrl}/assets/${scriptName}`),
+    fetch(
+      `${baseUrl}/images/2025/08/ChatGPT-Image-5-aout-2025-01_57_25-1024x683.avif`,
+    ),
+  ]);
+
+  assert.match(pageResponse.headers.get("cache-control") || "", /no-cache/);
+  assert.equal(pageResponse.headers.get("content-encoding"), "gzip");
+  assert.equal(
+    assetResponse.headers.get("cache-control"),
+    "public, max-age=31536000, immutable",
+  );
+  assert.equal(
+    imageResponse.headers.get("cache-control"),
+    "public, max-age=2592000",
+  );
 });

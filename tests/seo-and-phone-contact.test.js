@@ -49,9 +49,9 @@ test("structured data exposes the phone channel for the rental service", () => {
 
 test("local landing pages are indexable with distinct city-focused metadata", () => {
   const expectedPaths = [
-    "/location-benne-montauban",
-    "/location-benne-toulouse",
-    "/location-benne-albi",
+    "/location-benne-montauban/",
+    "/location-benne-toulouse/",
+    "/location-benne-albi/",
   ];
 
   assert.deepEqual(

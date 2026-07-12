@@ -1,7 +1,5 @@
 import assert from "node:assert/strict";
 import { readFile, stat } from "node:fs/promises";
-import { spawnSync } from "node:child_process";
-import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 import {
@@ -21,16 +19,6 @@ function routeFile(pathname) {
 }
 
 test("the production build emits crawlable HTML for every indexable route", async () => {
-  const isWindows = process.platform === "win32";
-  const command = isWindows ? process.env.ComSpec : "npm";
-  const args = isWindows ? ["/d", "/s", "/c", "npm run build"] : ["run", "build"];
-  const result = spawnSync(command, args, {
-    cwd: fileURLToPath(projectRoot),
-    encoding: "utf8",
-  });
-
-  assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
-
   for (const { path } of INDEXABLE_ROUTES) {
     const file = routeFile(path);
     await stat(file);
@@ -40,10 +28,13 @@ test("the production build emits crawlable HTML for every indexable route", asyn
 
     assert.equal(h1Count, 1, `${path} must contain exactly one prerendered h1`);
     assert.match(html, /<main\b/);
+    assert.match(html, /<html lang="fr-FR">/);
     assert.ok(html.includes(seo.title));
     assert.ok(html.includes(getCanonicalUrl(path)));
     assert.doesNotMatch(html, /<div id="root"><\/div>/);
     assert.doesNotMatch(html, /name="geo\.(?:region|placename)"/);
+    assert.doesNotMatch(html, /<meta\s+name="keywords"/i);
+    assert.doesNotMatch(html, /hreflang=/i);
 
     for (const locationPage of locationPages) {
       assert.ok(
@@ -68,6 +59,8 @@ test("generated discovery files expose all canonical routes", async () => {
 
   assert.deepEqual(urls, expected);
   assert.equal(new Set(urls).size, urls.length);
+  assert.doesNotMatch(sitemap, /<(?:changefreq|priority)>/);
+  assert.equal((sitemap.match(/<lastmod>/g) || []).length, expected.length);
   assert.match(robots, /Disallow: \/api\//);
   assert.match(robots, /Sitemap: https:\/\/location-benne-occitanie\.fr\/sitemap\.xml/);
 });
