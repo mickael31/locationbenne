@@ -3,9 +3,11 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import compression from "compression";
 import express from "express";
 import nodemailer from "nodemailer";
 import { EmailParams, MailerSend, Recipient, Sender } from "mailersend";
+import { INDEXABLE_ROUTES } from "../src/seo/seoConfig.js";
 
 function parseIntEnv(name, fallback) {
   const value = Number(process.env[name]);
@@ -126,6 +128,9 @@ const LOGIN_LOCK_WINDOW_MS = 15 * 60 * 1000;
 const MAX_LOGIN_ATTEMPTS = 5;
 const CONTACT_RATE_WINDOW_MS = 60 * 1000;
 const CONTACT_RATE_MAX = 20;
+const CANONICAL_PATHS = new Map(
+  INDEXABLE_ROUTES.map(({ path: routePath }) => [routePath.toLowerCase(), routePath]),
+);
 const VALID_SUBMISSION_STATUS = new Set(["new", "replied", "archived"]);
 const DEFAULT_BOOTSTRAP_USERNAME = normalizeUsername(
   process.env.DEFAULT_ADMIN_USERNAME || "admin",
@@ -778,10 +783,32 @@ function checkAndRegisterContactRate(ip) {
 
 const app = express();
 app.disable("x-powered-by");
+app.use(compression());
+
+app.use("/api", (_req, res, next) => {
+  res.set("X-Robots-Tag", "noindex, nofollow");
+  res.set("Cache-Control", "no-store");
+  next();
+});
+
 app.use(express.json({ limit: "300kb" }));
 
 app.get(["/357-2", "/357-2/", "/357-2/index.html"], (_req, res) => {
   res.redirect(301, "/bennes/");
+});
+
+app.get(/\/index\.html$/i, (req, res, next) => {
+  if (req.path.toLowerCase().startsWith("/api/")) {
+    next();
+    return;
+  }
+
+  const cleanPath = req.path
+    .slice(0, -"index.html".length)
+    .replace(/\/{2,}/g, "/");
+  const search = new URL(req.originalUrl, "http://localhost").search;
+  const canonicalPath = CANONICAL_PATHS.get((cleanPath || "/").toLowerCase());
+  res.redirect(301, `${canonicalPath || cleanPath || "/"}${search}`);
 });
 
 app.get("/api/health", (_req, res) => {
@@ -1129,8 +1156,44 @@ app.use("/api", (_req, res) => {
   res.status(404).json({ error: "not-found" });
 });
 
+app.get("*", (req, res, next) => {
+  const candidatePath =
+    req.path === "/" ? "/" : `${req.path.replace(/\/+$/, "")}/`;
+  const canonicalPath = CANONICAL_PATHS.get(candidatePath.toLowerCase());
+
+  if (!canonicalPath || req.path === canonicalPath) {
+    next();
+    return;
+  }
+
+  const search = new URL(req.originalUrl, "http://localhost").search;
+  res.redirect(301, `${canonicalPath}${search}`);
+});
+
 if (fs.existsSync(DIST_DIR)) {
-  app.use(express.static(DIST_DIR));
+  app.use(
+    express.static(DIST_DIR, {
+      setHeaders(res, filePath) {
+        const normalizedPath = filePath.replace(/\\/g, "/");
+        if (/\/assets\/[^/]+-[A-Za-z0-9_-]+\.(?:css|js)$/i.test(normalizedPath)) {
+          res.setHeader(
+            "Cache-Control",
+            "public, max-age=31536000, immutable",
+          );
+          return;
+        }
+
+        if (/\.(?:avif|webp|png|jpe?g|gif|svg|ico|woff2?)$/i.test(filePath)) {
+          res.setHeader("Cache-Control", "public, max-age=2592000");
+          return;
+        }
+
+        if (/\.html?$/i.test(filePath)) {
+          res.setHeader("Cache-Control", "no-cache, max-age=0, must-revalidate");
+        }
+      },
+    }),
+  );
 }
 
 app.get("*", (req, res, next) => {
@@ -1140,6 +1203,7 @@ app.get("*", (req, res, next) => {
   }
 
   if (fs.existsSync(DIST_DIR)) {
+    res.set("Cache-Control", "no-cache, max-age=0, must-revalidate");
     res.status(404).sendFile(path.join(DIST_DIR, "404.html"));
     return;
   }

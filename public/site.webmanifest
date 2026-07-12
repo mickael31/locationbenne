@@ -8,14 +8,28 @@
   "lang": "fr-FR",
   "icons": [
     {
-      "src": "/images/2025/08/Logo_de_Benne_Occitanie-removebg-preview-150x150.png",
-      "sizes": "150x150",
-      "type": "image/png"
+      "src": "/images/icons/favicon-48.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/images/2025/08/Logo_de_Benne_Occitanie-removebg-preview-300x300.png",
-      "sizes": "300x300",
-      "type": "image/png"
+      "src": "/images/icons/apple-touch-icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
