@@ -12,7 +12,7 @@ const app = (
     >
       <App />
     </BrowserRouter>
-  </React.StrictMode>,
+  </React.StrictMode>
 );
 
 if (rootElement.hasChildNodes()) {
