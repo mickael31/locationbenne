@@ -1,0 +1,58 @@
+name: Submit sitemap to IndexNow
+
+on:
+  workflow_run:
+    workflows: ["Deploy Now: Orchestration"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  submit:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for production deployment
+        if: ${{ github.event_name == 'workflow_run' }}
+        run: sleep 45
+
+      - name: Submit published URLs to IndexNow
+        env:
+          SITE_ORIGIN: https://location-benne-occitanie.fr
+          INDEXNOW_KEY: f4b1df2dccf4a2919a50e799ba33f8ac
+        run: |
+          set -euo pipefail
+
+          key_url="$SITE_ORIGIN/$INDEXNOW_KEY.txt"
+          sitemap_url="$SITE_ORIGIN/sitemap.xml"
+
+          test "$(curl --fail --silent --show-error --location "$key_url")" = "$INDEXNOW_KEY"
+          curl --fail --silent --show-error --location "$sitemap_url" -o sitemap.xml
+
+          python3 - <<'PY' > payload.json
+          import json
+          import xml.etree.ElementTree as ET
+
+          site_origin = "https://location-benne-occitanie.fr"
+          key = "f4b1df2dccf4a2919a50e799ba33f8ac"
+          root = ET.parse("sitemap.xml").getroot()
+          namespace = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+          urls = [node.text.strip() for node in root.findall("sm:url/sm:loc", namespace) if node.text]
+          if not urls:
+              raise SystemExit("No URLs found in sitemap.xml")
+          print(json.dumps({
+              "host": "location-benne-occitanie.fr",
+              "key": key,
+              "keyLocation": f"{site_origin}/{key}.txt",
+              "urlList": urls,
+          }))
+          PY
+
+          curl --fail-with-body --silent --show-error \
+            -X POST https://api.indexnow.org/indexnow \
+            -H 'Content-Type: application/json; charset=utf-8' \
+            --data-binary @payload.json
+
+          echo "IndexNow submission completed for $(python3 -c 'import json; print(len(json.load(open("payload.json"))["urlList"]))') URLs."
