@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import ElfsightGoogleReviews from "../components/ElfsightGoogleReviews";
 import PhoneFirstNotice from "../components/PhoneFirstNotice";
 import SectionCta from "../components/SectionCta";
 import SiteImage from "../components/SiteImage";
@@ -198,6 +199,21 @@ export default function HomePage() {
                 <p>{item.description}</p>
               </article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section alt" aria-labelledby="google-reviews-title">
+        <div className="container">
+          <p className="eyebrow fade-in">Avis Google</p>
+          <h2 id="google-reviews-title" className="fade-in">
+            Les avis réels de nos clients
+          </h2>
+          <p className="section-lead fade-in">
+            Retrouvez les avis publiés sur la fiche Google de Location Benne Occitanie.
+          </p>
+          <div className="fade-in">
+            <ElfsightGoogleReviews />
           </div>
         </div>
       </section>
