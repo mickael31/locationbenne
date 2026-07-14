@@ -8,6 +8,7 @@ import { join } from "node:path";
 
 const DIST_DIR = "dist";
 const BUSINESS_ID = "https://location-benne-occitanie.fr/#business";
+const LEGAL_NOTICE_FILE = join("mentions-legales", "index.html");
 const SERVICE_MODE_LABEL =
   "Interventions uniquement chez les clients — aucun accueil sur place";
 const ADDRESS_PATTERNS = [
@@ -45,7 +46,7 @@ function sanitizeJsonLd(value) {
   return sanitized;
 }
 
-function sanitizeHtml(html) {
+function sanitizeHtml(html, { allowLegalAddress = false } = {}) {
   const withoutStructuredAddress = html.replace(
     /<script\b([^>]*\btype=["']application\/ld\+json["'][^>]*)>([\s\S]*?)<\/script>/gi,
     (script, attributes, source) => {
@@ -58,6 +59,10 @@ function sanitizeHtml(html) {
     },
   );
 
+  if (allowLegalAddress) {
+    return withoutStructuredAddress;
+  }
+
   return ADDRESS_PATTERNS.reduce(
     (result, pattern) => result.replace(pattern, SERVICE_MODE_LABEL),
     withoutStructuredAddress,
@@ -67,7 +72,9 @@ function sanitizeHtml(html) {
 const files = listHtmlFiles(DIST_DIR);
 for (const file of files) {
   const source = readFileSync(file, "utf8");
-  const sanitized = sanitizeHtml(source);
+  const sanitized = sanitizeHtml(source, {
+    allowLegalAddress: file.endsWith(LEGAL_NOTICE_FILE),
+  });
   if (sanitized !== source) {
     writeFileSync(file, sanitized);
   }
