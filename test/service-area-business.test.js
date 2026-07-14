@@ -8,6 +8,7 @@ import { businessDetails } from "../src/data/businessDetails.js";
 
 const projectRoot = fileURLToPath(new URL("../", import.meta.url));
 const distDirectory = join(projectRoot, "dist");
+const legalNoticeFile = join(distDirectory, "mentions-legales", "index.html");
 const businessId = "https://location-benne-occitanie.fr/#business";
 
 async function listHtmlFiles(directory) {
@@ -44,16 +45,30 @@ test("the company is configured as a service-area business", () => {
   ]);
 });
 
-test("published HTML does not expose the non-customer address", async () => {
+test("the registered address is limited to the legal notice", async () => {
   const htmlFiles = await listHtmlFiles(distDirectory);
   assert.ok(htmlFiles.length > 0, "the build must emit HTML files");
 
   let serviceModeIsVisible = false;
+  let legalNoticeIsLinked = false;
+  let legalNoticeWasChecked = false;
   let businessNodesChecked = 0;
 
   for (const file of htmlFiles) {
     const html = await readFile(file, "utf8");
-    assert.doesNotMatch(html, /28\s+chemin\s+des\s+bernardets/i, file);
+    const isLegalNotice = file === legalNoticeFile;
+
+    if (isLegalNotice) {
+      legalNoticeWasChecked = true;
+      assert.match(html, /28\s+chemin\s+des\s+bernardets/i);
+      assert.match(html, /aucun accueil du public/i);
+      assert.match(html, /entrepreneur individuel \(EI\)/i);
+    } else {
+      assert.doesNotMatch(html, /28\s+chemin\s+des\s+bernardets/i, file);
+      if (html.includes('href="/mentions-legales/"')) {
+        legalNoticeIsLinked = true;
+      }
+    }
 
     if (html.includes(businessDetails.serviceModeLabel)) {
       serviceModeIsVisible = true;
@@ -73,12 +88,14 @@ test("published HTML does not expose the non-customer address", async () => {
         assert.equal(
           Object.hasOwn(node, "address"),
           false,
-          `${file} must not publish a customer-facing address`,
+          `${file} must not publish a customer-facing address in JSON-LD`,
         );
       }
     }
   }
 
+  assert.equal(legalNoticeWasChecked, true);
+  assert.equal(legalNoticeIsLinked, true);
   assert.equal(serviceModeIsVisible, true);
   assert.ok(businessNodesChecked > 0, "business JSON-LD must be present");
 });
