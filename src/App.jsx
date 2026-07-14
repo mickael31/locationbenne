@@ -2,6 +2,7 @@ import { Suspense, lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import BusinessDetailsPanel from "./components/BusinessDetailsPanel";
 import BusinessLegalJsonLd from "./components/BusinessLegalJsonLd";
+import LegalNoticeLink from "./components/LegalNoticeLink";
 import SiteLayout from "./components/SiteLayout";
 import SeoManager from "./components/SeoManager";
 import HomePage from "./pages/HomePage";
@@ -86,6 +87,7 @@ export default function App({ pages = clientPages }) {
           <BusinessDetailsPanel />
         </Suspense>
       </SiteLayout>
+      <LegalNoticeLink />
     </>
   );
 }
