@@ -6,7 +6,6 @@ export default function SectionCta({ showPhoneNotice = true }) {
   return (
     <section className="cta-section">
       <div className="container cta-content">
-        {showPhoneNotice ? <PhoneFirstNotice compact /> : null}
         <h2>Préparons votre location de benne</h2>
         <p>
           Indiquez-nous les déchets, le volume estimé et l'adresse du chantier
@@ -20,6 +19,7 @@ export default function SectionCta({ showPhoneNotice = true }) {
             Appeler {company.phoneLocalDisplay}
           </a>
         </div>
+        {showPhoneNotice ? <PhoneFirstNotice compact /> : null}
       </div>
     </section>
   );

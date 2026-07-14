@@ -85,7 +85,10 @@ function Header() {
             responsive={false}
             loading="eager"
           />
-          <span>{company.name}</span>
+          <span className="brand-lockup">
+            <span className="brand-kicker">Location</span>
+            <strong className="brand-name">BENNE OCCITANIE</strong>
+          </span>
         </NavLink>
         <button
           type="button"

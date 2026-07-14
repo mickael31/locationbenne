@@ -1013,6 +1013,22 @@ details[open] summary::after {
   color: #d6e1eb;
 }
 
+.cta-content > .phone-first-notice-compact {
+  width: min(100%, 58rem);
+  margin: 1.5rem auto 0;
+  padding: clamp(1rem, 2vw, 1.25rem) clamp(1.1rem, 2.5vw, 1.5rem);
+  text-align: left;
+}
+
+.cta-content > .phone-first-notice-compact > div {
+  max-width: 42rem;
+}
+
+.cta-content > .phone-first-notice-compact h2 {
+  max-width: 30ch;
+  font-size: clamp(1.1rem, 2.3vw, 1.45rem);
+}
+
 .cta-actions {
   display: flex;
   justify-content: center;
@@ -2086,6 +2102,28 @@ h3 {
   filter: none;
 }
 
+.brand-lockup {
+  display: grid;
+  gap: 0.12rem;
+  line-height: 1;
+}
+
+.brand-kicker {
+  color: #745312;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.29em;
+  text-transform: uppercase;
+}
+
+.brand-name {
+  color: #102431;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+}
+
 .menu-toggle {
   border: 1px solid rgba(20, 35, 44, 0.14);
   border-radius: 999px;
@@ -2611,6 +2649,11 @@ summary::after {
 }
 
 @media (max-width: 760px) {
+  .cta-content > .phone-first-notice-compact {
+    align-items: center;
+    text-align: center;
+  }
+
   .hero-advice .phone-first-notice {
     align-items: flex-start;
   }
@@ -2647,8 +2690,18 @@ summary::after {
     height: 42px;
   }
 
-  .logo-link span {
-    font-size: 0.75rem;
+  .brand-lockup {
+    gap: 0.1rem;
+  }
+
+.brand-kicker {
+    font-size: 0.62rem;
+    letter-spacing: 0.24em;
+  }
+
+  .brand-name {
+    font-size: 0.66rem;
+    letter-spacing: 0.02em;
   }
 
   .menu-toggle {

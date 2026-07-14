@@ -1,9 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-labelledby="title">
-  <title>Symbole Location Benne Occitanie</title>
-  <rect x="6" y="6" width="116" height="116" rx="27" fill="#17212b"/>
-  <path d="m36 52 8-15 15 3 3 16zM65 52l5-19 18 5 1 18zM92 55l3-14 12 5-2 13z" fill="#2f7d4a"/>
-  <path d="M22 56h84l-9 42H33z" fill="#f2aa00"/>
-  <path d="M31 67h65l-5 21H39z" fill="#17212b"/>
-  <path d="m40 67 16 21M87 67 71 88" stroke="#f2aa00" stroke-linecap="round" stroke-width="4"/>
-  <path d="M28 101h73" stroke="#2f7d4a" stroke-linecap="round" stroke-width="7"/>
+  <title id="title">Monogramme Bascule Location Benne Occitanie</title>
+  <defs>
+    <linearGradient id="bascule-bronze" x1="26" y1="19" x2="108" y2="110" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#e6bd68"/>
+      <stop offset="0.52" stop-color="#c58e3c"/>
+      <stop offset="1" stop-color="#9b651f"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="31" fill="#102431"/>
+  <g fill="url(#bascule-bronze)">
+    <rect x="27" y="20" width="21" height="88" rx="10.5"/>
+    <path d="M43 20h34c17.6 0 29 10.3 29 25.9S94.6 72 77 72H43z"/>
+    <path d="M43 61h37c18 0 30 10.4 30 26s-12 21-30 21H43z"/>
+  </g>
+  <path d="M58 35h17c8.6 0 14 4.7 14 11s-5.4 11-14 11H58z" fill="#102431"/>
+  <path d="M58 76h21c9 0 15 4.7 15 11s-6 11-15 11H58z" fill="#102431"/>
 </svg>

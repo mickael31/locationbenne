@@ -71,7 +71,7 @@ function webpDimensions(buffer) {
   };
 }
 
-test("the brand uses a crisp vector logo and compact mark", async () => {
+test("the brand uses a premium Bascule monogram with an editorial wordmark", async () => {
   assert.equal(company.logo, expectedLogo);
   assert.equal(company.logoHeader, expectedMark);
 
@@ -81,11 +81,14 @@ test("the brand uses a crisp vector logo and compact mark", async () => {
   ]) {
     const source = await readFile(publicFile(assetPath), "utf8");
     assert.match(source, /<svg\b/);
-    assert.match(source, /<title>/);
+    assert.match(source, /<title id="title">/);
+    assert.match(source, /aria-labelledby="title"/);
     assert.match(source, new RegExp(`viewBox="${viewBox}"`));
-    assert.match(source, /#17212b/i);
-    assert.match(source, /#f2aa00/i);
-    assert.match(source, /#2f7d4a/i);
+    assert.match(source, /Bascule/i);
+    assert.match(source, /#102431/i);
+    assert.match(source, /#c58e3c/i);
+    assert.match(source, /linearGradient/i);
+    assert.doesNotMatch(source, /#14232c|#b88a31|#fffdf8|#17212b|#f2aa00|#2f7d4a/i);
   }
 });
 
@@ -115,6 +118,10 @@ test("favicons and install icons use the compact brand mark", async () => {
     readFile(new URL("index.html", projectRoot), "utf8"),
   ]);
   const manifest = JSON.parse(manifestSource);
+
+  assert.equal(manifest.background_color, "#f7f3ec");
+  assert.equal(manifest.theme_color, "#c58e3c");
+  assert.match(indexSource, /<meta name="theme-color" content="#c58e3c"/);
 
   assert.deepEqual(
     manifest.icons.map(({ src }) => src),
