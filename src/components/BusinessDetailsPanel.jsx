@@ -19,6 +19,14 @@ export default function BusinessDetailsPanel() {
               <p>{businessDetails.openingHoursLabel}</p>
             </article>
             <article>
+              <h3>Mode d'intervention</h3>
+              <p>{businessDetails.serviceModeLabel}</p>
+            </article>
+            <article>
+              <h3>Zone desservie</h3>
+              <p>{businessDetails.serviceAreaLabel}</p>
+            </article>
+            <article>
               <h3>Exploitant</h3>
               <p>{businessDetails.legalName}</p>
             </article>
