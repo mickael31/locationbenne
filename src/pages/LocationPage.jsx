@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import PhoneFirstNotice from "../components/PhoneFirstNotice";
 import SectionCta from "../components/SectionCta";
+import SiteImage from "../components/SiteImage";
 import { company } from "../data/content";
 import { getLocationPage, locationPages } from "../data/locationPages";
 import useScrollReveal from "../hooks/useScrollReveal";
@@ -32,12 +33,29 @@ export default function LocationPage({ locationKey }) {
       </section>
 
       <section className="section">
-        <div className="container location-intro">
-          <p className="eyebrow fade-in">Votre projet à {page.city}</p>
-          <h2 className="fade-in">
-            Une location préparée pour votre adresse à {page.city}
-          </h2>
-          <p className="fade-in">{page.introduction}</p>
+        <div className="container">
+          <div className="location-feature">
+            <div className="location-intro">
+              <p className="eyebrow fade-in">Votre projet à {page.city}</p>
+              <h2 className="fade-in">
+                Une location préparée pour votre adresse à {page.city}
+              </h2>
+              <p className="fade-in">{page.introduction}</p>
+            </div>
+            <figure className="location-feature-media fade-in-right">
+              <SiteImage
+                src={page.seo.image}
+                alt="Camion et benne préparés pour un chantier"
+                width={1536}
+                height={1024}
+                loading="lazy"
+                sizes="(max-width: 980px) 92vw, 42vw"
+              />
+              <figcaption>
+                Une solution adaptée au volume, aux déchets et aux contraintes d'accès.
+              </figcaption>
+            </figure>
+          </div>
         </div>
       </section>
 

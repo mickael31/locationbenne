@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { getMailtoHref } from "../contactLinks";
 import SiteImage from "./SiteImage";
@@ -8,6 +8,7 @@ import { getBreadcrumbItems } from "../seo/seoConfig";
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuToggleRef = useRef(null);
   const location = useLocation();
   const menuId = "site-navigation";
 
@@ -15,6 +16,20 @@ function Header() {
     setMenuOpen(false);
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+
+    function closeMenuWithEscape(event) {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        menuToggleRef.current?.focus();
+      }
+    }
+
+    window.addEventListener("keydown", closeMenuWithEscape);
+    return () => window.removeEventListener("keydown", closeMenuWithEscape);
+  }, [menuOpen]);
 
   useEffect(() => {
     function handlePhoneClick(event) {
@@ -74,6 +89,7 @@ function Header() {
         </NavLink>
         <button
           type="button"
+          ref={menuToggleRef}
           className={`menu-toggle${menuOpen ? " open" : ""}`}
           onClick={() => setMenuOpen((value) => !value)}
           aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
@@ -101,8 +117,9 @@ function Header() {
             </NavLink>
           ))}
         </nav>
-        <NavLink to="/contact/" className="btn btn-primary small">
-          Demander un devis
+        <NavLink to="/contact/" className="header-quote btn btn-primary small">
+          <span className="header-quote-full">Demander un devis</span>
+          <span className="header-quote-compact">Devis</span>
         </NavLink>
       </div>
     </header>

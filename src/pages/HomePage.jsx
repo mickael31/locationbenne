@@ -11,21 +11,20 @@ export default function HomePage() {
 
   return (
     <>
-      <section className="hero">
+      <section className="hero hero-premium">
         <div className="container hero-grid hero-grid-pro">
           <div className="hero-copy">
             <p className="eyebrow">{home.hero.eyebrow}</p>
             <h1>{home.hero.title}</h1>
-            <PhoneFirstNotice compact />
             <p className="hero-lead">{home.hero.description}</p>
 
-            <ul className="hero-points">
+            <ul className="hero-proof-list">
               <li>Desserte vérifiée à Montauban, Toulouse, Albi et alentours.</li>
               <li>Quatre volumes disponibles : 3, 7, 10 et 15 m³.</li>
               <li>Déchets, accès et lieu de pose validés avant le devis.</li>
             </ul>
 
-            <div className="button-row">
+            <div className="button-row hero-actions">
               <NavLink to="/contact/" className="btn btn-primary">
                 Demander un devis
               </NavLink>
@@ -34,7 +33,7 @@ export default function HomePage() {
               </NavLink>
             </div>
 
-            <div className="hero-kpis">
+            <div className="hero-kpis hero-facts" aria-label="Nos repères de service">
               <article className="hero-kpi">
                 <strong>Adresse vérifiée</strong>
                 <span>Desserte confirmée</span>
@@ -51,25 +50,27 @@ export default function HomePage() {
           </div>
 
           <div className="hero-media">
-            <SiteImage
-              src={home.hero.image}
-              alt="Camion livrant une benne sur un chantier en Occitanie"
-              width={1536}
-              height={1024}
-              loading="eager"
-              fetchPriority="high"
-              sizes="(max-width: 980px) 92vw, 44vw"
-            />
-            <aside className="hero-overlay-card">
-              <p className="hero-overlay-title">Un chantier à préparer ?</p>
-              <p className="hero-overlay-text">
-                Appelez-nous pour vérifier le volume, les déchets et l'accès.
-              </p>
-              <a href={`tel:${company.phoneRaw}`} className="btn btn-primary small">
-                Appeler {company.phoneLocalDisplay}
-              </a>
-            </aside>
+            <figure className="hero-figure">
+              <SiteImage
+                src={home.hero.image}
+                alt="Camion livrant une benne sur un chantier en Occitanie"
+                width={1536}
+                height={1024}
+                loading="eager"
+                fetchPriority="high"
+                sizes="(max-width: 980px) 92vw, 44vw"
+              />
+              <figcaption className="hero-media-caption">
+                Une logistique préparée selon votre accès, vos déchets et votre volume.
+              </figcaption>
+            </figure>
           </div>
+        </div>
+      </section>
+
+      <section className="hero-advice">
+        <div className="container">
+          <PhoneFirstNotice compact />
         </div>
       </section>
 
