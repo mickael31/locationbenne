@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export default function useScrollReveal() {
+export default function useScrollReveal(dependencyKey) {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -34,5 +34,5 @@ export default function useScrollReveal() {
     targets.forEach((target) => observer.observe(target));
 
     return () => observer.disconnect();
-  }, []);
+  }, [dependencyKey]);
 }

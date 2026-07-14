@@ -82,8 +82,8 @@ export default function ContactPage() {
           <p className="eyebrow">{contact.eyebrow}</p>
           <h1>{contact.title}</h1>
           <p className="contact-hero-lead">
-            Une équipe locale disponible pour organiser votre location de benne
-            sans perte de temps, du devis à l&apos;enlèvement.
+            Décrivez vos déchets, votre adresse et l&apos;accès au chantier : nous
+            reprenons ces éléments avec vous avant de préparer le devis.
           </p>
           <div className="services-hero-actions">
             <a href={`tel:${company.phoneRaw}`} className="btn btn-primary">
@@ -104,15 +104,17 @@ export default function ContactPage() {
 
       <section className="contact-highlights">
         <div className="container contact-highlights-grid">
-          <article className="contact-highlight-item fade-in">Réponse rapide</article>
+          <article className="contact-highlight-item fade-in">
+            Échange par téléphone
+          </article>
           <article className="contact-highlight-item fade-in stagger-1">
             Devis gratuit
           </article>
           <article className="contact-highlight-item fade-in stagger-2">
-            Intervention Occitanie
+            Montauban, Toulouse et Albi
           </article>
           <article className="contact-highlight-item fade-in stagger-3">
-            Suivi de A à Z
+            Besoin vérifié avant devis
           </article>
         </div>
       </section>
@@ -140,11 +142,11 @@ export default function ContactPage() {
             <div className="contact-meta-grid">
               <article>
                 <h3>Zones couvertes</h3>
-                <p>Montauban, Toulouse, Albi et alentours.</p>
+                <p>Montauban, Toulouse, Albi et alentours selon desserte.</p>
               </article>
               <article>
                 <h3>Délais habituels</h3>
-                <p>Livraison possible sous 24h à 48h selon disponibilité.</p>
+                <p>Créneau confirmé selon l'adresse, le volume et les disponibilités.</p>
               </article>
             </div>
           </article>

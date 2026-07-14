@@ -64,9 +64,9 @@ function Header() {
         <NavLink className="logo-link" to="/">
           <SiteImage
             src={company.logoHeader || company.logo}
-            alt={company.name}
-            width={300}
-            height={208}
+            alt=""
+            width={64}
+            height={64}
             responsive={false}
             loading="eager"
           />

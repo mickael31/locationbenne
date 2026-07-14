@@ -2,6 +2,9 @@ node_modules
 dist
 .ssr
 coverage
+output
+.playwright-cli
 server-data
 .env
-.env.local
+.env.*
+!.env.example

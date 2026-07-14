@@ -18,6 +18,20 @@ function routeFile(pathname) {
   );
 }
 
+function normalizeVisibleText(html) {
+  return html
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&#x27;|&apos;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function assertVisibleText(html, expected, message) {
+  assert.ok(normalizeVisibleText(html).includes(expected), message || expected);
+}
+
 test("the production build emits crawlable HTML for every indexable route", async () => {
   for (const { path } of INDEXABLE_ROUTES) {
     const file = routeFile(path);
@@ -63,4 +77,48 @@ test("generated discovery files expose all canonical routes", async () => {
   assert.equal((sitemap.match(/<lastmod>/g) || []).length, expected.length);
   assert.match(robots, /Disallow: \/api\//);
   assert.match(robots, /Sitemap: https:\/\/location-benne-occitanie\.fr\/sitemap\.xml/);
+});
+
+test("local prerendered pages contain their useful copy and contextual city links", async () => {
+  for (const page of locationPages) {
+    const html = await readFile(routeFile(page.path), "utf8");
+    const mainHtml = html.match(/<main\b[\s\S]*?<\/main>/)?.[0] || "";
+    const canonical = getCanonicalUrl(page.path);
+
+    assert.equal((html.match(/<link rel="canonical"/g) || []).length, 1);
+    assert.ok(
+      html.includes(`<link rel="canonical" href="${canonical}" />`),
+      `${page.path} must expose its exact canonical`,
+    );
+    assertVisibleText(mainHtml, page.title, `${page.path} must expose its H1 copy`);
+    assertVisibleText(mainHtml, page.lead, `${page.path} must expose its lead`);
+    assertVisibleText(
+      mainHtml,
+      page.introduction,
+      `${page.path} must expose its introduction`,
+    );
+
+    for (const item of [
+      ...page.useCases,
+      ...page.volumeGuidance,
+      ...page.preparation,
+      ...page.rentalSteps,
+    ]) {
+      assertVisibleText(mainHtml, item.title);
+      assertVisibleText(mainHtml, item.description);
+    }
+
+    for (const faq of page.faqs) {
+      assertVisibleText(mainHtml, faq.question);
+      assertVisibleText(mainHtml, faq.answer);
+    }
+
+    for (const sibling of locationPages.filter(({ key }) => key !== page.key)) {
+      assert.ok(
+        mainHtml.includes(`href="${sibling.path}"`),
+        `${page.path} needs a contextual link to ${sibling.path}`,
+      );
+      assertVisibleText(mainHtml, `Location de benne à ${sibling.city}`);
+    }
+  }
 });

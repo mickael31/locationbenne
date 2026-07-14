@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const stylesUrl = new URL("../src/styles.css", import.meta.url);
+const homePageUrl = new URL("../src/pages/HomePage.jsx", import.meta.url);
 
 async function loadStyles() {
   return readFile(stylesUrl, "utf8");
@@ -107,4 +108,11 @@ test("compact interfaces keep touch targets and calls clear of content", async (
     requiredDeclarations(".not-found-card .button-row .btn", mobile),
     /width:\s*100%/,
   );
+});
+
+test("the homepage does not reserve an empty block for an unavailable review widget", async () => {
+  const homePage = await readFile(homePageUrl, "utf8");
+
+  assert.doesNotMatch(homePage, /<iframe\b/);
+  assert.doesNotMatch(homePage, /home-review-(?:wrap|frame)/);
 });

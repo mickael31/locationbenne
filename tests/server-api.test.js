@@ -5,6 +5,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, before, test } from "node:test";
 
+import { HOME_HERO_PRELOAD } from "../src/seo/seoConfig.js";
+
 const port = 46000 + Math.floor(Math.random() * 1000);
 const baseUrl = `http://127.0.0.1:${port}`;
 
@@ -189,9 +191,7 @@ test("public pages revalidate while versioned assets use durable caching", async
       headers: { "Accept-Encoding": "gzip" },
     }),
     fetch(`${baseUrl}/assets/${scriptName}`),
-    fetch(
-      `${baseUrl}/images/2025/08/ChatGPT-Image-5-aout-2025-01_57_25-1024x683.avif`,
-    ),
+    fetch(`${baseUrl}${HOME_HERO_PRELOAD}`),
   ]);
 
   assert.match(pageResponse.headers.get("cache-control") || "", /no-cache/);

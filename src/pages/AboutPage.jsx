@@ -41,8 +41,8 @@ export default function AboutPage() {
           <SiteImage
             className="fade-in-left"
             src={about.images[0]}
-            alt="Illustration d'un professionnel contrôlant une benne"
-            width={1024}
+            alt="Professionnel contrôlant une benne avant livraison"
+            width={1536}
             height={1024}
             sizes="(max-width: 980px) 92vw, 44vw"
           />
@@ -73,8 +73,8 @@ export default function AboutPage() {
             className="fade-in-right"
             src={about.images[1]}
             alt="Camion transportant une benne en Occitanie"
-            width={1024}
-            height={683}
+            width={1536}
+            height={1024}
             sizes="(max-width: 980px) 92vw, 44vw"
           />
           <div className="fade-in-left">
@@ -90,8 +90,8 @@ export default function AboutPage() {
           <SiteImage
             className="fade-in-left"
             src={about.images[2]}
-            alt="Illustration d'une benne de chantier"
-            width={1024}
+            alt="Conseiller répondant à une demande de location de benne"
+            width={1536}
             height={1024}
             sizes="(max-width: 980px) 92vw, 44vw"
           />

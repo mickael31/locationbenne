@@ -7,10 +7,10 @@ export default function SectionCta({ showPhoneNotice = true }) {
     <section className="cta-section">
       <div className="container cta-content">
         {showPhoneNotice ? <PhoneFirstNotice compact /> : null}
-        <h2>Ne laissez pas vos encombrants s'accumuler !</h2>
+        <h2>Préparons votre location de benne</h2>
         <p>
-          Contactez-nous dès aujourd'hui pour un devis gratuit et rapide sur la
-          location de bennes.
+          Indiquez-nous les déchets, le volume estimé et l'adresse du chantier
+          pour recevoir un devis gratuit adapté à votre demande.
         </p>
         <div className="cta-actions">
           <NavLink to="/contact/" className="btn btn-light">

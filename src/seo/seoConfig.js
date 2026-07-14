@@ -11,12 +11,11 @@ export const SITE_ORIGIN = "https://location-benne-occitanie.fr";
 export const SITE_NAME = company.name;
 export const SITE_LANGUAGE = "fr-FR";
 export const SITE_LOCALE = "fr_FR";
-export const DEFAULT_IMAGE =
-  "/images/2025/08/ChatGPT-Image-5-aout-2025-01_57_25-1024x683.png";
+export const DEFAULT_IMAGE = home.hero.image;
 export const DEFAULT_IMAGE_ALT =
   "Location de benne en Occitanie - Location Benne Occitanie";
-export const DEFAULT_IMAGE_WIDTH = 1024;
-export const DEFAULT_IMAGE_HEIGHT = 683;
+export const DEFAULT_IMAGE_WIDTH = 1536;
+export const DEFAULT_IMAGE_HEIGHT = 1024;
 export const DEFAULT_IMAGE_TYPE = "image/png";
 export const DEFAULT_ROBOTS =
   "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1";
@@ -24,7 +23,7 @@ export const HOME_HERO_PRELOAD = home.hero.image.replace(/\.png$/i, ".avif");
 export const HOME_HERO_PRELOAD_SRCSET = [
   `${home.hero.image.replace(/\.png$/i, "-480w.avif")} 480w`,
   `${home.hero.image.replace(/\.png$/i, "-768w.avif")} 768w`,
-  `${HOME_HERO_PRELOAD} 1024w`,
+  `${HOME_HERO_PRELOAD} 1536w`,
 ].join(", ");
 export const HOME_HERO_SIZES = "(max-width: 980px) 92vw, 44vw";
 
@@ -32,22 +31,23 @@ export const LEGACY_ROUTE_REDIRECTS = [
   { from: "/357-2", to: "/bennes/" },
 ];
 
-const DEFAULT_AREA_SERVED = ["Montauban", "Toulouse", "Albi", "Occitanie"];
+const DEFAULT_AREA_SERVED = ["Montauban", "Toulouse", "Albi"];
 
 const locationRoutes = locationPages.map((page) => ({
   path: withTrailingSlash(page.path),
   label: `Location de benne à ${page.city}`,
   title: page.seo.title,
   description: page.seo.description,
-  image: home.hero.image,
-  imageAlt: `Location de benne à ${page.city}`,
-  imageWidth: 1024,
-  imageHeight: 683,
+  image: page.seo.image || home.hero.image,
+  imageAlt: page.seo.imageAlt || `Location de benne à ${page.city}`,
+  imageWidth: 1536,
+  imageHeight: 1024,
   lastModified: page.lastModified,
   schemaType: "WebPage",
   includePrimaryService: true,
-  areaServed: [page.city, "Occitanie"],
+  areaServed: [page.city],
   serviceName: `Location de benne à ${page.city}`,
+  serviceDescription: page.seo.serviceDescription,
 }));
 
 const PRIMARY_ROUTES = [
@@ -57,12 +57,12 @@ const PRIMARY_ROUTES = [
     title:
       "Location de benne à Montauban, Toulouse et Albi | Benne Occitanie",
     description:
-      "Location de bennes de 3 à 15 m³ à Montauban, Toulouse, Albi et alentours. Conseil par téléphone, devis gratuit, livraison rapide et évacuation des déchets.",
+      "Location de bennes de 3 à 15 m³ à Montauban, Toulouse et Albi. Conseil sur les déchets, le volume et l'accès, puis devis gratuit selon votre adresse.",
     image: home.hero.image,
     imageAlt: "Camion de location de benne en Occitanie",
-    imageWidth: 1024,
-    imageHeight: 683,
-    lastModified: "2026-07-12",
+    imageWidth: 1536,
+    imageHeight: 1024,
+    lastModified: "2026-07-14",
     schemaType: "WebPage",
     includePrimaryService: true,
   },
@@ -73,10 +73,10 @@ const PRIMARY_ROUTES = [
     description:
       "Découvrez l'entreprise Location Benne Occitanie, son expertise terrain, son histoire et son engagement pour un service fiable et réactif.",
     image: about.images[0],
-    imageAlt: "Illustration d'un professionnel contrôlant une benne",
-    imageWidth: 1024,
+    imageAlt: "Professionnel contrôlant une benne avant livraison",
+    imageWidth: 1536,
     imageHeight: 1024,
-    lastModified: "2026-07-12",
+    lastModified: "2026-07-14",
     schemaType: "AboutPage",
   },
   {
@@ -88,9 +88,9 @@ const PRIMARY_ROUTES = [
       "Consultez nos services de location de bennes en Occitanie : livraison, enlèvement, évacuation de déchets et accompagnement pour vos chantiers et débarras.",
     image: servicesPage.items[1].image,
     imageAlt: "Services de location de bennes en Occitanie",
-    imageWidth: 1024,
-    imageHeight: 683,
-    lastModified: "2026-07-12",
+    imageWidth: 1536,
+    imageHeight: 1024,
+    lastModified: "2026-07-14",
     schemaType: "CollectionPage",
     includeServiceCatalog: true,
   },
@@ -103,9 +103,9 @@ const PRIMARY_ROUTES = [
       "Choisissez la benne adaptée à votre chantier ou débarras en Occitanie : 3 m³, 7 m³, 10 m³ ou 15 m³, avec livraison rapide et devis gratuit.",
     image: bennes.types[0].image,
     imageAlt: "Bennes 3 à 15 m³ disponibles en Occitanie",
-    imageWidth: 1024,
-    imageHeight: 872,
-    lastModified: "2026-07-12",
+    imageWidth: 1536,
+    imageHeight: 1024,
+    lastModified: "2026-07-14",
     schemaType: "CollectionPage",
     includeBenneCatalog: true,
   },
@@ -117,9 +117,9 @@ const PRIMARY_ROUTES = [
       "Premier échange par téléphone pour comprendre vos déchets, votre volume et vos accès, puis vous conseiller la benne adaptée. Devis gratuit en Occitanie.",
     image: home.hero.image,
     imageAlt: "Demande de devis pour location de benne en Occitanie",
-    imageWidth: 1024,
-    imageHeight: 683,
-    lastModified: "2026-07-12",
+    imageWidth: 1536,
+    imageHeight: 1024,
+    lastModified: "2026-07-14",
     schemaType: "ContactPage",
   },
   {
@@ -129,10 +129,10 @@ const PRIMARY_ROUTES = [
       "Élagage et abattage en Tarn-et-Garonne | Natur'Elag 82 et benne",
     description:
       "Découvrez l'activité partenaire d'élagage et d'abattage Natur'Elag 82, coordonnée avec la location de benne pour simplifier vos chantiers extérieurs.",
-    image: "/images/2025/08/ChatGPT-Image-4-aout-2025-22_15_10-1024x683.png",
-    imageAlt: "Camion transportant une benne en Occitanie",
-    imageWidth: 1024,
-    imageHeight: 683,
+    image: "/images/pro/livraison-benne-chantier.png",
+    imageAlt: "Livraison d'une benne sur un chantier en Occitanie",
+    imageWidth: 1536,
+    imageHeight: 1024,
     lastModified: "2026-07-12",
     schemaType: "WebPage",
   },
@@ -144,8 +144,8 @@ const PRIMARY_ROUTES = [
       "Consultez la politique de confidentialité de Location Benne Occitanie et vos droits concernant le traitement de vos données personnelles.",
     image: home.hero.image,
     imageAlt: "Politique de confidentialité - Location Benne Occitanie",
-    imageWidth: 1024,
-    imageHeight: 683,
+    imageWidth: 1536,
+    imageHeight: 1024,
     lastModified: "2026-07-12",
     schemaType: "WebPage",
   },
@@ -216,9 +216,9 @@ function getBusinessSchema() {
     name: SITE_NAME,
     url: `${SITE_ORIGIN}/`,
     image: toAbsoluteUrl(home.hero.image),
-    logo: toAbsoluteUrl("/images/icons/icon-512.png"),
+    logo: toAbsoluteUrl(company.logo),
     description:
-      "Location de bennes et évacuation de déchets pour particuliers et professionnels à Montauban, Toulouse, Albi et dans les secteurs desservis en Occitanie.",
+      "Location de bennes de 3 à 15 m³ pour particuliers et professionnels à Montauban, Toulouse et Albi, après vérification de l'adresse et des conditions d'accès.",
     email: company.email,
     telephone: company.phoneRaw,
     address: {
@@ -251,14 +251,16 @@ function getPrimaryServiceSchema({
   canonical,
   areaServed = DEFAULT_AREA_SERVED,
   serviceName = "Location de bennes en Occitanie",
+  serviceDescription =
+    "Un premier échange par téléphone permet de qualifier le besoin et de recommander la benne adaptée au volume, aux déchets et aux accès.",
 } = {}) {
   return {
     "@type": "Service",
     "@id": `${canonical}#service`,
     name: serviceName,
     serviceType: "Location de bennes",
-    description:
-      "Un premier échange par téléphone permet de qualifier le besoin et de recommander la benne adaptée au volume, aux déchets et aux accès.",
+    description: serviceDescription,
+    url: canonical,
     provider: {
       "@id": `${SITE_ORIGIN}/#business`,
     },
@@ -287,7 +289,7 @@ function getServiceCatalogSchema(canonical) {
         provider: {
           "@id": `${SITE_ORIGIN}/#business`,
         },
-        areaServed: ["Montauban", "Toulouse", "Albi", "Occitanie"],
+        areaServed: DEFAULT_AREA_SERVED,
       },
     })),
   };
@@ -308,7 +310,7 @@ function getBenneCatalogSchema(canonical) {
         provider: {
           "@id": `${SITE_ORIGIN}/#business`,
         },
-        areaServed: ["Montauban", "Toulouse", "Albi", "Occitanie"],
+        areaServed: DEFAULT_AREA_SERVED,
       },
     })),
   };
@@ -336,12 +338,25 @@ function getWebPageSchema(pathname, seo, canonical) {
     url: canonical,
     inLanguage: SITE_LANGUAGE,
     description: seo.description,
+    dateModified: seo.lastModified,
     isPartOf: {
       "@id": `${SITE_ORIGIN}/#website`,
     },
     about: {
       "@id": `${SITE_ORIGIN}/#business`,
     },
+    primaryImageOfPage: {
+      "@type": "ImageObject",
+      "@id": `${canonical}#primaryimage`,
+      url: toAbsoluteUrl(seo.image),
+      contentUrl: toAbsoluteUrl(seo.image),
+      caption: seo.imageAlt,
+      width: seo.imageWidth,
+      height: seo.imageHeight,
+    },
+    ...(seo.includePrimaryService
+      ? { mainEntity: { "@id": `${canonical}#service` } }
+      : {}),
   };
 }
 
@@ -412,6 +427,7 @@ export function getSeoGraph(pathname) {
         canonical,
         areaServed: seo.areaServed,
         serviceName: seo.serviceName,
+        serviceDescription: seo.serviceDescription,
       }),
     );
   }

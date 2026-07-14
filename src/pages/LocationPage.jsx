@@ -2,12 +2,13 @@ import { NavLink } from "react-router-dom";
 import PhoneFirstNotice from "../components/PhoneFirstNotice";
 import SectionCta from "../components/SectionCta";
 import { company } from "../data/content";
-import { getLocationPage } from "../data/locationPages";
+import { getLocationPage, locationPages } from "../data/locationPages";
 import useScrollReveal from "../hooks/useScrollReveal";
 
 export default function LocationPage({ locationKey }) {
   const page = getLocationPage(locationKey);
-  useScrollReveal();
+  const otherLocations = locationPages.filter(({ key }) => key !== locationKey);
+  useScrollReveal(locationKey);
 
   if (!page) return null;
 
@@ -33,7 +34,9 @@ export default function LocationPage({ locationKey }) {
       <section className="section">
         <div className="container location-intro">
           <p className="eyebrow fade-in">Votre projet à {page.city}</p>
-          <h2 className="fade-in">Une location préparée avec vous</h2>
+          <h2 className="fade-in">
+            Une location préparée pour votre adresse à {page.city}
+          </h2>
           <p className="fade-in">{page.introduction}</p>
         </div>
       </section>
@@ -41,7 +44,7 @@ export default function LocationPage({ locationKey }) {
       <section className="section alt">
         <div className="container">
           <p className="eyebrow fade-in">Besoins courants</p>
-          <h2 className="fade-in">Une benne adaptée à ce que vous évacuez</h2>
+          <h2 className="fade-in">{page.useCasesTitle}</h2>
           <div className="cards">
             {page.useCases.map((item, index) => (
               <article className={`card scale-in stagger-${index + 1}`} key={item.title}>
@@ -67,10 +70,10 @@ export default function LocationPage({ locationKey }) {
           </div>
           <div className="location-links fade-in">
             <NavLink to="/bennes/" className="btn btn-secondary">
-              Comparer les volumes de bennes
+              Voir les bennes de 3 à 15 m³
             </NavLink>
             <NavLink to="/services/" className="btn btn-ghost">
-              Découvrir nos services
+              Comprendre la livraison et l'enlèvement
             </NavLink>
           </div>
         </div>
@@ -78,10 +81,10 @@ export default function LocationPage({ locationKey }) {
 
       <section className="section alt">
         <div className="container">
-          <p className="eyebrow fade-in">Pose de la benne à {page.city}</p>
-          <h2 className="fade-in">Préparer l'emplacement et la voirie</h2>
+          <p className="eyebrow fade-in">Volume et chargement</p>
+          <h2 className="fade-in">{page.volumeTitle}</h2>
           <div className="cards">
-            {page.preparation.map((item, index) => (
+            {page.volumeGuidance.map((item, index) => (
               <article
                 className={`card scale-in stagger-${index + 1}`}
                 key={item.title}
@@ -96,7 +99,56 @@ export default function LocationPage({ locationKey }) {
 
       <section className="section">
         <div className="container">
-          <h2 className="fade-in">Questions fréquentes</h2>
+          <p className="eyebrow fade-in">Pose de la benne à {page.city}</p>
+          <h2 className="fade-in">{page.preparationTitle}</h2>
+          <div className="cards">
+            {page.preparation.map((item, index) => (
+              <article
+                className={`card scale-in stagger-${index + 1}`}
+                key={item.title}
+              >
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </article>
+            ))}
+          </div>
+          <div className="location-intro fade-in">
+            <p>{page.officialGuidance.note}</p>
+            <a
+              href={page.officialGuidance.url}
+              className="btn btn-ghost"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {page.officialGuidance.label}
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section className="section alt">
+        <div className="container">
+          <p className="eyebrow fade-in">De la demande à l'enlèvement</p>
+          <h2 className="fade-in">{page.processTitle}</h2>
+          <div className="process-grid">
+            {page.rentalSteps.map((item, index) => (
+              <article
+                className={`process-card scale-in stagger-${index + 1}`}
+                key={item.title}
+              >
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container">
+          <h2 className="fade-in">
+            Questions fréquentes sur la location de benne à {page.city}
+          </h2>
           <div className="faq-list">
             {page.faqs.map((faq) => (
               <details className="fade-in" key={faq.question}>
@@ -105,6 +157,31 @@ export default function LocationPage({ locationKey }) {
               </details>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="section alt">
+        <div className="container">
+          <p className="eyebrow fade-in">Nos zones principales</p>
+          <h2 className="fade-in">Autres secteurs desservis</h2>
+          <p className="section-lead fade-in">
+            Consultez les informations propres aux deux autres villes ou
+            indiquez-nous votre adresse pour vérifier la desserte.
+          </p>
+          <nav
+            className="location-links fade-in"
+            aria-label="Autres villes desservies"
+          >
+            {otherLocations.map((location) => (
+              <NavLink
+                key={location.path}
+                to={location.path}
+                className="btn btn-secondary"
+              >
+                Location de benne à {location.city}
+              </NavLink>
+            ))}
+          </nav>
         </div>
       </section>
 

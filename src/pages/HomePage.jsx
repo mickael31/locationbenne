@@ -20,9 +20,9 @@ export default function HomePage() {
             <p className="hero-lead">{home.hero.description}</p>
 
             <ul className="hero-points">
-              <li>Intervention locale rapide sur Montauban, Toulouse, Albi et alentours.</li>
-              <li>Solution adaptée à chaque volume de déchets, de 3 à 15 m³.</li>
-              <li>Accompagnement simple : conseil, livraison, enlèvement.</li>
+              <li>Desserte vérifiée à Montauban, Toulouse, Albi et alentours.</li>
+              <li>Quatre volumes disponibles : 3, 7, 10 et 15 m³.</li>
+              <li>Déchets, accès et lieu de pose validés avant le devis.</li>
             </ul>
 
             <div className="button-row">
@@ -36,8 +36,8 @@ export default function HomePage() {
 
             <div className="hero-kpis">
               <article className="hero-kpi">
-                <strong>24-48h</strong>
-                <span>Livraison rapide</span>
+                <strong>Adresse vérifiée</strong>
+                <span>Desserte confirmée</span>
               </article>
               <article className="hero-kpi">
                 <strong>3 à 15 m³</strong>
@@ -53,17 +53,17 @@ export default function HomePage() {
           <div className="hero-media">
             <SiteImage
               src={home.hero.image}
-              alt="Camion benne en Occitanie"
-              width={1024}
-              height={683}
+              alt="Camion livrant une benne sur un chantier en Occitanie"
+              width={1536}
+              height={1024}
               loading="eager"
               fetchPriority="high"
               sizes="(max-width: 980px) 92vw, 44vw"
             />
             <aside className="hero-overlay-card">
-              <p className="hero-overlay-title">Urgence chantier ?</p>
+              <p className="hero-overlay-title">Un chantier à préparer ?</p>
               <p className="hero-overlay-text">
-                Contact direct pour planifier rapidement votre benne.
+                Appelez-nous pour vérifier le volume, les déchets et l'accès.
               </p>
               <a href={`tel:${company.phoneRaw}`} className="btn btn-primary small">
                 Appeler {company.phoneLocalDisplay}
@@ -77,7 +77,7 @@ export default function HomePage() {
         <div className="container trust-grid">
           <article className="trust-item fade-in">Particuliers et professionnels</article>
           <article className="trust-item fade-in stagger-1">Zones urbaines et périurbaines</article>
-          <article className="trust-item fade-in stagger-2">Gestion responsable des déchets</article>
+          <article className="trust-item fade-in stagger-2">Déchets vérifiés avant devis</article>
           <article className="trust-item fade-in stagger-3">Accompagnement de A à Z</article>
         </div>
       </section>
@@ -108,8 +108,8 @@ export default function HomePage() {
           <SiteImage
             className="fade-in-left"
             src={home.intro.image}
-            alt="Illustration de l'histoire de Benne Occitanie"
-            width={1024}
+            alt="Professionnel contrôlant une benne avant livraison"
+            width={1536}
             height={1024}
             sizes="(max-width: 980px) 92vw, 44vw"
           />
@@ -197,22 +197,6 @@ export default function HomePage() {
                 <p>{item.description}</p>
               </article>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section alt">
-        <div className="container">
-          <h2 className="fade-in">Ce que nos clients disent de nous</h2>
-          <div className="fade-in home-review-wrap">
-            <iframe
-              loading="lazy"
-              width="100%"
-              height="320"
-              src="https://2ce195e1bf9e45548064458cdf627318.elf.site"
-              className="home-review-frame"
-              title="Avis clients - Trustindex"
-            />
           </div>
         </div>
       </section>

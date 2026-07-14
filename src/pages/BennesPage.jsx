@@ -58,8 +58,8 @@ export default function BennesPage() {
                 <SiteImage
                   src={item.image}
                   alt={item.title}
-                  width={1024}
-                  height={item.title === "Benne 3 m³" ? 872 : 1024}
+                  width={1536}
+                  height={1024}
                   sizes="(max-width: 640px) 92vw, (max-width: 1100px) 44vw, 340px"
                 />
                 <p className="service-tag">{item.title.replace("Benne ", "Volume ")}</p>

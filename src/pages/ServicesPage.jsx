@@ -4,13 +4,6 @@ import SiteImage from "../components/SiteImage";
 import { company, servicesPage } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
 
-const serviceImageDimensions = [
-  { width: 1024, height: 1024 },
-  { width: 1024, height: 683 },
-  { width: 683, height: 1024 },
-  { width: 1024, height: 1024 },
-];
-
 export default function ServicesPage() {
   useScrollReveal();
 
@@ -52,40 +45,33 @@ export default function ServicesPage() {
 
       <section className="section">
         <div className="container service-list">
-          {servicesPage.items.map((item, i) => {
-            const dimensions = serviceImageDimensions[i] || {
-              width: 1024,
-              height: 1024,
-            };
-
-            return (
-              <article
-                key={item.title}
-                className={`service-item service-item-pro fade-in stagger-${i + 1}`}
-              >
-                <SiteImage
-                  src={item.image}
-                  alt={item.imageAlt}
-                  width={dimensions.width}
-                  height={dimensions.height}
-                  sizes="(max-width: 980px) 92vw, 310px"
-                />
-                <div>
-                  <p className="service-tag">Service {(i + 1).toString().padStart(2, "0")}</p>
-                  <h2>{item.title}</h2>
-                  <p>{item.description}</p>
-                  <div className="service-actions">
-                    <NavLink to="/contact/" className="btn btn-secondary small">
-                      Demander ce service
-                    </NavLink>
-                    <a href={`tel:${company.phoneRaw}`} className="btn btn-ghost small">
-                      Appeler
-                    </a>
-                  </div>
+          {servicesPage.items.map((item, i) => (
+            <article
+              key={item.title}
+              className={`service-item service-item-pro fade-in stagger-${i + 1}`}
+            >
+              <SiteImage
+                src={item.image}
+                alt={item.imageAlt}
+                width={1536}
+                height={1024}
+                sizes="(max-width: 980px) 92vw, 310px"
+              />
+              <div>
+                <p className="service-tag">Service {(i + 1).toString().padStart(2, "0")}</p>
+                <h2>{item.title}</h2>
+                <p>{item.description}</p>
+                <div className="service-actions">
+                  <NavLink to="/contact/" className="btn btn-secondary small">
+                    Demander ce service
+                  </NavLink>
+                  <a href={`tel:${company.phoneRaw}`} className="btn btn-ghost small">
+                    Appeler
+                  </a>
                 </div>
-              </article>
-            );
-          })}
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 
