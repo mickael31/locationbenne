@@ -1,8 +1,10 @@
 import { Suspense, lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import BusinessDetailsPanel from "./components/BusinessDetailsPanel";
+import BusinessLegalJsonLd from "./components/BusinessLegalJsonLd";
 import SiteLayout from "./components/SiteLayout";
-import HomePage from "./pages/HomePage";
 import SeoManager from "./components/SeoManager";
+import HomePage from "./pages/HomePage";
 
 const clientPages = {
   AboutPage: lazy(() => import("./pages/AboutPage")),
@@ -40,6 +42,7 @@ export default function App({ pages = clientPages }) {
   return (
     <>
       <SeoManager />
+      <BusinessLegalJsonLd />
       <SiteLayout>
         <Suspense fallback={<RouteFallback />}>
           <Routes>
@@ -80,6 +83,7 @@ export default function App({ pages = clientPages }) {
             />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
+          <BusinessDetailsPanel />
         </Suspense>
       </SiteLayout>
     </>
