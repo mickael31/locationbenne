@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
@@ -11,8 +12,20 @@ import {
 } from "../src/data/content.js";
 
 const projectRoot = new URL("../", import.meta.url);
-const expectedLogo = "/images/brand/logo-location-benne-occitanie.svg";
-const expectedMark = "/images/brand/mark-location-benne-occitanie.svg";
+const expectedLogo =
+  "/images/brand/logo-location-benne-occitanie.png?v=20260719";
+const expectedHeaderLogo =
+  "/images/brand/logo-location-benne-occitanie-header.webp";
+const suppliedLogoSha256 =
+  "97fc825bc7575fab60ac886133eddb27dd253d84d63393220d83c789eca4552d";
+const expectedHeaderLogoSha256 =
+  "dd94a025e23c3eb2d37f176a156fac5a3b33e79b3a65a4baab307b328fe83d30";
+const expectedIconHashes = new Map([
+  ["/images/icons/favicon-brand-48.png?v=20260719", "f94271c035c9a02c020356c5c4b541df893f3f447378a43970f251e938623260"],
+  ["/images/icons/apple-touch-icon-brand-180.png?v=20260719", "a3d091d37570ce3764b9c8b92cf4db5be82b35930b6b513edfc5a5067f5c7e3d"],
+  ["/images/icons/icon-brand-192.png?v=20260719", "18412a05c1f4e2e994188a8cb3490ba22f288197f7f23b603422ac51b302a638"],
+  ["/images/icons/icon-brand-512.png?v=20260719", "082b959cc1f4bbb28511ddc65e12b6c7334eaa4c2b6e0e07e5797d2557b2c805"],
+]);
 const expectedEditorialImages = [
   "/images/pro/hero-location-benne-occitanie.png",
   "/images/pro/equipe-controle-benne.png",
@@ -34,7 +47,8 @@ const editorialImages = [
 ];
 
 function publicFile(assetPath) {
-  return new URL(`public${assetPath}`, projectRoot);
+  const [pathname] = assetPath.split(/[?#]/, 1);
+  return new URL(`public${pathname}`, projectRoot);
 }
 
 function responsiveVariant(assetPath, suffix, format) {
@@ -48,6 +62,10 @@ function pngDimensions(buffer) {
     width: buffer.readUInt32BE(16),
     height: buffer.readUInt32BE(20),
   };
+}
+
+function sha256(buffer) {
+  return createHash("sha256").update(buffer).digest("hex");
 }
 
 function avifDimensions(buffer) {
@@ -71,25 +89,23 @@ function webpDimensions(buffer) {
   };
 }
 
-test("the brand uses a premium Bascule monogram with an editorial wordmark", async () => {
+test("the site uses the exact supplied Location Benne Occitanie logo", async () => {
   assert.equal(company.logo, expectedLogo);
-  assert.equal(company.logoHeader, expectedMark);
+  assert.equal(company.logoHeader, expectedHeaderLogo);
 
-  for (const [assetPath, viewBox] of [
-    [expectedLogo, "0 0 640 144"],
-    [expectedMark, "0 0 128 128"],
-  ]) {
-    const source = await readFile(publicFile(assetPath), "utf8");
-    assert.match(source, /<svg\b/);
-    assert.match(source, /<title id="title">/);
-    assert.match(source, /aria-labelledby="title"/);
-    assert.match(source, new RegExp(`viewBox="${viewBox}"`));
-    assert.match(source, /Bascule/i);
-    assert.match(source, /#102431/i);
-    assert.match(source, /#c58e3c/i);
-    assert.match(source, /linearGradient/i);
-    assert.doesNotMatch(source, /#14232c|#b88a31|#fffdf8|#17212b|#f2aa00|#2f7d4a/i);
-  }
+  const logo = await readFile(publicFile(expectedLogo));
+  assert.equal(sha256(logo), suppliedLogoSha256);
+  assert.deepEqual(pngDimensions(logo), { width: 1254, height: 1254 });
+
+  const headerLogo = await readFile(publicFile(expectedHeaderLogo));
+  assert.deepEqual(webpDimensions(headerLogo), { width: 1203, height: 839 });
+  assert.equal(sha256(headerLogo), expectedHeaderLogoSha256);
+
+  const layoutSource = await readFile(
+    new URL("src/components/SiteLayout.jsx", projectRoot),
+    "utf8",
+  );
+  assert.doesNotMatch(layoutSource, /brand-lockup|brand-kicker|brand-name/);
 });
 
 test("all editorial content uses the coherent professional image set", async () => {
@@ -106,12 +122,12 @@ test("all editorial content uses the coherent professional image set", async () 
   }
 });
 
-test("favicons and install icons use the compact brand mark", async () => {
+test("favicons and install icons are regenerated from the supplied logo", async () => {
   const iconSizes = new Map([
-    ["/images/icons/favicon-brand-48.png", 48],
-    ["/images/icons/apple-touch-icon-brand-180.png", 180],
-    ["/images/icons/icon-brand-192.png", 192],
-    ["/images/icons/icon-brand-512.png", 512],
+    ["/images/icons/favicon-brand-48.png?v=20260719", 48],
+    ["/images/icons/apple-touch-icon-brand-180.png?v=20260719", 180],
+    ["/images/icons/icon-brand-192.png?v=20260719", 192],
+    ["/images/icons/icon-brand-512.png?v=20260719", 512],
   ]);
   const [manifestSource, indexSource] = await Promise.all([
     readFile(new URL("public/site.webmanifest", projectRoot), "utf8"),
@@ -127,11 +143,14 @@ test("favicons and install icons use the compact brand mark", async () => {
     manifest.icons.map(({ src }) => src),
     [...iconSizes.keys()],
   );
-  assert.match(indexSource, /mark-location-benne-occitanie\.svg/);
+  assert.doesNotMatch(indexSource, /mark-location-benne-occitanie\.svg/);
+  assert.match(indexSource, /favicon-brand-48\.png\?v=20260719/);
 
   for (const [assetPath, size] of iconSizes) {
-    const dimensions = pngDimensions(await readFile(publicFile(assetPath)));
+    const icon = await readFile(publicFile(assetPath));
+    const dimensions = pngDimensions(icon);
     assert.deepEqual(dimensions, { width: size, height: size });
+    assert.equal(sha256(icon), expectedIconHashes.get(assetPath));
   }
 });
 

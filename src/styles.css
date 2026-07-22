@@ -2099,29 +2099,11 @@ h3 {
 }
 
 .logo-link img {
+  width: 170px;
+  height: 118px;
+  object-fit: contain;
+  object-position: center;
   filter: none;
-}
-
-.brand-lockup {
-  display: grid;
-  gap: 0.12rem;
-  line-height: 1;
-}
-
-.brand-kicker {
-  color: #745312;
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.29em;
-  text-transform: uppercase;
-}
-
-.brand-name {
-  color: #102431;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.025em;
-  white-space: nowrap;
 }
 
 .menu-toggle {
@@ -2686,22 +2668,8 @@ summary::after {
   }
 
   .logo-link img {
-    width: 42px;
-    height: 42px;
-  }
-
-  .brand-lockup {
-    gap: 0.1rem;
-  }
-
-.brand-kicker {
-    font-size: 0.62rem;
-    letter-spacing: 0.24em;
-  }
-
-  .brand-name {
-    font-size: 0.66rem;
-    letter-spacing: 0.02em;
+    width: 128px;
+    height: 89px;
   }
 
   .menu-toggle {

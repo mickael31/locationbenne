@@ -76,19 +76,19 @@ function Header() {
         <a href={getMailtoHref()}>{company.email}</a>
       </div>
       <div className="nav-wrap">
-        <NavLink className="logo-link" to="/">
+        <NavLink
+          className="logo-link"
+          to="/"
+          aria-label="Location Benne Occitanie - Accueil"
+        >
           <SiteImage
             src={company.logoHeader || company.logo}
             alt=""
-            width={64}
-            height={64}
+            width={1203}
+            height={839}
             responsive={false}
             loading="eager"
           />
-          <span className="brand-lockup">
-            <span className="brand-kicker">Location</span>
-            <strong className="brand-name">BENNE OCCITANIE</strong>
-          </span>
         </NavLink>
         <button
           type="button"

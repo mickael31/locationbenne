@@ -24,12 +24,11 @@ test("the header keeps a compact quote action available, readable branding, and 
   ]);
 
   assert.match(source, /className="header-quote btn btn-primary small"/);
-  assert.match(source, /className="brand-lockup"/);
-  assert.match(source, /className="brand-kicker">Location<\/span>/);
-  assert.match(source, /className="brand-name">BENNE OCCITANIE<\/strong>/);
+  assert.match(source, /aria-label="Location Benne Occitanie - Accueil"/);
+  assert.doesNotMatch(source, /brand-lockup|brand-kicker|brand-name/);
   assert.match(
     styles,
-    /\.brand-kicker\s*\{[^}]*color:\s*#745312;[^}]*font-size:\s*0\.62rem;/,
+    /\.logo-link img\s*\{[^}]*width:\s*170px;[^}]*height:\s*118px;[^}]*object-fit:\s*contain;/,
   );
   assert.match(source, /event\.key === "Escape"/);
   assert.match(source, /window\.addEventListener\("keydown", closeMenuWithEscape\)/);
