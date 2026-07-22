@@ -8,6 +8,22 @@ async function readProjectFile(path) {
   return readFile(new URL(path, projectRoot), "utf8");
 }
 
+function extractLastCssBlock(source, selector) {
+  const selectorIndex = source.lastIndexOf(selector);
+  assert.notEqual(selectorIndex, -1, `Missing CSS block: ${selector}`);
+
+  const openingBraceIndex = source.indexOf("{", selectorIndex);
+  let depth = 0;
+
+  for (let index = openingBraceIndex; index < source.length; index += 1) {
+    if (source[index] === "{") depth += 1;
+    if (source[index] === "}") depth -= 1;
+    if (depth === 0) return source.slice(openingBraceIndex + 1, index);
+  }
+
+  assert.fail(`Unclosed CSS block: ${selector}`);
+}
+
 test("the premium home hero keeps its proof and advice in distinct, scannable areas", async () => {
   const source = await readProjectFile("src/pages/HomePage.jsx");
 
@@ -28,7 +44,12 @@ test("the header keeps a compact quote action available, readable branding, and 
   assert.doesNotMatch(source, /brand-lockup|brand-kicker|brand-name/);
   assert.match(
     styles,
-    /\.logo-link img\s*\{[^}]*width:\s*170px;[^}]*height:\s*118px;[^}]*object-fit:\s*contain;/,
+    /\.logo-link img\s*\{[^}]*width:\s*132px;[^}]*height:\s*92px;[^}]*object-fit:\s*contain;/,
+  );
+  const mobileStyles = extractLastCssBlock(styles, "@media (max-width: 580px)");
+  assert.match(
+    mobileStyles,
+    /\.logo-link img\s*\{[^}]*width:\s*108px;[^}]*height:\s*75px;/,
   );
   assert.match(source, /event\.key === "Escape"/);
   assert.match(source, /window\.addEventListener\("keydown", closeMenuWithEscape\)/);

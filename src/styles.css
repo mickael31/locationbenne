@@ -2099,8 +2099,8 @@ h3 {
 }
 
 .logo-link img {
-  width: 170px;
-  height: 118px;
+  width: 132px;
+  height: 92px;
   object-fit: contain;
   object-position: center;
   filter: none;
@@ -2668,8 +2668,8 @@ summary::after {
   }
 
   .logo-link img {
-    width: 128px;
-    height: 89px;
+    width: 108px;
+    height: 75px;
   }
 
   .menu-toggle {
