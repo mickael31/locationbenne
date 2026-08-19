@@ -4,7 +4,6 @@
   phoneDisplay: "06.79.98.41.26",
   phoneLocalDisplay: "06.79.98.41.26",
   phoneRaw: "+33679984126",
-  address: "28 chemin des bernardets 82000 Montauban",
   logo: "/images/brand/logo-location-benne-occitanie.png?v=20260719",
   logoHeader: "/images/brand/logo-location-benne-occitanie-header.webp",
 };

@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 import { businessDetails } from "../src/data/businessDetails.js";
+import { company } from "../src/data/content.js";
 
 const projectRoot = fileURLToPath(new URL("../", import.meta.url));
 const distDirectory = join(projectRoot, "dist");
@@ -34,6 +35,15 @@ function collectObjects(value, output = []) {
   return output;
 }
 
+function isBusinessDefinition(node) {
+  const types = Array.isArray(node["@type"]) ? node["@type"] : [node["@type"]];
+  return (
+    node["@id"] === businessId &&
+    types.includes("Organization") &&
+    Object.hasOwn(node, "name")
+  );
+}
+
 test("the company is configured as a service-area business", () => {
   assert.equal(businessDetails.publicAddress, false);
   assert.equal(businessDetails.serviceMode, "service-area");
@@ -45,6 +55,10 @@ test("the company is configured as a service-area business", () => {
   ]);
 });
 
+test("public company data does not expose the registered address", () => {
+  assert.equal(Object.hasOwn(company, "address"), false);
+});
+
 test("the registered address is limited to the legal notice", async () => {
   const htmlFiles = await listHtmlFiles(distDirectory);
   assert.ok(htmlFiles.length > 0, "the build must emit HTML files");
@@ -53,6 +67,7 @@ test("the registered address is limited to the legal notice", async () => {
   let legalNoticeIsLinked = false;
   let legalNoticeWasChecked = false;
   let businessNodesChecked = 0;
+  let pagesWithBusinessSchema = 0;
 
   for (const file of htmlFiles) {
     const html = await readFile(file, "utf8");
@@ -80,11 +95,14 @@ test("the registered address is limited to the legal notice", async () => {
       ),
     ];
 
+    let businessDefinitions = 0;
+
     for (const [, source] of scripts) {
       const data = JSON.parse(source);
       for (const node of collectObjects(data)) {
         if (node["@id"] !== businessId) continue;
         businessNodesChecked += 1;
+        if (isBusinessDefinition(node)) businessDefinitions += 1;
         assert.equal(
           Object.hasOwn(node, "address"),
           false,
@@ -92,10 +110,20 @@ test("the registered address is limited to the legal notice", async () => {
         );
       }
     }
+
+    if (businessDefinitions > 0) {
+      pagesWithBusinessSchema += 1;
+      assert.equal(
+        businessDefinitions,
+        1,
+        `${file} must define the service-area business exactly once`,
+      );
+    }
   }
 
   assert.equal(legalNoticeWasChecked, true);
   assert.equal(legalNoticeIsLinked, true);
   assert.equal(serviceModeIsVisible, true);
   assert.ok(businessNodesChecked > 0, "business JSON-LD must be present");
+  assert.ok(pagesWithBusinessSchema > 0, "business JSON-LD definitions must be present");
 });

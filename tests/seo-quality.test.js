@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile, stat } from "node:fs/promises";
 import test from "node:test";
 
+import { businessDetails } from "../src/data/businessDetails.js";
 import {
   DEFAULT_IMAGE,
   INDEXABLE_ROUTES,
@@ -96,7 +97,9 @@ test("structured data models one stable business entity without obsolete FAQ mar
 
   for (const { path } of INDEXABLE_ROUTES) {
     const graph = getSeoGraph(path)["@graph"];
-    const businesses = graph.filter((node) => hasType(node, "LocalBusiness"));
+    const businesses = graph.filter(
+      (node) => node["@id"] === businessId && hasType(node, "Organization"),
+    );
     const websites = graph.filter((node) => hasType(node, "WebSite"));
     const breadcrumbs = graph.filter((node) =>
       hasType(node, "BreadcrumbList"),
@@ -105,8 +108,33 @@ test("structured data models one stable business entity without obsolete FAQ mar
     assert.equal(businesses.length, 1, `${path} must expose one business`);
     assert.equal(businesses[0]["@id"], businessId);
     assert.ok(hasType(businesses[0], "Organization"));
+    assert.equal(hasType(businesses[0], "LocalBusiness"), false);
     assert.equal(businesses[0].telephone, company.phoneRaw);
-    assert.ok(businesses[0].address);
+    assert.equal(businesses[0].legalName, businessDetails.legalName);
+    assert.equal(businesses[0].email, businessDetails.email);
+    assert.deepEqual(businesses[0].areaServed, businessDetails.serviceAreas);
+    assert.equal(Object.hasOwn(businesses[0], "address"), false);
+    assert.deepEqual(
+      businesses[0].identifier.map(({ propertyID, value }) => ({
+        propertyID,
+        value,
+      })),
+      [
+        { propertyID: "SIREN", value: businessDetails.siren },
+        { propertyID: "SIRET", value: businessDetails.siret },
+      ],
+    );
+    assert.equal(Object.hasOwn(businesses[0], "openingHoursSpecification"), false);
+    assert.deepEqual(
+      businesses[0].contactPoint[0].hoursAvailable.map(({ opens, closes }) => ({
+        opens,
+        closes,
+      })),
+      businessDetails.openingHours.map(({ opens, closes }) => ({
+        opens,
+        closes,
+      })),
+    );
     assert.equal(
       graph.some((node) => hasType(node, "FAQPage")),
       false,

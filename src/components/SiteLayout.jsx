@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { getMailtoHref } from "../contactLinks";
 import SiteImage from "./SiteImage";
+import { businessDetails } from "../data/businessDetails";
 import { company, navLinks } from "../data/content";
 import { locationPages } from "../data/locationPages";
 import { getBreadcrumbItems } from "../seo/seoConfig";
@@ -135,14 +136,14 @@ function Footer() {
       <div className="footer-inner">
         <div className="footer-business">
           <strong>{company.name}</strong>
-          <span>{company.address}</span>
+          <span>{businessDetails.serviceModeLabel}</span>
           <a href={`tel:${company.phoneRaw}`}>{company.phoneLocalDisplay}</a>
         </div>
         <nav className="footer-locations" aria-label="Zones desservies">
           <strong>Location de benne par ville</strong>
           {locationPages.map((locationPage) => (
             <NavLink key={locationPage.key} to={locationPage.path}>
-              {locationPage.city}
+              Location de benne à {locationPage.city}
             </NavLink>
           ))}
         </nav>

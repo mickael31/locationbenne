@@ -146,6 +146,33 @@ export default function LocationPage({ locationKey }) {
 
       <section className="section alt">
         <div className="container">
+          <p className="eyebrow fade-in">Prix, déchets et devis</p>
+          <h2 className="fade-in">{page.commercialTitle}</h2>
+          <p className="section-lead fade-in">{page.commercialIntro}</p>
+          <div className="cards">
+            {page.commercialTopics.map((item, index) => (
+              <article
+                className={`card scale-in stagger-${index + 1}`}
+                key={item.title}
+              >
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </article>
+            ))}
+          </div>
+          <div className="location-links fade-in">
+            <NavLink to="/contact/" className="btn btn-primary">
+              Demander un devis à {page.city}
+            </NavLink>
+            <NavLink to="/bennes/" className="btn btn-ghost">
+              Comparer les volumes de benne
+            </NavLink>
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container">
           <p className="eyebrow fade-in">De la demande à l'enlèvement</p>
           <h2 className="fade-in">{page.processTitle}</h2>
           <div className="process-grid">
@@ -162,7 +189,7 @@ export default function LocationPage({ locationKey }) {
         </div>
       </section>
 
-      <section className="section">
+      <section className="section alt">
         <div className="container">
           <h2 className="fade-in">
             Questions fréquentes sur la location de benne à {page.city}
@@ -178,7 +205,7 @@ export default function LocationPage({ locationKey }) {
         </div>
       </section>
 
-      <section className="section alt">
+      <section className="section">
         <div className="container">
           <p className="eyebrow fade-in">Nos zones principales</p>
           <h2 className="fade-in">Autres secteurs desservis</h2>

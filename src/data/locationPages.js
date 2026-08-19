@@ -8,7 +8,7 @@ export const locationPages = [
   {
     key: "montauban",
     path: "/location-benne-montauban/",
-    lastModified: "2026-07-14",
+    lastModified: "2026-08-19",
     city: "Montauban",
     department: "Tarn-et-Garonne",
     departmentCode: "82",
@@ -63,6 +63,26 @@ export const locationPages = [
           "Si la benne doit empiéter sur une chaussée, un trottoir ou une place de stationnement, vérifiez en amont la démarche applicable auprès du gestionnaire de voirie.",
       },
     ],
+    commercialTitle: "Prix et devis de location de benne à Montauban",
+    commercialIntro:
+      "Le prix d'une location de benne à Montauban dépend du volume, des déchets, de la durée, du transport et des conditions de pose. Le devis permet de chiffrer ces éléments à partir de votre chantier réel, sans afficher un tarif générique qui ne correspondrait pas à votre demande.",
+    commercialTopics: [
+      {
+        title: "Devis pour une benne à gravats",
+        description:
+          "Briques, béton, tuiles ou carrelage doivent être décrits avant le devis, car le poids des gravats influence le volume compatible et les modalités d'enlèvement.",
+      },
+      {
+        title: "Déchets verts et encombrants",
+        description:
+          "Branches, tailles de haies, mobilier et objets volumineux n'occupent pas la benne de la même façon. Signalez chaque flux pour obtenir une estimation cohérente.",
+      },
+      {
+        title: "Les éléments qui font varier le tarif",
+        description:
+          "Une benne de 3, 7, 10 ou 15 m³, la durée prévue, l'adresse à Montauban, l'accès du camion et la nature des déchets sont repris dans le chiffrage.",
+      },
+    ],
     processTitle: "Votre location de benne à Montauban en trois étapes",
     rentalSteps: [
       {
@@ -110,7 +130,7 @@ export const locationPages = [
       },
     ],
     seo: {
-      title: "Location de benne à Montauban (82) | 3 à 15 m³",
+      title: "Location de benne à Montauban (82) | Devis 3 à 15 m³",
       description:
         "Besoin d'une benne à Montauban ? Volumes de 3 à 15 m³ pour gravats, débarras ou déchets verts. Conseil par téléphone et devis gratuit selon votre projet.",
       serviceDescription:
@@ -122,7 +142,7 @@ export const locationPages = [
   {
     key: "toulouse",
     path: "/location-benne-toulouse/",
-    lastModified: "2026-07-14",
+    lastModified: "2026-08-19",
     city: "Toulouse",
     department: "Haute-Garonne",
     departmentCode: "31",
@@ -177,6 +197,26 @@ export const locationPages = [
           "Une pose sur la chaussée ou une place de stationnement peut nécessiter une démarche auprès de Toulouse Métropole. Anticipez cette vérification avant de choisir une date.",
       },
     ],
+    commercialTitle: "Tarif et devis de location de benne à Toulouse",
+    commercialIntro:
+      "Le tarif d'une location de benne à Toulouse se calcule selon le volume, les déchets, la durée et l'organisation de la livraison. L'accès en zone urbaine, le stationnement et une éventuelle occupation du domaine public doivent être étudiés avant d'établir le devis.",
+    commercialTopics: [
+      {
+        title: "Benne à gravats pour rénovation",
+        description:
+          "Pour du béton, des briques, du carrelage ou d'autres gravats, précisez la quantité et le chemin de chargement afin de vérifier la charge et la benne envisageable.",
+      },
+      {
+        title: "Déchets verts ou encombrants à évacuer",
+        description:
+          "Végétaux, mobilier, bois et objets volumineux demandent une estimation différente. Leur description permet de comparer les bennes de 3 à 15 m³ sans surévaluer le besoin.",
+      },
+      {
+        title: "Un prix adapté aux contraintes toulousaines",
+        description:
+          "Le devis tient compte de l'adresse, du créneau possible, de l'accès du camion, de la durée et des démarches de stationnement qui peuvent concerner le lieu de pose.",
+      },
+    ],
     processTitle: "Préparer votre demande de devis à Toulouse",
     rentalSteps: [
       {
@@ -224,7 +264,7 @@ export const locationPages = [
       },
     ],
     seo: {
-      title: "Location de benne à Toulouse (31) | 3 à 15 m³",
+      title: "Location de benne à Toulouse (31) | Devis 3 à 15 m³",
       description:
         "Location de benne à Toulouse pour rénovation, gravats ou débarras. Volumes de 3 à 15 m³, accès et emplacement vérifiés avec vous avant le devis gratuit.",
       serviceDescription:
@@ -236,7 +276,7 @@ export const locationPages = [
   {
     key: "albi",
     path: "/location-benne-albi/",
-    lastModified: "2026-07-14",
+    lastModified: "2026-08-19",
     city: "Albi",
     department: "Tarn",
     departmentCode: "81",
@@ -291,6 +331,26 @@ export const locationPages = [
           "Si l'emplacement envisagé se trouve dans la rue, sur le trottoir ou sur du stationnement, demandez au service compétent quelle procédure s'applique à Albi.",
       },
     ],
+    commercialTitle: "Prix d'une location de benne et devis à Albi",
+    commercialIntro:
+      "Le prix d'une location de benne à Albi varie avec les déchets, le volume, la durée, l'adresse et la facilité de pose. Un devis établi après qualification évite de comparer des tarifs qui ne couvrent pas le même transport, le même tonnage ou le même traitement.",
+    commercialTopics: [
+      {
+        title: "Location de benne pour gravats",
+        description:
+          "Les gravats propres, les matériaux mélangés et les déchets de chantier ne suivent pas les mêmes contraintes. Indiquez leur nature et leur quantité avant le chiffrage.",
+      },
+      {
+        title: "Jardin, déchets verts et encombrants",
+        description:
+          "Décrivez séparément les végétaux, le bois, le mobilier et les objets encombrants pour choisir un volume réaliste et préparer les consignes de chargement.",
+      },
+      {
+        title: "Comprendre le tarif proposé",
+        description:
+          "Le volume de 3, 7, 10 ou 15 m³, la durée, l'accès à l'adresse albigeoise et les déchets déclarés sont les principaux éléments étudiés avant le devis.",
+      },
+    ],
     processTitle: "Du besoin à l'enlèvement de la benne à Albi",
     rentalSteps: [
       {
@@ -338,7 +398,7 @@ export const locationPages = [
       },
     ],
     seo: {
-      title: "Location de benne à Albi (81) | 3 à 15 m³",
+      title: "Location de benne à Albi (81) | Devis 3 à 15 m³",
       description:
         "Location de benne à Albi pour chantier, débarras ou jardin. Volumes de 3 à 15 m³, déchets et accès vérifiés avant la préparation de votre devis gratuit.",
       serviceDescription:

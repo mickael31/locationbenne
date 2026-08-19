@@ -5,6 +5,7 @@ import {
   home,
   servicesPage,
 } from "../data/content.js";
+import { businessDetails } from "../data/businessDetails.js";
 import { locationPages } from "../data/locationPages.js";
 
 export const SITE_ORIGIN = "https://location-benne-occitanie.fr";
@@ -202,34 +203,47 @@ function getContactPointSchema(areaServed = DEFAULT_AREA_SERVED) {
   return {
     "@type": "ContactPoint",
     contactType: "customer service",
-    email: company.email,
+    email: businessDetails.email,
     telephone: company.phoneRaw,
     areaServed,
     availableLanguage: ["fr-FR"],
+    hoursAvailable: businessDetails.openingHours.map((openingHours) => ({
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: openingHours.dayOfWeek.map(
+        (day) => `https://schema.org/${day}`,
+      ),
+      opens: openingHours.opens,
+      closes: openingHours.closes,
+    })),
   };
 }
 
 function getBusinessSchema() {
   return {
-    "@type": ["LocalBusiness", "Organization"],
+    "@type": "Organization",
     "@id": `${SITE_ORIGIN}/#business`,
     name: SITE_NAME,
+    legalName: businessDetails.legalName,
     url: `${SITE_ORIGIN}/`,
     image: toAbsoluteUrl(home.hero.image),
     logo: toAbsoluteUrl(company.logo),
     description:
       "Location de bennes de 3 à 15 m³ pour particuliers et professionnels à Montauban, Toulouse et Albi, après vérification de l'adresse et des conditions d'accès.",
-    email: company.email,
+    email: businessDetails.email,
     telephone: company.phoneRaw,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "28 chemin des bernardets",
-      postalCode: "82000",
-      addressLocality: "Montauban",
-      addressRegion: "Occitanie",
-      addressCountry: "FR",
-    },
-    areaServed: DEFAULT_AREA_SERVED,
+    areaServed: businessDetails.serviceAreas,
+    identifier: [
+      {
+        "@type": "PropertyValue",
+        propertyID: "SIREN",
+        value: businessDetails.siren,
+      },
+      {
+        "@type": "PropertyValue",
+        propertyID: "SIRET",
+        value: businessDetails.siret,
+      },
+    ],
     contactPoint: [getContactPointSchema()],
   };
 }

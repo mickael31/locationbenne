@@ -108,6 +108,17 @@ test("local prerendered pages contain their useful copy and contextual city link
       assertVisibleText(mainHtml, item.description);
     }
 
+    assert.ok(
+      Array.isArray(page.commercialTopics),
+      `${page.path} must define commercial search topics`,
+    );
+    assertVisibleText(mainHtml, page.commercialTitle);
+    assertVisibleText(mainHtml, page.commercialIntro);
+    for (const item of page.commercialTopics) {
+      assertVisibleText(mainHtml, item.title);
+      assertVisibleText(mainHtml, item.description);
+    }
+
     for (const faq of page.faqs) {
       assertVisibleText(mainHtml, faq.question);
       assertVisibleText(mainHtml, faq.answer);
@@ -120,5 +131,23 @@ test("local prerendered pages contain their useful copy and contextual city link
       );
       assertVisibleText(mainHtml, `Location de benne à ${sibling.city}`);
     }
+  }
+});
+
+test("the global footer uses descriptive anchors for every local landing page", async () => {
+  const html = await readFile(routeFile("/"), "utf8");
+  const footer =
+    html.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)?.[0] || "";
+
+  for (const page of locationPages) {
+    const anchor = footer.match(
+      new RegExp(`<a[^>]*href="${page.path}"[^>]*>[\\s\\S]*?<\\/a>`),
+    );
+    assert.ok(anchor, `the footer must link to ${page.city}`);
+    assert.equal(
+      normalizeVisibleText(anchor[0]),
+      `Location de benne à ${page.city}`,
+      `the footer must use a descriptive anchor for ${page.city}`,
+    );
   }
 });

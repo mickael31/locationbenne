@@ -78,6 +78,14 @@ test("local pages provide substantial and genuinely local decision support", () 
     assert.ok(page.preparation.length >= 2);
     assert.equal(page.rentalSteps.length, 3);
     assert.ok(page.faqs.length >= 4);
+    assert.match(page.commercialTitle, new RegExp(page.city, "i"));
+    assert.match(page.commercialTitle, /prix|tarif|devis/i);
+    assert.match(page.commercialIntro, /prix|tarif|devis/i);
+    assert.ok(page.commercialTopics.length >= 3);
+    const commercialCopy = collectCopy(page.commercialTopics).join(" ");
+    assert.match(commercialCopy, /gravats/i);
+    assert.match(commercialCopy, /déchets verts/i);
+    assert.match(commercialCopy, /encombrants/i);
     assert.ok(
       page.faqs.every(({ question }) =>
         new RegExp(page.city, "i").test(question),
@@ -95,6 +103,11 @@ test("local pages provide substantial and genuinely local decision support", () 
       ...page.volumeGuidance.map(({ description }) => description),
       ...page.preparation.map(({ description }) => description),
       ...page.rentalSteps.map(({ description }) => description),
+      page.commercialIntro,
+      ...page.commercialTopics.flatMap(({ title, description }) => [
+        title,
+        description,
+      ]),
       ...page.faqs.flatMap(({ question, answer }) => [question, answer]),
     );
   }
@@ -128,7 +141,7 @@ test("city metadata and structured data describe one real business and one local
     assert.ok(page.seo.description.length <= 170);
 
     assert.equal(businesses.length, 1);
-    assert.equal(businesses[0].address.addressLocality, "Montauban");
+    assert.equal(Object.hasOwn(businesses[0], "address"), false);
     assert.deepEqual(businesses[0].areaServed, [
       "Montauban",
       "Toulouse",

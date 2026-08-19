@@ -2,6 +2,7 @@ import { useState } from "react";
 import { getMailtoHref } from "../contactLinks";
 import PhoneFirstNotice from "../components/PhoneFirstNotice";
 import SectionCta from "../components/SectionCta";
+import { businessDetails } from "../data/businessDetails";
 import { company, contact } from "../data/content";
 import useScrollReveal from "../hooks/useScrollReveal";
 import { submitContactForm } from "../api/contactApi";
@@ -136,7 +137,7 @@ export default function ContactPage() {
               </p>
               <p>
                 <span>Adresse</span>
-                {company.address}
+                {businessDetails.serviceModeLabel}
               </p>
             </div>
             <div className="contact-meta-grid">
